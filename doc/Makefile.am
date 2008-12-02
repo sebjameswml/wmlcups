@@ -6,7 +6,7 @@ docdir = $(prefix)/doc/$(PACKAGE)-$(VERSION)
 
 EXTRA_DIST = html
 
-SEDCMD1 = s/$$title/GNU futil documentation version $(VERSION)/g
+SEDCMD1 = s/$$title/GNU wmlcups documentation version $(VERSION)/g
 SEDCMD2 = s/$$(VERSION)/$(VERSION)/g
 
 all: html
