@@ -127,19 +127,19 @@ fi
 
 dnl Determine host system type
 dnl AC_CANONICAL_HOST
-AC_DEFINE_UNQUOTED(HOST, "$host", [The host system futil was configured for])
+AC_DEFINE_UNQUOTED(HOST, "$host", [The host system wmlcups was configured for])
 
 dnl enable/disable compiler warnings (using gcc), if specified
 AC_ARG_ENABLE(warnings,
   [  --disable-warnings      disable gcc warnings [default=no]],
   [case "${enableval}" in
-    yes) futil_warnings=yes ;; 
-    no)  futil_warnings=no ;;
+    yes) wmlcups_warnings=yes ;; 
+    no)  wmlcups_warnings=no ;;
     *) AC_MSG_ERROR(bad value ${enableval} for --enable-warnings) ;;
-  esac], futil_warnings=yes)
+  esac], wmlcups_warnings=yes)
 AC_MSG_CHECKING(whether to use gcc verbose warnings)
-AC_MSG_RESULT($futil_warnings)
-if (test "$futil_warnings" = yes && test "$GCC" = yes); then
+AC_MSG_RESULT($wmlcups_warnings)
+if (test "$wmlcups_warnings" = yes && test "$GCC" = yes); then
   CXXFLAGS="-Wall $CXXFLAGS"
 fi
 
@@ -147,14 +147,42 @@ dnl enable/disable debug logging, if specified
 AC_ARG_ENABLE(debug-logging,
   [  --enable-debug-logging  enable debug logging [default=no]],
   [case "${enableval}" in
-    yes) futil_debug=yes ;;
-    no)  futil_debug=no ;;
+    yes) wmlcups_debug=yes ;;
+    no)  wmlcups_debug=no ;;
     *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug-logging) ;;
-  esac], futil_debug=no)
+  esac], wmlcups_debug=no)
 AC_MSG_CHECKING(whether to enable debug logging)
-AC_MSG_RESULT($futil_debug)
-if test "$futil_debug" = yes; then
+AC_MSG_RESULT($wmlcups_debug)
+if test "$wmlcups_debug" = yes; then
   AC_DEFINE(DEBUG, 1, [Define if debug logging is enabled])
+fi
+
+dnl enable/disable disk space check
+AC_ARG_ENABLE(disk-space-check,
+  [  --enable-disk-space-check  enable disk space checking [default=yes]],
+  [case "${enableval}" in
+    yes) wmlcups_disk_space=yes ;;
+    no)  wmlcups_disk_space=no ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-disk-space-check) ;;
+  esac], wmlcups_disk_space=yes)
+AC_MSG_CHECKING(whether to enable disk space checking)
+AC_MSG_RESULT($wmlcups_disk_space)
+if test "$wmlcups_disk_space" = yes; then
+  AC_DEFINE(CHECK_DISK_SPACE_FEATURE, 1, [Define if disk space checking is enabled])
+fi
+
+dnl enable/disable queue enabled check
+AC_ARG_ENABLE(queue-enabled-check,
+  [  --enable-queue-enabled-check  enable queue enabled checking [default=yes]],
+  [case "${enableval}" in
+    yes) wmlcups_queue_enabled=yes ;;
+    no)  wmlcups_queue_enabled=no ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-queue-enabled-check) ;;
+  esac], wmlcups_queue_enabled=yes)
+AC_MSG_CHECKING(whether to enable queue enabled checking)
+AC_MSG_RESULT($wmlcups_queue_enabled)
+if test "$wmlcups_queue_enabled" = yes; then
+  AC_DEFINE(CHECK_QUEUE_IS_ENABLED_FEATURE, 1, [Define if queue enabled checking is enabled])
 fi
 
 dnl Always output certain files

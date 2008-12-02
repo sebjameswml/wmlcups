@@ -14,6 +14,8 @@
 #include <cups/ipp.h>
 #include <wmlppctrl/cupsd_numjobs.h>
 
+#include "config.h"
+
 /* BUFFER is the smallest amount of free space allowed on the cups
    temporary file store before cups-lpd will start to pause while
    processing jobs. BUFFER should be given in bytes. BUFFER should be

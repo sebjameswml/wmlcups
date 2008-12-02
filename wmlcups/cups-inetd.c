@@ -5,10 +5,12 @@
  * able to create new CUPs jobs with minimum fuss).
  */
 
+#include "config.h"
 #include "cups-inetd.h"
 #include <cups/language.h>
 #include <syslog.h>
 #include <errno.h>
+#include <stdlib.h>
 
 int
 check_cupsd_for_maxjobs (http_t * connection)
