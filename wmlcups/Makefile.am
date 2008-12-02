@@ -6,4 +6,4 @@ lib_LTLIBRARIES = libwmlcups.la
 
 libwmlcups_la_SOURCES = cups-inetd.c
 
-#pkginclude_HEADERS = 
+pkginclude_HEADERS = cups-inetd.h

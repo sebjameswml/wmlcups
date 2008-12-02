@@ -29,11 +29,10 @@ AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MALLOC
 AC_HEADER_STDC
 AC_FUNC_STAT
-AC_CHECK_FUNCS([memset socket strerror strrchr])
+AC_CHECK_FUNCS([memset strerror strstr strtol])
 
 dnl Checks for header files.
-AC_HEADER_DIRENT
-AC_CHECK_HEADERS([sys/file.h sys/ioctl.h syslog.h unistd.h])
+AC_CHECK_HEADERS([sys/statvfs.h])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
