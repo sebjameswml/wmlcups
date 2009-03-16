@@ -1,8 +1,6 @@
 /*
- * Functions which are useful in rawprint.c, potentially in cups-lpd.c
- * (though we hav ea copy of these in cups-1.1.23-wml for that) and in
- * the wmlcdl code (or any other CUPs filter code which needs to be
- * able to create new CUPs jobs with minimum fuss).
+ * Functions which are useful in WML code which need to access the
+ * CUPs API with minimum fuss.
  */
 
 #include "config.h"
@@ -11,216 +9,6 @@
 #include <syslog.h>
 #include <errno.h>
 #include <stdlib.h>
-
-int
-check_cupsd_for_maxjobs (http_t * connection)
-{
-	/* Find what MaxJobs is. This is held in the scheduler as a
-	 * variable */
-	/* Find what current number of jobs is, also from the scheduler */
-	/* If we're too close to MaxJobs, return 0 */
-	/* Any errors, return -1 */
-
-	ipp_t * rqst;
-	ipp_t * rtn;
-	ipp_attribute_t * ipp_attributes;
-	cups_lang_t * lang;
-
-	int made_connection = 0;
-
-	int i = 0;
-	int MyMaxJobs = 0, gotMax = 0;
-	int MyNumJobs = 0, gotJobs = 0;
-
-	int cupsd_jobs_ok = 0;
-
-	static const char * jobinfo_attributes[] = {
-		"cupsd-maxjobs",
-		"cupsd-numjobs"
-	};
-	int n_attributes = 2; // Should match the above number of entries
-
-	//syslog (LOG_INFO, "At start of %s", __FUNCTION__);
-
-	/*
-	 * Setup a connection and request data...
-	 */
-
-	if (connection == NULL) {
-		if ((connection = httpConnectEncrypt(cupsServer(), ippPort(),
-						     cupsEncryption())) == NULL)
-		{
-			syslog(LOG_ERR, "%s: Unable to connect to server %s: %s",
-			       __FUNCTION__, cupsServer(), strerror(errno));
-			return -1;
-		}
-		made_connection = 1;
-	}
-
-	rqst = ippNew();
-	rqst->request.op.operation_id = CUPS_GET_MAXJOBS;
-	rqst->request.op.request_id   = 0x8383;
-	lang = cupsLangDefault();
-
-	ippAddString(rqst,
-		     IPP_TAG_OPERATION,
-		     IPP_TAG_CHARSET,
-		     "attributes-charset",
-		     NULL,
-		     cupsLangEncoding(lang));
-
-	ippAddString(rqst,
-		     IPP_TAG_OPERATION,
-		     IPP_TAG_LANGUAGE,
-		     "attributes-natural-language",
-		     NULL,
-		     lang->language);
-
-	ippAddStrings(rqst,
-		      IPP_TAG_OPERATION,
-		      IPP_TAG_KEYWORD,
-		      "requested-attributes",
-		      n_attributes,
-		      NULL,
-		      jobinfo_attributes);
-
-	rtn = cupsDoRequest (connection, rqst, "/");
-
-	if (!rtn) {
-		syslog (LOG_ERR, "%s: cupsDoRequest() failed: '%s'\n", __FUNCTION__, ippErrorString(cupsLastError()));
-		cupsLangFree (lang);
-		return -1;
-	}
-
-	for (ipp_attributes = rtn->attrs; ipp_attributes != NULL; ipp_attributes = ipp_attributes->next) {
-
-		while (ipp_attributes != NULL && ipp_attributes->group_tag != IPP_TAG_EVENT_NOTIFICATION) {
-			// Move on to the next one.
-			ipp_attributes = ipp_attributes->next;
-		}
-
-		while (ipp_attributes != NULL && ipp_attributes->group_tag == IPP_TAG_EVENT_NOTIFICATION) {
-
-			if (!strcmp(ipp_attributes->name, "cupsd-maxjobs") &&
-			    ipp_attributes->value_tag == IPP_TAG_INTEGER) {
-				MyMaxJobs = ipp_attributes->values[0].integer;
-				gotMax = 1;
-				//syslog (LOG_DEBUG, "Got MaxJobs (%d)", MyMaxJobs);
-			}
-
-			if (!strcmp(ipp_attributes->name, "cupsd-numjobs") &&
-			    ipp_attributes->value_tag == IPP_TAG_INTEGER) {
-				MyNumJobs = ipp_attributes->values[0].integer;
-				gotJobs = 1;
-				//syslog (LOG_DEBUG, "Got NumJobs (%d)", MyNumJobs);
-			}
-
-			ipp_attributes = ipp_attributes->next;
-		}
-		if (gotJobs && gotMax) { break; }
-		if (i++ > 1023) {
-			syslog (LOG_WARNING, "%s: spinning and failed to get both NumJobs and MaxJobs after 1024 for loops", __FUNCTION__);
-			break;
-		}
-	}
-
-	if (rtn)
-		ippDelete(rtn);
-	cupsLangFree (lang);
-
-	if (made_connection) {
-		httpClose(connection);
-	}
-
-	if (MyNumJobs - MyMaxJobs < 0) {
-		/* All is well, cupsd has space to receive the job, return 1 */
-		cupsd_jobs_ok = 1;
-	} else {
-		cupsd_jobs_ok = 0;
-	}
-
-	return cupsd_jobs_ok;
-}
-
-/*
- * 'check_free_space_for_a_duplicate()' - Check we have enough free space
- * to create a duplicate of "file" on the filesystem containing "file".
- *
- * NB: This assumes the cups-lpd temporary file is created in the same
- * directory as the cups temporary file. Is that true? It is for my
- * application, but may not be for all?
- *
- * This check is important on cups systems where the print spool filesystem
- * is limited in size.
- *
- */
-
-int
-check_free_space_for_a_duplicate (const char * file)
-{
-	struct statvfs *tmpstat;        /* Used by statvfs() function */
-	struct stat    *buf;            /* Used by stat() function */
-	int            statret;         /* To hold the rtn value of stat()
-					 * and statvfs() */
-	unsigned long  file_size = 0;   /* The size of the file to be printed */
-	unsigned long  free_space = 0;  /* The free space available on the
-					 * filesystem holding file */
-
-	/* Find disk usage of file */
-	buf = malloc (sizeof (struct stat));
-	memset (buf, 0, sizeof(struct stat));
-
-	if ((statret = stat (file, buf)) != 0) {
-		syslog (LOG_ERR, "%s: stat() returned error %d\n",
-			__FUNCTION__, statret);
-		free (buf);
-		return -1;
-	}
-
-	if (S_ISREG(buf->st_mode))
-	{
-		file_size = buf->st_size;
-		free (buf);
-	}
-	else
-	{
-		/* Error reading file */
-		syslog (LOG_ERR, "%s: Error reading file", __FUNCTION__);
-		free (buf);
-		return -1;
-	}
-
-	/* Find free space available */
-	tmpstat = malloc (sizeof (struct statvfs));
-
-	/* Here we have a hardcoded directory - how to get this from cups? */
-	if ((statret = statvfs (file, tmpstat)))
-	{
-		syslog (LOG_ERR, "%s: statvfs() returned error %d\n",
-			__FUNCTION__, statret);
-		free (tmpstat);
-		return -1;
-	}
-
-	/* 512 blocks is 2 MB on /tmp on the vortex */
-	free_space = tmpstat->f_bfree * tmpstat->f_bsize;
-
-	syslog (LOG_INFO, "file_size = %ld (%2f MB), free_space = %ld (%2f MB)",
-		file_size, (float)file_size/1048576,
-		free_space, (float)free_space/1048576);
-
-	if (free_space > file_size)
-	{
-		free (tmpstat);
-		return 1;
-	}
-	else
-	{
-		free (tmpstat);
-		return 0;
-	}
-
-}
 
 /* Return length of string found. */
 int get_string_from_cupsdconf (const char* var_name,
@@ -360,7 +148,12 @@ long get_integer_from_cupsd_conf (const char* var_name)
  *
  * This fn gets InputBuffer and TempDir from cupsd.conf as it needs
  * these variables.
+ *
+ * I don't think this function is necessary now, as we correctly
+ * handle the case that cupsd has reached maxjobs, and we will set
+ * maxjobs to suit the average file size used at a site.
  */
+#define BUFFER      8388608 /* 8 MB */
 int tempdir_free_space (void)
 {
 	struct statvfs   *tmpstat;
@@ -549,9 +342,6 @@ print_file(const char    *name,		/* I - Printer or class name */
 	char		uri[HTTP_MAX_URI];	/* Printer URI */
 	cups_lang_t	*language;		/* Language to use */
 	int		jobid;			/* New job ID */
-#ifdef CHECK_DISK_SPACE_FEATURE
-	int           rtn;                    /* return value of check_free_space... */
-#endif
 
 	/*
 	 * Setup a connection and request data...
@@ -613,24 +403,6 @@ print_file(const char    *name,		/* I - Printer or class name */
 	 */
 
 	snprintf(uri, sizeof(uri), "/printers/%s", name);
-
-#ifdef CHECK_DISK_SPACE_FEATURE
-	/*
-	 * Find the size of the file and make sure we have 1 times that amount
-	 * of free space prior to processing it, as the cupsDoFileRequest will copy
-	 * the file prior to spooling it to the printer.
-	 */
-	while (!(rtn = check_free_space_for_a_duplicate (file)))
-	{
-		syslog (LOG_INFO,
-			"Ramdisk is nearly full, waiting for space to become available..");
-		usleep (5000000); /* 5 sec */
-	}
-
-	if (rtn == -1)
-		syslog (LOG_ERR, "check_free_space_for_a_duplicate() returned an error.");
-
-#endif /* CHECK_DISK_SPACE_FEATURE */
 
 #ifdef CHECK_QUEUE_IS_ENABLED_FEATURE
 	/* Make sure that the queue is enabled before calling cupsDoFileRequest() */
