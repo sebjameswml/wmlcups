@@ -446,3 +446,502 @@ print_file(const char    *name,		/* I - Printer or class name */
 
 	return (jobid);
 }
+
+/*
+ * IPP_CREATE_JOB function
+ *
+ * name - Printer or class name
+ * title - Title of job
+ * docname - Name of job file
+ * user - Owner of job
+ * num_options - Number of options
+ * options - CUPS Options
+ */
+int ipp_create_job(http_t * http, const char * name, const char * title, const char * docname,
+		   const char * user, int num_options, cups_option_t * options)
+{
+	ipp_t * request;           /* IPP request */
+	ipp_t * response;          /* IPP response */
+	ipp_attribute_t * attr;    /* IPP job-id attribute */
+	char uri[HTTP_MAX_URI];    /* Printer URI */
+	cups_lang_t * language;    /* Language to use */
+	int jobid;                 /* New job ID */
+
+	/*
+	 * Build a standard CUPS URI for the printer and fill the standard IPP
+	 * attributes...
+	 */
+
+	if ((request = ippNew()) == NULL)
+	{
+		syslog(LOG_ERR, "Unable to create request: %s", strerror(errno));
+		httpClose(http);
+		return (0);
+	}
+
+	request->request.op.operation_id = IPP_CREATE_JOB;
+	request->request.op.request_id = 0x8091;
+
+	snprintf(uri, sizeof(uri), "ipp://localhost/printers/%s", name);
+
+	language = cupsLangDefault();
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_CHARSET,
+		     "attributes-charset", NULL, cupsLangEncoding(language));
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_LANGUAGE,
+		     "attributes-natural-language", NULL,
+		     language != NULL ? language->language : "C");
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_URI, "printer-uri",
+		     NULL, uri);
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME, "requesting-user-name",
+		     NULL, user);
+
+	if (title)
+	{
+		ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME,
+			     "job-name", NULL, title);
+	}
+	if (docname)
+	{
+		ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME,
+			     "document-name", NULL, docname);
+	}
+
+	/*
+	 * Then add all options on the command-line...
+	 */
+
+	cupsEncodeOptions(request, num_options, options);
+
+	/*
+	 * Do the request...
+	 */
+
+	snprintf(uri, sizeof(uri), "/printers/%s", name);
+
+	response = cupsDoRequest(http, request, uri);
+
+	if (response == NULL)
+	{
+		syslog(LOG_ERR, "Unable to create job (queue %s), null "
+		       "response to cupsDoRequest, cupsLastError() returns %s",
+		       name, ippErrorString(cupsLastError()));
+		jobid = 0;
+
+	}
+	else if (response->request.status.status_code > IPP_OK_CONFLICT)
+	{
+		syslog(LOG_ERR, "Unable to create job (queue %s), "
+		       "response->request.status.status_code = %s",
+		       name, ippErrorString(response->request.status.status_code));
+		jobid = 0;
+
+	}
+	else if ((attr = ippFindAttribute(response, "job-id", IPP_TAG_INTEGER)) == NULL)
+	{
+		syslog(LOG_ERR, "No job-id attribute found in response from server!");
+		jobid = 0;
+
+	}
+	else
+	{
+		/* cupsd successfully created a job */
+		jobid = attr->values[0].integer;
+	}
+
+	if (response != NULL)
+	{
+		ippDelete(response);
+	}
+
+	cupsLangFree(language);
+
+	return (jobid);
+}
+
+/*
+ * IPP_SET_JOB_ATTRIBUTES function
+ *
+ * jobid - the CUPS Job ID to set attributes for
+ * name - Printer or class name
+ * title - Title of job
+ * docname - Name of job file
+ * user - Owner of job
+ * num_options - Number of options
+ * options - CUPS Options
+ */
+int ipp_set_job_attributes(http_t * http, int jobid,
+			   const char * name, const char * title, const char * docname,
+			   const char * user, int num_options, cups_option_t * options)
+{
+	ipp_t * request;		/* IPP request */
+	ipp_t * response;		/* IPP response */
+	char uri[HTTP_MAX_URI];	/* Printer URI */
+	cups_lang_t * language;	/* Language to use */
+	int rtn = -1;
+
+	/*
+	 * Build a standard CUPS URI for the printer and fill the standard IPP
+	 * attributes...
+	 */
+
+	if ((request = ippNew()) == NULL)
+	{
+		syslog(LOG_ERR, "Unable to create request: %s", strerror(errno));
+		httpClose(http);
+		return (0);
+	}
+
+	request->request.op.operation_id = IPP_CREATE_JOB;
+	request->request.op.request_id = 0x8095;
+
+	snprintf(uri, sizeof(uri), "ipp://localhost/jobs/%d", jobid);
+
+	language = cupsLangDefault();
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_CHARSET,
+		     "attributes-charset", NULL, cupsLangEncoding(language));
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_LANGUAGE,
+		     "attributes-natural-language", NULL,
+		     language != NULL ? language->language : "C");
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_URI, "printer-uri",
+		     NULL, uri);
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME, "requesting-user-name",
+		     NULL, user);
+
+	if (title)
+	{
+		ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME,
+			     "job-name", NULL, title);
+	}
+	if (docname)
+	{
+		ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME,
+			     "document-name", NULL, docname);
+	}
+
+	/*
+	 * Then add all options on the command-line...
+	 */
+
+	cupsEncodeOptions(request, num_options, options);
+
+	/*
+	 * Do the request...
+	 */
+
+	snprintf(uri, sizeof(uri), "/jobs/%d", jobid);
+
+	response = cupsDoRequest(http, request, uri);
+
+	if (response == NULL)
+	{
+		syslog(LOG_ERR, "Unable to set job %d attributes, null "
+		       "response to cupsDoRequest, cupsLastError() returns %s",
+		       jobid, ippErrorString(cupsLastError()));
+		rtn = -1;
+
+	}
+	else if (response->request.status.status_code > IPP_OK_CONFLICT)
+	{
+		syslog(LOG_ERR, "Unable to set job %d attributes, "
+		       "response->request.status.status_code = %s",
+		       jobid, ippErrorString(response->request.status.status_code));
+		rtn = -1;
+
+	}
+	else
+	{
+		rtn = 0;
+	}
+
+	if (response != NULL)
+	{
+		ippDelete(response);
+	}
+
+	cupsLangFree(language);
+
+	return (rtn);
+}
+
+/*
+ * IPP_HOLD_JOB function.
+ *
+ * job_id - The job ID to hold
+ * user - Owner of job
+ */
+int ipp_hold_job(http_t * http, int job_id, const char * user)
+{
+	ipp_t * request;		/* IPP request */
+	ipp_t * response;		/* IPP response */
+	char uri[HTTP_MAX_URI];	        /* Printer URI */
+	cups_lang_t * language;		/* Language to use */
+	int rtn = -1;                   /* Return value -1: Error 0: Success */
+
+	/*
+	 * Build a standard CUPS URI for the printer and fill the standard IPP
+	 * attributes...
+	 */
+
+	if ((request = ippNew()) == NULL)
+	{
+		syslog(LOG_ERR, "Unable to create request: %s", strerror(errno));
+		httpClose(http);
+		return (-1);
+	}
+
+	request->request.op.operation_id = IPP_HOLD_JOB;
+	request->request.op.request_id   = 0x8094;
+
+	snprintf(uri, sizeof(uri), "ipp://localhost/jobs/%d", job_id);
+
+	language = cupsLangDefault();
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_CHARSET,
+		     "attributes-charset", NULL, cupsLangEncoding(language));
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_LANGUAGE,
+		     "attributes-natural-language", NULL,
+		     language != NULL ? language->language : "C");
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_URI, "job-uri",
+		     NULL, uri);
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME, "requesting-user-name",
+		     NULL, user);
+
+	/*
+	 * Do the request...
+	 */
+
+	snprintf(uri, sizeof(uri), "/jobs/%d", job_id);
+
+	response = cupsDoRequest(http, request, uri);
+
+	if (response == NULL)
+	{
+		syslog(LOG_ERR, "Unable to hold Job %d, "
+		       "null response to cupsDoRequest, cupsLastError() returns %s",
+		       job_id, ippErrorString(cupsLastError()));
+		rtn = -1;
+
+	}
+	else if (response->request.status.status_code > IPP_OK_CONFLICT)
+	{
+		syslog(LOG_ERR, "Unable to hold Job %d, "
+		       "response->request.status.status_code = %s",
+		       job_id, ippErrorString(response->request.status.status_code));
+		rtn = -1;
+
+	}
+	else
+	{
+		rtn = 0;
+	}
+
+	if (response != NULL)
+	{
+		ippDelete(response);
+	}
+
+	cupsLangFree(language);
+
+	return rtn;
+}
+
+/*
+ * IPP_RELEASE_JOB function.
+ *
+ * job_id - The job ID to release
+ * user - Owner of job
+ */
+int ipp_release_job(http_t * http, int job_id, const char * user)
+{
+	ipp_t * request;		/* IPP request */
+	ipp_t * response;		/* IPP response */
+	char uri[HTTP_MAX_URI];	        /* Printer URI */
+	cups_lang_t * language;		/* Language to use */
+	int rtn = -1;                   /* Return value -1: Error 0: Success */
+
+	/*
+	 * Build a standard CUPS URI for the printer and fill the standard IPP
+	 * attributes...
+	 */
+
+	if ((request = ippNew()) == NULL)
+	{
+		syslog(LOG_ERR, "Unable to create request: %s", strerror(errno));
+		httpClose(http);
+		return (-1);
+	}
+
+	request->request.op.operation_id = IPP_RELEASE_JOB;
+	request->request.op.request_id   = 0x8095;
+
+	snprintf(uri, sizeof(uri), "ipp://localhost/jobs/%d", job_id);
+
+	language = cupsLangDefault();
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_CHARSET,
+		     "attributes-charset", NULL, cupsLangEncoding(language));
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_LANGUAGE,
+		     "attributes-natural-language", NULL,
+		     language != NULL ? language->language : "C");
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_URI, "job-uri",
+		     NULL, uri);
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME, "requesting-user-name",
+		     NULL, user);
+
+	/*
+	 * Do the request...
+	 */
+
+	snprintf(uri, sizeof(uri), "/jobs/%d", job_id);
+
+	response = cupsDoRequest(http, request, uri);
+
+	if (response == NULL)
+	{
+		syslog(LOG_ERR, "Unable to release Job %d, "
+		       "null response to cupsDoRequest, cupsLastError() returns %s",
+		       job_id, ippErrorString(cupsLastError()));
+		rtn = -1;
+
+	}
+	else if (response->request.status.status_code > IPP_OK_CONFLICT)
+	{
+		syslog(LOG_ERR, "Unable to release Job %d, "
+		       "response->request.status.status_code = %s",
+		       job_id, ippErrorString(response->request.status.status_code));
+		rtn = -1;
+
+	}
+	else
+	{
+		rtn = 0;
+	}
+
+	if (response != NULL)
+	{
+		ippDelete(response);
+	}
+
+	cupsLangFree(language);
+
+	return rtn;
+}
+
+/*
+ * IPP_SEND_DOCUMENT function
+ *
+ * job_id - The job ID to print this file to
+ * file - File to print
+ * docname - Name of job file
+ * user - Owner of job
+ * format - Document format
+ * last - 1 means last file in job
+ */
+int ipp_send_doc(http_t * http, int job_id, const char * file, const char * docname,
+		 const char * user, const char * format, int last)
+{
+	ipp_t * request;		/* IPP request */
+	ipp_t * response;		/* IPP response */
+	char uri[HTTP_MAX_URI];	        /* Printer URI */
+	cups_lang_t * language;		/* Language to use */
+	int rtn = -1;                   /* Return value -1: Error 0: Success */
+
+	/*
+	 * Build a standard CUPS URI for the printer and fill the standard IPP
+	 * attributes...
+	 */
+
+	if ((request = ippNew()) == NULL)
+	{
+		syslog(LOG_ERR, "Unable to create request: %s", strerror(errno));
+		httpClose(http);
+		return (-1);
+	}
+
+	request->request.op.operation_id = IPP_SEND_DOCUMENT;
+	request->request.op.request_id   = 0x8092;
+
+	snprintf(uri, sizeof(uri), "ipp://localhost/jobs/%d", job_id);
+
+	language = cupsLangDefault();
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_CHARSET,
+		     "attributes-charset", NULL, cupsLangEncoding(language));
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_LANGUAGE,
+		     "attributes-natural-language", NULL,
+		     language != NULL ? language->language : "C");
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_URI, "job-uri",
+		     NULL, uri);
+
+	ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME, "requesting-user-name",
+		     NULL, user);
+
+	if (docname)
+	{
+		ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_NAME,
+			     "document-name", NULL, docname);
+	}
+
+	if (format)
+	{
+		ippAddString(request, IPP_TAG_OPERATION, IPP_TAG_MIMETYPE,
+			     "document-format", NULL, format);
+	}
+
+	if (last) {
+		ippAddBoolean(request, IPP_TAG_OPERATION, "last-document", 1);
+	}
+
+	/*
+	 * Do the request...
+	 */
+
+	snprintf(uri, sizeof(uri), "/jobs/%d", job_id);
+
+	response = cupsDoFileRequest(http, request, uri, file);
+
+	if (response == NULL)
+	{
+		syslog(LOG_ERR, "Unable to print file (Job %d), "
+		       "null response to cupsDoRequest, cupsLastError() returns %s",
+		       job_id, ippErrorString(cupsLastError()));
+		rtn = -1;
+
+	}
+	else if (response->request.status.status_code > IPP_OK_CONFLICT)
+	{
+		syslog(LOG_ERR, "Unable to print file (Job %d), "
+		       "response->request.status.status_code = %s",
+		       job_id, ippErrorString(response->request.status.status_code));
+		rtn = -1;
+
+	}
+	else
+	{
+		rtn = 0;
+	}
+
+	if (response != NULL) {
+		ippDelete(response);
+	}
+
+	cupsLangFree(language);
+
+	return rtn;
+}

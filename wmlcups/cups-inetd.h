@@ -49,4 +49,43 @@ int print_file(const char *name, const char *file,
 	       const char *user, int num_options,
 	       cups_option_t *options);
 
+/*!
+ * Functions to allow us to create a job, hod it, add files, then
+ * release it.
+ */
+int ipp_create_job (http_t * http,
+		    const char * name,
+		    const char * title,
+		    const char * docname,
+		    const char * user,
+		    int num_options,
+		    cups_option_t * options);
+
+int ipp_set_job_attributes (http_t * http,
+			    int jobid,
+			    const char * name,
+			    const char * title,
+			    const char * docname,
+			    const char * user,
+			    int num_options,
+			    cups_option_t * options);
+
+int ipp_hold_job (http_t * http,
+		  int job_id,
+		  const char * user);
+
+int ipp_release_job (http_t * http,
+		     int job_id,
+		     const char * user);
+
+int ipp_send_doc (http_t * http,
+		  int job_id,
+		  const char * file,
+		  const char * docname,
+		  const char * user,
+		  const char * format,
+		  int last);
+
+
+
 #endif /* _CUPS_INETD_H_ */
