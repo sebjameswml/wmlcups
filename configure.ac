@@ -157,34 +157,6 @@ if test "$wmlcups_debug" = yes; then
   AC_DEFINE(DEBUG, 1, [Define if debug logging is enabled])
 fi
 
-dnl enable/disable disk space check
-AC_ARG_ENABLE(disk-space-check,
-  [  --enable-disk-space-check  enable disk space checking [default=yes]],
-  [case "${enableval}" in
-    yes) wmlcups_disk_space=yes ;;
-    no)  wmlcups_disk_space=no ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-disk-space-check) ;;
-  esac], wmlcups_disk_space=yes)
-AC_MSG_CHECKING(whether to enable disk space checking)
-AC_MSG_RESULT($wmlcups_disk_space)
-if test "$wmlcups_disk_space" = yes; then
-  AC_DEFINE(CHECK_DISK_SPACE_FEATURE, 1, [Define if disk space checking is enabled])
-fi
-
-dnl enable/disable queue enabled check
-AC_ARG_ENABLE(queue-enabled-check,
-  [  --enable-queue-enabled-check  enable queue enabled checking [default=yes]],
-  [case "${enableval}" in
-    yes) wmlcups_queue_enabled=yes ;;
-    no)  wmlcups_queue_enabled=no ;;
-    *) AC_MSG_ERROR(bad value ${enableval} for --enable-queue-enabled-check) ;;
-  esac], wmlcups_queue_enabled=yes)
-AC_MSG_CHECKING(whether to enable queue enabled checking)
-AC_MSG_RESULT($wmlcups_queue_enabled)
-if test "$wmlcups_queue_enabled" = yes; then
-  AC_DEFINE(CHECK_QUEUE_IS_ENABLED_FEATURE, 1, [Define if queue enabled checking is enabled])
-fi
-
 dnl Always output certain files
 AC_CONFIG_FILES([Makefile wmlcups/Makefile doc/Makefile doc/Doxyfile])
 
