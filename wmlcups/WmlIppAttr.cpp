@@ -127,6 +127,8 @@ wml::WmlIppAttr::determineType (void)
 		case 'i':
 			if (this->name == "printer-info") {
 				this->type = IPP_TAG_TEXT;
+			} else if (this->name == "printer-is-accepting-jobs") {
+				this->type = IPP_TAG_BOOLEAN;
 			} else {
 				this->type = IPP_TAG_UNKNOWN;
 			}
