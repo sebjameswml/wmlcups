@@ -21,6 +21,10 @@ extern "C" {
 using namespace std;
 using namespace wml;
 
+wml::WmlCups::WmlCups ()
+{
+}
+
 wml::WmlCups::WmlCups (string addr)
 {
 	if (addr.empty()) {
@@ -45,6 +49,32 @@ wml::WmlCups::WmlCups (string addr)
 wml::WmlCups::~WmlCups()
 {
 	httpClose (this->connection);
+}
+
+void
+wml::WmlCups::initialise (void)
+{
+	if (this->cupsdAddress.empty()) {
+		// This connects to the cupsd on the localhost
+		this->connection = httpConnectEncrypt (cupsServer(),
+						       ippPort(),
+						       cupsEncryption());
+	} else {
+		// Connect to indicated cupsdaddr
+		this->connection = httpConnectEncrypt (this->cupsdAddress.c_str(),
+						       ippPort(),
+						       cupsEncryption());
+	}
+
+	if (this->connection == 0) {
+		throw runtime_error ("WmlCups: Couldn't connect to the cupsd!");
+	}
+}
+
+void
+wml::WmlCups::setCupsdAddress (string a)
+{
+	this->cupsdAddress = a;
 }
 
 bool

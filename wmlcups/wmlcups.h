@@ -36,9 +36,19 @@ namespace wml {
 	class WmlCups
 	{
 	public:
+		WmlCups ();
 		WmlCups (std::string addr);
 		~WmlCups ();
 
+		/*!
+		 * After setting address, this makes a connection to
+		 * the cupsd.
+		 */
+		void initialise (void);
+
+		/*!
+		 * Sets the cupsd address.
+		 */
 		void setCupsdAddress (std::string s);
 
 		/*!
