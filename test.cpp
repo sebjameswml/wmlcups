@@ -14,7 +14,8 @@ int main (int argc, char** argv)
 		return -1;
 	}
 
-	string addr ("192.168.0.6");
+	//string addr ("192.168.0.6");
+	string addr ("localhost");
 	WmlCups c(addr);
 
 	// Test getStatus
@@ -43,5 +44,18 @@ int main (int argc, char** argv)
 	WmlIppAttr at4("printer-state");
 	cout << "state: " << c.getPrinterAttribute (argv[1], at4) << endl;
 
+	cout << "\nNow setting info...\n";
+	WmlIppAttr a("printer-info");
+	a.setValue ("Blah blah");
+	try {
+		c.setPrinterAttribute (argv[1], a);
+	} catch (const exception& e) {
+		cerr << "error: " << e.what() << endl;
+	}
+	a.setValue ("nono");
+	cout << "info is now: " << c.getPrinterAttribute (argv[1], a) << endl;
+
+	c.setInfo (argv[1], "Bleurgh bleurgh");
+	c.setLocation (argv[1], "The Quadrant");
 	return 0;
 }

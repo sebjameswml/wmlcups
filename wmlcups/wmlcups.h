@@ -31,7 +31,8 @@ namespace wml {
 	 * status information from and send commands to the cupsd.
 	 *
 	 * Intended always to be run in try/catch, as CUPS errors are
-	 * passed back as exceptions.
+	 * passed back as exceptions. (Or at least that was the
+	 * initial plan).
 	 */
 	class WmlCups
 	{
@@ -81,6 +82,16 @@ namespace wml {
 		std::string getInfo (std::string cupsPrinter);
 
 		/*!
+		 * Set the info Cups parameter to s.
+		 */
+		void setInfo (std::string cupsPrinter, std::string s);
+
+		/*!
+		 * Set the location Cups parameter to s.
+		 */
+		void setLocation (std::string cupsPrinter, std::string s);
+
+		/*!
 		 * Return a string (in English) of the printer
 		 * location.
 		 */
@@ -114,6 +125,21 @@ namespace wml {
 		 */
 		std::string getPrinterAttribute (const char* printerName,
 						 wml::WmlIppAttr& attr);
+
+		/*!
+		 * Set an IPP attribute for printerName. attr should
+		 * have been set up with the attribute name and the
+		 * attribute value.
+		 */
+		void setPrinterAttribute (const char* printerName,
+					  wml::WmlIppAttr& attr);
+
+		/*!
+		 * Return true if the string s is a name which is
+		 * valid to be a CUPS printer name.
+		 */
+		bool printerNameIsValid (std::string s);
+
 	private:
 		/*!
 		 * The IP or address of the CUPS server to query.

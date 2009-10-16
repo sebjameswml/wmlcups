@@ -86,9 +86,19 @@ namespace wml {
 		~WmlIppAttr ();
 
 		/*!
+		 * Zero out any stored values.
+		 */
+		void zero (void);
+
+		/*!
 		 * Return the name of this attribute.
 		 */
 		std::string getName (void);
+
+		/*!
+		 * Set the attribute name to s.
+		 */
+		void setName (std::string s);
 
 		/*!
 		 * Return the type tag of this attribute.

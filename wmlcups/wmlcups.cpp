@@ -134,54 +134,69 @@ string
 wml::WmlCups::getStateMsg (string cupsPrinter)
 {
 	WmlIppAttr attr("printer-state-message");
-	return getPrinterAttribute (cupsPrinter.c_str(), attr);
+	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
 wml::WmlCups::getInfo (string cupsPrinter)
 {
 	WmlIppAttr attr("printer-info");
-	return getPrinterAttribute (cupsPrinter.c_str(), attr);
+	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
+}
+
+void
+wml::WmlCups::setInfo (string cupsPrinter, string s)
+{
+	WmlIppAttr attr("printer-info");
+	attr.setValue (s);
+	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
+}
+
+void
+wml::WmlCups::setLocation (string cupsPrinter, string s)
+{
+	WmlIppAttr attr("printer-location");
+	attr.setValue (s);
+	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
 wml::WmlCups::getLocation (string cupsPrinter)
 {
 	WmlIppAttr attr("printer-location");
-	return getPrinterAttribute (cupsPrinter.c_str(), attr);
+	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
 wml::WmlCups::getMakeModel (string cupsPrinter)
 {
 	WmlIppAttr attr("printer-make-and-model");
-	return getPrinterAttribute (cupsPrinter.c_str(), attr);
+	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
 wml::WmlCups::getDeviceURI (string cupsPrinter)
 {
 	WmlIppAttr attr("device-uri");
-	return getPrinterAttribute (cupsPrinter.c_str(), attr);
+	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
 wml::WmlCups::getCupsURI (string cupsPrinter)
 {
 	WmlIppAttr attr("printer-uri-supported");
-	return getPrinterAttribute (cupsPrinter.c_str(), attr);
+	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
 wml::WmlCups::getPrinterAttribute (const char* printerName,
 				   WmlIppAttr& attr)
 {
+	bool gotPrinter = false;
 	ipp_t * prqst;
 	ipp_t * rtn;
-	cups_lang_t * lang;
-
 	char * attrTag;
-	// NB: Must free at end!
+	// NB: Must free attrTag at end!
 	attrTag = (char*)calloc (1+attr.getName().size(), sizeof(char));
 	strcpy (attrTag, attr.getName().c_str());
 	char printerNameTag[] = "printer-name";
@@ -195,25 +210,7 @@ wml::WmlCups::getPrinterAttribute (const char* printerName,
 	ipp_attribute_t * ipp_attributes;
 	char * printer = NULL;
 
-	prqst = ippNew();
-	prqst->request.op.operation_id = CUPS_GET_PRINTERS; // May need to pass this in?
-	prqst->request.op.request_id   = 1;
-
-	lang = cupsLangDefault();
-
-	ippAddString(prqst,
-		     IPP_TAG_OPERATION,
-		     IPP_TAG_CHARSET,
-		     "attributes-charset",
-		     NULL,
-		     cupsLangEncoding(lang));
-
-	ippAddString(prqst,
-		     IPP_TAG_OPERATION,
-		     IPP_TAG_LANGUAGE,
-		     "attributes-natural-language",
-		     NULL,
-		     lang->language);
+	prqst = ippNewRequest (CUPS_GET_PRINTERS);
 
 	ippAddStrings(prqst,
 		      IPP_TAG_OPERATION,
@@ -227,7 +224,6 @@ wml::WmlCups::getPrinterAttribute (const char* printerName,
 
 	if (!rtn) {
 		// Handle error
-		cupsLangFree (lang);
 		throw runtime_error ("WmlCups: cupsDoRequest() failed");
 	}
 
@@ -282,6 +278,7 @@ wml::WmlCups::getPrinterAttribute (const char* printerName,
 			// Then we have a queue of the right name. We
 			// should already have configured attr, above,
 			// so just break now.
+			gotPrinter = true;
 			break;
 
 		} // end of if printer != NULL...
@@ -293,11 +290,75 @@ wml::WmlCups::getPrinterAttribute (const char* printerName,
 	} // end of for each ipp response
 
 	ippDelete (rtn);
-	cupsLangFree (lang);
-
 	if (attrTag != (char*)0) {
 		free (attrTag);
 	}
 
+	if (!gotPrinter) {
+		// We didn't find the printer, so zero attr
+		attr.zero();
+	}
+
 	return attr.getString();
+}
+
+void
+wml::WmlCups::setPrinterAttribute (const char* printerName,
+				   wml::WmlIppAttr& attr)
+{
+	ipp_t * prqst;
+	ipp_t * rtn;
+	char uri[HTTP_MAX_URI];
+
+	prqst = ippNewRequest (CUPS_ADD_PRINTER);
+
+	httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/printers/%s", printerName);
+
+	ippAddString(prqst,
+		     IPP_TAG_OPERATION, IPP_TAG_URI,
+		     "printer-uri", NULL, uri);
+
+	ippAddString(prqst, IPP_TAG_PRINTER,
+		     attr.getType(), attr.getName().c_str(),
+		     NULL,
+		     attr.getString().c_str());
+
+	rtn = cupsDoRequest (this->connection, prqst, "/admin/");
+
+	if (!rtn) {
+		// Handle error
+		stringstream eee;
+		eee << "WmlCups: cupsDoRequest() failed -> "
+		    << cupsLastErrorString();
+		throw runtime_error (eee.str());
+	}
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		eee << "WmlCups: cupsDoRequest() failed -> "
+		    << cupsLastErrorString();
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	ippDelete (rtn);
+	return;
+}
+
+bool
+wml::WmlCups::printerNameIsValid (string s)
+{
+	string::size_type sz = s.size();
+	if (sz > 127) {
+		return false;
+	}
+	for (unsigned int i=0; i<sz; i++) {
+		if ((s[i] >= 0 && s[i] <= ' ')
+		    || s[i] == 127 || s[i] == '#' || s[i] == '/') {
+			return false;
+		}
+	}
+	return true;
 }

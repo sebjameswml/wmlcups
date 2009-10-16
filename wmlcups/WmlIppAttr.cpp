@@ -42,10 +42,26 @@ wml::WmlIppAttr::~WmlIppAttr ()
 {
 }
 
+void
+wml::WmlIppAttr::zero (void)
+{
+	// Make sure integer is 0
+	this->setValue (0);
+	// And string is empty
+	this->setValue ("");
+}
+
 string
 wml::WmlIppAttr::getName (void)
 {
 	return this->name;
+}
+
+void
+wml::WmlIppAttr::setName (string s)
+{
+	this->name = s;
+	this->determineType();
 }
 
 ipp_tag_t
