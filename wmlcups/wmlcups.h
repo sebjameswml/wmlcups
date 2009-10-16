@@ -69,6 +69,13 @@ namespace wml {
 		std::string getState (std::string cupsPrinter);
 
 		/*!
+		 * Return a string (in English) of the printer state
+		 * message, which is not the same as the printer
+		 * state.
+		 */
+		std::string getStateMsg (std::string cupsPrinter);
+
+		/*!
 		 * Return a string (in English) of the printer info.
 		 */
 		std::string getInfo (std::string cupsPrinter);
@@ -84,6 +91,18 @@ namespace wml {
 		 * and model.
 		 */
 		std::string getMakeModel (std::string cupsPrinter);
+
+		/*!
+		 * Return the printer destination URI. Something like:
+		 * socket://hp3005.wml:9100
+		 */
+		std::string getDeviceURI (std::string cupsPrinter);
+
+		/*!
+		 * Return the "cups" URI for the queue. Something
+		 * like: ipp://circle.wml:631/printers/hp3005
+		 */
+		std::string getCupsURI (std::string cupsPrinter);
 
 		/*!
 		 * Get the value of the attribute attr for the printer

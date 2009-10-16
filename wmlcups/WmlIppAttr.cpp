@@ -57,15 +57,36 @@ wml::WmlIppAttr::getType (void)
 string
 wml::WmlIppAttr::getString (void)
 {
-	// Hmm - should work on type, rather than whether or not
-	// string is empty.
-	string s;
-	if (this->stringValue.empty()) {
+	string s("");
+	switch (this->type) {
+	case  IPP_TAG_INTEGER:
+	case IPP_TAG_BOOLEAN:
+	case IPP_TAG_ENUM:
+	{
+		// We DO show integers as strings
 		stringstream ss;
 		ss << this->intValue;
 		s = ss.str();
-	} else {
+		break;
+	}
+	case IPP_TAG_STRING:
+	case IPP_TAG_DATE:
+	case IPP_TAG_RESOLUTION:
+	case IPP_TAG_RANGE:
+	case IPP_TAG_BEGIN_COLLECTION:
+	case IPP_TAG_TEXTLANG:
+	case IPP_TAG_NAMELANG:
+	case IPP_TAG_END_COLLECTION:
+	case IPP_TAG_TEXT:
+	case IPP_TAG_NAME:
+	case IPP_TAG_KEYWORD:
+	case IPP_TAG_URI:
 		s = this->stringValue;
+		break;
+	default:
+		// Unknown type, don't set s.
+		cerr << "Unknown type '" << this->type << "', can't get string\n";
+		break;
 	}
 	return s;
 }
@@ -79,6 +100,13 @@ wml::WmlIppAttr::getInt (void)
 void
 wml::WmlIppAttr::setValue (string s)
 {
+	this->stringValue = s;
+}
+
+void
+wml::WmlIppAttr::setValue (const char* c)
+{
+	string s(c);
 	this->stringValue = s;
 }
 
@@ -150,6 +178,20 @@ wml::WmlIppAttr::determineType (void)
 			break;
 		case 'u':
 			if (this->name == "printer-uri-supported") {
+				this->type = IPP_TAG_URI;
+			} else {
+				this->type = IPP_TAG_UNKNOWN;
+			}
+			break;
+		default:
+			this->type = IPP_TAG_UNKNOWN;
+			break;
+		}
+	} else if (start == "device-") {
+		// device- something attributes
+		switch (this->name[7]) {
+		case 'u':
+			if (this->name == "device-uri") {
 				this->type = IPP_TAG_URI;
 			} else {
 				this->type = IPP_TAG_UNKNOWN;

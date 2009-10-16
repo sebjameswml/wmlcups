@@ -109,12 +109,32 @@ wml::WmlCups::getEnabled (string cupsPrinter)
 string
 wml::WmlCups::getState (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-state-message");
-	string state = getPrinterAttribute (cupsPrinter.c_str(), attr);
-	if (state.empty()||state=="0") {
-		state = "Ready";
+	WmlIppAttr attr("printer-state");
+	getPrinterAttribute (cupsPrinter.c_str(), attr);
+	string state("");
+	switch (attr.getInt()) {
+	case (int)IPP_PRINTER_PROCESSING:
+		state = "processing";
+		break;
+	case (int)IPP_PRINTER_IDLE:
+		state = "idle";
+		break;
+	case (int)IPP_PRINTER_STOPPED:
+		state = "stopped";
+		break;
+	default:
+		state = "error reading state";
+		break;
 	}
+
 	return state;
+}
+
+string
+wml::WmlCups::getStateMsg (string cupsPrinter)
+{
+	WmlIppAttr attr("printer-state-message");
+	return getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
@@ -135,6 +155,20 @@ string
 wml::WmlCups::getMakeModel (string cupsPrinter)
 {
 	WmlIppAttr attr("printer-make-and-model");
+	return getPrinterAttribute (cupsPrinter.c_str(), attr);
+}
+
+string
+wml::WmlCups::getDeviceURI (string cupsPrinter)
+{
+	WmlIppAttr attr("device-uri");
+	return getPrinterAttribute (cupsPrinter.c_str(), attr);
+}
+
+string
+wml::WmlCups::getCupsURI (string cupsPrinter)
+{
+	WmlIppAttr attr("printer-uri-supported");
 	return getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 

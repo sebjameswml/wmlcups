@@ -26,6 +26,8 @@ int main (int argc, char** argv)
 	cout << "getInfo says " << printer << " info is " << c.getInfo(printer) << endl;
 	cout << "getLocation says " << printer << " location is " << c.getLocation(printer) << endl;
 	cout << "getMakeModel says " << printer << " make and model is " << c.getMakeModel(printer) << endl;
+	cout << "Device URI is " << c.getDeviceURI(printer) << endl;
+	cout << "Cups URI is " << c.getCupsURI(printer) << endl;
 
 	cout << "\ngetPrinterAttribute() tests:\n";
 	WmlIppAttr at("printer-state-message");
