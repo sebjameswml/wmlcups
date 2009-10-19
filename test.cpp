@@ -26,6 +26,8 @@ int main (int argc, char** argv)
 	string addr ("localhost");
 	WmlCups c(addr);
 
+	c.addPrinter (argv[1], "file:/dev/null");
+
 	// Test getStatus
 	cout << "\nTop level status function tests:\n";
 	string printer(argv[1]);
@@ -66,6 +68,14 @@ int main (int argc, char** argv)
 */
 	c.setInfo (argv[1], "Test description of printer");
 	c.setLocation (argv[1], "The Quadrant");
+
+	vector<string> l = c.getCupsPrinterList();
+	vector<string>::iterator i = l.begin();
+	cout << "Printer List:\n";
+	while (i != l.end()) {
+		cout << *i << endl;
+		i++;
+	}
 
 	DBGCLOSE();
 	return 0;

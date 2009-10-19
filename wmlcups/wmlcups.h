@@ -15,6 +15,7 @@
 #endif
 
 #include <utility>
+#include <vector>
 
 extern "C" {
 #include <cups/cups.h>
@@ -115,10 +116,29 @@ namespace wml {
 		std::string getDeviceURI (std::string cupsPrinter);
 
 		/*!
+		 * Set the printer destination URI to s. This is the
+		 * "create a cups printer" command - if the printer
+		 * doesn't exist a new one is added with the given
+		 * device uri.
+		 */
+		void setDeviceURI (std::string cupsPrinter, std::string s);
+
+		/*!
+		 * This checks that the printer doesn't exist, then
+		 * calls setDeviceURI() to create it.
+		 */
+		void addPrinter (std::string cupsPrinter, std::string devURI);
+
+		/*!
 		 * Return the "cups" URI for the queue. Something
 		 * like: ipp://circle.wml:631/printers/hp3005
 		 */
 		std::string getCupsURI (std::string cupsPrinter);
+
+		/*!
+		 * Get a list of printer on the cupsd.
+		 */
+		std::vector<std::string> getCupsPrinterList (void);
 
 		/*!
 		 * Get the value of the attribute attr for the printer
@@ -144,6 +164,24 @@ namespace wml {
 		 * valid to be a CUPS printer name.
 		 */
 		bool printerNameIsValid (std::string s);
+
+		/*!
+		 * Return true if the string s is a name which is
+		 * valid to be a CUPS device address.
+		 */
+		bool addrIsValid (std::string s);
+
+		/*!
+		 * Return true if the string s is a name which is
+		 * valid to be a CUPS queue or port.
+		 */
+		bool lpdqIsValid (std::string s);
+
+		/*!
+		 * Same effect as cupsLastErrorString(), except that
+		 * cupsLastErrorString doesn't seem to work.
+		 */
+		std::string errorString (ipp_status_t err);
 
 	private:
 		/*!
