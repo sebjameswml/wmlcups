@@ -208,7 +208,13 @@ wml::WmlCups::addPrinter (string cupsPrinter, string devURI)
 	DBG ("Called");
 	try {
 		this->getDeviceURI(cupsPrinter);
+		// If we get here without exception, printer exists,
+		// but we'll set the DeviceURI anyway:
+		DBG ("Printer already exists, setting device uri anyway");
+		this->setDeviceURI (cupsPrinter, devURI);
+
 	} catch (const exception& e ) {
+
 		string ee = e.what();
 		if (ee == "Unknown") {
 			this->setDeviceURI (cupsPrinter, devURI);
@@ -217,6 +223,48 @@ wml::WmlCups::addPrinter (string cupsPrinter, string devURI)
 			throw e;
 		}
 	}
+}
+
+void
+wml::WmlCups::deletePrinter (string cupsPrinter)
+{
+	DBG ("Called");
+	ipp_t * prqst;
+	ipp_t * rtn;
+	char uri[HTTP_MAX_URI];
+
+	prqst = ippNewRequest (CUPS_DELETE_PRINTER);
+
+	httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/printers/%s", cupsPrinter.c_str());
+
+	ippAddString(prqst,
+		     IPP_TAG_OPERATION, IPP_TAG_URI,
+		     "printer-uri", NULL, uri);
+
+	rtn = cupsDoRequest (this->connection, prqst, "/admin/");
+
+	if (!rtn) {
+		// Handle error
+		stringstream eee;
+		eee << "WmlCups: cupsDoRequest() failed in " << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		throw runtime_error (eee.str());
+	}
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		eee << "WmlCups: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	ippDelete (rtn);
+	return;
 }
 
 string

@@ -130,6 +130,11 @@ namespace wml {
 		void addPrinter (std::string cupsPrinter, std::string devURI);
 
 		/*!
+		 * Delete the printer.
+		 */
+		void deletePrinter (std::string cupsPrinter);
+
+		/*!
 		 * Return the "cups" URI for the queue. Something
 		 * like: ipp://circle.wml:631/printers/hp3005
 		 */
