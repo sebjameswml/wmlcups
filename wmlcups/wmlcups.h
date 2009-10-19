@@ -87,21 +87,26 @@ namespace wml {
 		void setInfo (std::string cupsPrinter, std::string s);
 
 		/*!
-		 * Set the location Cups parameter to s.
-		 */
-		void setLocation (std::string cupsPrinter, std::string s);
-
-		/*!
 		 * Return a string (in English) of the printer
 		 * location.
 		 */
 		std::string getLocation (std::string cupsPrinter);
 
 		/*!
+		 * Set the location Cups parameter to s.
+		 */
+		void setLocation (std::string cupsPrinter, std::string s);
+
+		/*!
 		 * Return a string (in English) of the printer make
 		 * and model.
 		 */
 		std::string getMakeModel (std::string cupsPrinter);
+
+		/*!
+		 * Set the make and model string
+		 */
+		void setMakeModel (std::string cupsPrinter, std::string s);
 
 		/*!
 		 * Return the printer destination URI. Something like:

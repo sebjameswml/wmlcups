@@ -152,6 +152,13 @@ wml::WmlCups::setInfo (string cupsPrinter, string s)
 	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
+string
+wml::WmlCups::getLocation (string cupsPrinter)
+{
+	WmlIppAttr attr("printer-location");
+	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
+}
+
 void
 wml::WmlCups::setLocation (string cupsPrinter, string s)
 {
@@ -161,17 +168,18 @@ wml::WmlCups::setLocation (string cupsPrinter, string s)
 }
 
 string
-wml::WmlCups::getLocation (string cupsPrinter)
-{
-	WmlIppAttr attr("printer-location");
-	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
-}
-
-string
 wml::WmlCups::getMakeModel (string cupsPrinter)
 {
 	WmlIppAttr attr("printer-make-and-model");
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
+}
+
+void
+wml::WmlCups::setMakeModel (string cupsPrinter, string s)
+{
+	WmlIppAttr attr("printer-make-and-model");
+	attr.setValue (s);
+	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string

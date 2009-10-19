@@ -1,5 +1,9 @@
 #include <iostream>
+#include <fstream>
 #include <string>
+
+#include "config.h"
+#include <futil/WmlDbg.h>
 
 #include "wmlcups.h"
 #include "WmlIppAttr.h"
@@ -7,12 +11,16 @@
 using namespace std;
 using namespace wml;
 
+ofstream DBGSTREAM;
+
 int main (int argc, char** argv)
 {
 	if (argc<2) {
 		cerr << "Usage " << argv[0] << " queue\n";
 		return -1;
 	}
+
+	DBGOPEN ("/tmp/wmlcups.log");
 
 	//string addr ("192.168.0.6");
 	string addr ("localhost");
@@ -45,6 +53,7 @@ int main (int argc, char** argv)
 	cout << "state: " << c.getPrinterAttribute (argv[1], at4) << endl;
 
 	cout << "\nNow setting info...\n";
+/*
 	WmlIppAttr a("printer-info");
 	a.setValue ("Blah blah");
 	try {
@@ -54,8 +63,10 @@ int main (int argc, char** argv)
 	}
 	a.setValue ("nono");
 	cout << "info is now: " << c.getPrinterAttribute (argv[1], a) << endl;
-
-	c.setInfo (argv[1], "Bleurgh bleurgh");
+*/
+	c.setInfo (argv[1], "Test description of printer");
 	c.setLocation (argv[1], "The Quadrant");
+
+	DBGCLOSE();
 	return 0;
 }
