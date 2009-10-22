@@ -5,7 +5,7 @@
 #include "config.h"
 #include <futil/WmlDbg.h>
 
-#include "wmlcups.h"
+#include "WmlCups.h"
 #include "WmlIppAttr.h"
 
 using namespace std;

@@ -17,7 +17,7 @@ extern "C" {
 #include <utility>
 
 #include "WmlIppAttr.h"
-#include "wmlcups.h"
+#include "WmlCups.h"
 
 using namespace std;
 using namespace wml;
