@@ -107,6 +107,17 @@ wml::WmlCups::getEnabled (string cupsPrinter)
 	return true;
 }
 
+bool
+wml::WmlCups::printerExists (string cupsPrinter)
+{
+	WmlIppAttr attr("printer-name");
+	getPrinterAttribute (cupsPrinter.c_str(), attr);
+	if (attr.getString() == cupsPrinter) {
+		return true;
+	}
+	return false;
+}
+
 string
 wml::WmlCups::getState (string cupsPrinter)
 {

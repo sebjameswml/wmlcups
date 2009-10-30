@@ -66,6 +66,12 @@ namespace wml {
 		bool getEnabled (std::string cupsPrinter);
 
 		/*!
+		 * Is there a printer with the given name set up on
+		 * the cupsd?
+		 */
+		bool printerExists (std::string cupsPrinter);
+
+		/*!
 		 * Return a string (in English) of the printer state.
 		 */
 		std::string getState (std::string cupsPrinter);
