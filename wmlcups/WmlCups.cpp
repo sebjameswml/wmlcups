@@ -92,6 +92,22 @@ wml::WmlCups::getAccepting (string cupsPrinter)
 	return false;
 }
 
+void
+wml::WmlCups::setAccepting (string cupsPrinter, bool accept)
+{
+	if (accept == true) {
+		this->sendPrinterCommand (cupsPrinter.c_str(),
+					  "WmlCups",
+					  "WmlCups::setAccepting(true)",
+					  CUPS_ACCEPT_JOBS);
+	} else {
+		this->sendPrinterCommand (cupsPrinter.c_str(),
+					  "WmlCups",
+					  "WmlCups::setAccepting(false)",
+					  CUPS_REJECT_JOBS);
+	}
+}
+
 bool
 wml::WmlCups::getEnabled (string cupsPrinter)
 {
@@ -105,6 +121,22 @@ wml::WmlCups::getEnabled (string cupsPrinter)
 	}
 
 	return true;
+}
+
+void
+wml::WmlCups::setEnabled (string cupsPrinter, bool enable)
+{
+	if (enable == true) {
+		this->sendPrinterCommand (cupsPrinter.c_str(),
+					  "WmlCups",
+					  "WmlCups::setEnabled(true)",
+					  IPP_RESUME_PRINTER);
+	} else {
+		this->sendPrinterCommand (cupsPrinter.c_str(),
+					  "WmlCups",
+					  "WmlCups::setEnabled(false)",
+					  IPP_PAUSE_PRINTER);
+	}
 }
 
 bool
@@ -485,6 +517,59 @@ wml::WmlCups::setPrinterAttribute (const char* printerName,
 		     attr.getType(), attr.getName().c_str(),
 		     NULL,
 		     attr.getString().c_str());
+
+	rtn = cupsDoRequest (this->connection, prqst, "/admin/");
+
+	if (!rtn) {
+		// Handle error
+		stringstream eee;
+		eee << "WmlCups: cupsDoRequest() failed in " << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		throw runtime_error (eee.str());
+	}
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		eee << "WmlCups: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	ippDelete (rtn);
+	return;
+}
+
+void
+wml::WmlCups::sendPrinterCommand (const char* printerName,
+				  string asUser,
+				  string reason,
+				  ipp_op_t command)
+{
+	ipp_t * prqst;
+	ipp_t * rtn;
+	char uri[HTTP_MAX_URI];
+
+	prqst = ippNewRequest (command);
+
+	httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/printers/%s", printerName);
+
+	ippAddString(prqst,
+		     IPP_TAG_OPERATION, IPP_TAG_URI,
+		     "printer-uri", NULL, uri);
+
+	ippAddString(prqst,
+		     IPP_TAG_OPERATION, IPP_TAG_NAME,
+		     "requesting-user-name", NULL, asUser.c_str());
+
+	// Can also add a reason string, if useful:
+	ippAddString(prqst,
+		     IPP_TAG_OPERATION, IPP_TAG_TEXT,
+		     "printer-state-message", NULL, reason.c_str());
 
 	rtn = cupsDoRequest (this->connection, prqst, "/admin/");
 

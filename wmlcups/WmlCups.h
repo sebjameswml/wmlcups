@@ -60,10 +60,22 @@ namespace wml {
 		bool getAccepting (std::string cupsPrinter);
 
 		/*!
+		 * Enable printer cupsPrinter if enable is true,
+		 * disable it otherwise.
+		 */
+		void setAccepting (std::string cupsPrinter, bool accept);
+
+		/*!
 		 * Query cupsd for whether the given cupsPrinter is
 		 * enabled
 		 */
 		bool getEnabled (std::string cupsPrinter);
+
+		/*!
+		 * Enable printer cupsPrinter if enable is true,
+		 * disable it otherwise.
+		 */
+		void setEnabled (std::string cupsPrinter, bool enable);
 
 		/*!
 		 * Is there a printer with the given name set up on
@@ -170,6 +182,15 @@ namespace wml {
 		void setPrinterAttribute (const char* printerName,
 					  wml::WmlIppAttr& attr);
 
+		/*!
+		 * Send a command for the queue, such as
+		 * CUPS_ACCEPT_JOBS, CUPS_REJECT_JOBS,
+		 * IPP_PAUSE_PRINTER or IPP_RESUME_PRINTER.
+		 */
+		void sendPrinterCommand (const char* printerName,
+					 std::string asUser,
+					 std::string reason,
+					 ipp_op_t command);
 		/*!
 		 * Return true if the string s is a name which is
 		 * valid to be a CUPS printer name.
