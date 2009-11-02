@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = check-news dist-bzip2
 
 SUBDIRS = wmlcups doc
 
-bin_PROGRAMS = test testenable testaccept
+bin_PROGRAMS = test testenable testaccept teststatus
 
 test_SOURCES = test.cpp
 test_LDADD = wmlcups/libwmlcups.la -lcups
@@ -13,6 +13,9 @@ testenable_LDADD = wmlcups/libwmlcups.la -lcups
 
 testaccept_SOURCES = testaccept.cpp
 testaccept_LDADD = wmlcups/libwmlcups.la -lcups
+
+teststatus_SOURCES = teststatus.cpp
+teststatus_LDADD = wmlcups/libwmlcups.la -lcups
 
 INCLUDES = -I./wmlcups
 

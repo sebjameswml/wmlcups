@@ -16,6 +16,7 @@ extern "C" {
 #include <sstream>
 #include <utility>
 
+#include "QueueCupsStatus.h"
 #include "WmlIppAttr.h"
 #include "WmlCups.h"
 
@@ -179,6 +180,132 @@ wml::WmlCups::getStateMsg (string cupsPrinter)
 {
 	WmlIppAttr attr("printer-state-message");
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
+}
+
+string
+wml::WmlCups::getStateReasons (string cupsPrinter)
+{
+	WmlIppAttr attr("printer-state-reasons");
+	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
+}
+
+bool
+wml::WmlCups::getFullStatus (std::string cupsPrinter,
+			     wml::QueueCupsStatus& qstat)
+{
+	bool gotPrinter = false;
+	ipp_t * prqst;
+	ipp_t * rtn;
+	static const char * printerAttributes[] = {
+		"printer-name",
+		"printer-state",
+		"printer-state-message",
+		"printer-is-accepting-jobs"
+	};
+	int n_attributes = 4;
+	static const char *jobAttributes[] = {
+		"job-id"
+	};
+
+	ipp_attribute_t * ipp_attributes;
+	char * printer = NULL;
+
+	prqst = ippNewRequest (CUPS_GET_PRINTERS);
+
+	ippAddStrings(prqst,
+		      IPP_TAG_OPERATION,
+		      IPP_TAG_KEYWORD,
+		      "requested-attributes",
+		      n_attributes,
+		      NULL,
+		      printerAttributes);
+
+	rtn = cupsDoRequest (this->connection, prqst, "/");
+
+	if (!rtn) {
+		// Handle error
+		throw runtime_error ("WmlCups: cupsDoRequest() failed");
+	}
+
+	for (ipp_attributes = rtn->attrs;
+	     ipp_attributes != NULL;
+	     ipp_attributes = ipp_attributes->next) {
+
+		while (ipp_attributes != NULL
+		       && ipp_attributes->group_tag != IPP_TAG_PRINTER) {
+			// Move on to the next one.
+			ipp_attributes = ipp_attributes->next;
+		}
+
+		while (ipp_attributes != NULL &&
+		       ipp_attributes->group_tag == IPP_TAG_PRINTER) {
+
+			// State/Enabled
+			if (!strcmp(ipp_attributes->name, "printer-state") &&
+			    ipp_attributes->value_tag == IPP_TAG_ENUM) {
+				switch (ipp_attributes->values[0].integer) {
+				case (int)IPP_PRINTER_PROCESSING:
+					qstat.state = "processing";
+					qstat.enabled = true;
+					break;
+				case (int)IPP_PRINTER_IDLE:
+					qstat.state = "idle";
+					qstat.enabled = true;
+					break;
+				case (int)IPP_PRINTER_STOPPED:
+					qstat.state = "stopped";
+					qstat.enabled = false;
+					break;
+				default:
+					qstat.state = "error reading state";
+					break;
+				}
+			}
+
+			// State Message
+			if (!strcmp(ipp_attributes->name, "printer-state-message") &&
+			    ipp_attributes->value_tag == IPP_TAG_TEXT) {
+				qstat.stateMsg = ipp_attributes->values[0].string.text;
+			}
+
+			// Accepting
+			if (!strcmp(ipp_attributes->name, "printer-is-accepting-jobs") &&
+			    ipp_attributes->value_tag == IPP_TAG_BOOLEAN) {
+				if (ipp_attributes->values[0].boolean) {
+					qstat.accepting = true;
+				} else {
+					qstat.accepting = false;
+				}
+			}
+
+			// Printer name.
+			if (!strcmp(ipp_attributes->name, "printer-name") &&
+			    ipp_attributes->value_tag == IPP_TAG_NAME) {
+				printer = ipp_attributes->values[0].string.text;
+			}
+
+			ipp_attributes = ipp_attributes->next;
+		}
+
+		if (printer != NULL
+		    && !strcmp (printer, cupsPrinter.c_str())) {
+			// Then we have a queue of the right name. We
+			// should already have configured the features above.
+			// so just break now.
+			gotPrinter = true;
+			break;
+
+		} // end of if printer != NULL...
+
+		if (ipp_attributes == NULL) {
+			break;
+		}
+
+	} // end of for each ipp response
+
+	ippDelete (rtn);
+
+	return gotPrinter;
 }
 
 string
@@ -444,6 +571,7 @@ wml::WmlCups::getPrinterAttribute (const char* printerName,
 				case IPP_TAG_TEXT:
 				case IPP_TAG_NAME:
 				case IPP_TAG_URI:
+				case IPP_TAG_KEYWORD:
 					attr.setValue (ipp_attributes->values[0].string.text);
 					break;
 				case IPP_TAG_ENUM:

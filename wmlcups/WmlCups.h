@@ -24,6 +24,7 @@ extern "C" {
 
 #include "config.h"
 #include "WmlIppAttr.h"
+#include "QueueCupsStatus.h"
 
 namespace wml {
 
@@ -94,6 +95,17 @@ namespace wml {
 		 * state.
 		 */
 		std::string getStateMsg (std::string cupsPrinter);
+
+		std::string getStateReasons (std::string cupsPrinter);
+
+		/*!
+		 * Get all status info for the queue cupsPrinter in
+		 * the minimum number of cupsd connections, storing
+		 * the results in qstat. Return true if the printer
+		 * was found and status was set, false otherwise.
+		 */
+		bool getFullStatus (std::string cupsPrinter,
+				    wml::QueueCupsStatus& qstat);
 
 		/*!
 		 * Return a string (in English) of the printer info.
