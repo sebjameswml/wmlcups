@@ -30,6 +30,8 @@ namespace wml {
 		CupsJob();
 		~CupsJob();
 
+		void reset (void);
+
 		void setId (int i);
 		int getId (void);
 

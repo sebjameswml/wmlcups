@@ -27,6 +27,20 @@ wml::CupsJob::~CupsJob ()
 }
 
 void
+wml::CupsJob::reset (void)
+{
+	this->id = 0;
+	this->copies = 1;
+	this->name = "";
+	this->user = "";
+	this->sizeKB = 0;
+	this->cupsPages = 0;
+	this->printerUri = "";
+	this->state = IPP_JOB_PENDING;
+	this->time = 0;
+}
+
+void
 wml::CupsJob::setId (int i)
 {
 	this->id = i;

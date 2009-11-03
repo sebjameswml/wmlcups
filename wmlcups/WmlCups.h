@@ -119,6 +119,24 @@ namespace wml {
 				 std::string whichJobs = "");
 
 		/*!
+		 * Get a list of the jobs for the printer
+		 * cupsPrinter. Can pass in whichJobs as "all" or
+		 * "completed" to show all jobs or only completed
+		 * jobs. If whichJobs is left empty, only currently
+		 * processing jobs are listed. Fills jList with up to
+		 * numJobs jobs from the cupsd, most recent first. If
+		 * numJobs is 0, then there is no limit on the number
+		 * of jobs returned in jList.
+		 *
+		 * This should be faster if you only want to get the
+		 * information of the last one (or few) jobs.
+		 */
+		void getJobList (std::string cupsPrinter,
+				 std::vector<wml::CupsJob>& jList,
+				 int numJobs,
+				 std::string whichJobs = "");
+
+		/*!
 		 * Get the Job information for the given Job ID,
 		 * placing it in CupsJob j. If id == 0, then get the
 		 * job information for the last job processed or

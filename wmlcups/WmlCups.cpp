@@ -193,6 +193,8 @@ bool
 wml::WmlCups::getFullStatus (std::string cupsPrinter,
 			     wml::QueueCupsStatus& qstat)
 {
+	DBG ("Called for queue " << cupsPrinter);
+
 	bool gotPrinter = false;
 	ipp_t * prqst;
 	ipp_t * rtn;
@@ -302,6 +304,7 @@ wml::WmlCups::getFullStatus (std::string cupsPrinter,
 	ippDelete (rtn);
 
 	if (gotPrinter == true) {
+		DBG ("Calling getJobStatus now");
 		this->getJobStatus (cupsPrinter, 0, qstat.lastJob);
 	}
 
@@ -311,6 +314,9 @@ wml::WmlCups::getFullStatus (std::string cupsPrinter,
 void
 wml::WmlCups::getJobList (string cupsPrinter, vector<CupsJob>& jList, string whichJobs)
 {
+	// Could be:
+	// this->getJobList (cupsPrinter, jList, 0, whichJobs);
+	// But better as:
 	ipp_t * jrqst;
 	ipp_t * rtn;
 	ipp_attribute_t * ipp_attributes;
@@ -424,18 +430,337 @@ wml::WmlCups::getJobList (string cupsPrinter, vector<CupsJob>& jList, string whi
 			break;
 		}
 	}
+
 }
+
+/*
+ * Tried two alternative implementations of getJobList, but couldn't
+ * make it run any faster than 0.2 seconds to get the last job info
+ * out of about 450 jobs on a queue. CUPS really needs a way to walk
+ * backward through the list of jobs.
+ */
+#ifdef SKIP_THROUGH_METHOD_FASTER
+void
+wml::WmlCups::getJobList (string cupsPrinter,
+			  vector<CupsJob>& jList,
+			  int numJobs,
+			  string whichJobs)
+{
+	ipp_t * jrqst;
+	ipp_t * rtn;
+	ipp_attribute_t * ipp_attributes;
+	char uri[HTTP_MAX_URI];
+
+	jrqst = ippNewRequest (IPP_GET_JOBS);
+
+	if (!cupsPrinter.empty()) {
+		httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+				  NULL, this->cupsdAddress.c_str(), 0,
+				  "/printers/%s", cupsPrinter.c_str());
+	} else {
+		snprintf (uri, HTTP_MAX_URI, "ipp://%s/", this->cupsdAddress.c_str());
+	}
+
+	ippAddString (jrqst,
+		      IPP_TAG_OPERATION,
+		      IPP_TAG_URI,
+		      "printer-uri",
+		      NULL,
+		      uri);
+
+	if (!whichJobs.empty()) {
+		ippAddString (jrqst,
+			      IPP_TAG_OPERATION,
+			      IPP_TAG_KEYWORD,
+			      "which-jobs",
+			      NULL,
+			      whichJobs.c_str());
+	}
+
+	rtn = cupsDoRequest (this->connection, jrqst, "/");
+
+	if (!rtn) {
+		// Handle error
+		throw runtime_error ("WmlCups: cupsDoRequest() failed");
+	}
+
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		eee << "WmlCups: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	/*
+	 * Would like to work backwards, ideally, but CUPS API doesn't
+	 * seem to provide for this, even though struct ipp_s has a
+	 * "prev" field since CUPS 1.2.
+	 *
+	 * This is second best - loop through finding each job. Then
+	 * go through that list pulling as much info as requried.
+	 */
+	vector<ipp_attribute_t*> jobList;
+	for (ipp_attributes = rtn->attrs;
+	     ipp_attributes != NULL;
+	     ipp_attributes = ipp_attributes->next) {
+
+		while (ipp_attributes != NULL
+		       && ipp_attributes->group_tag != IPP_TAG_JOB) {
+			// Move on to the next one.
+			ipp_attributes = ipp_attributes->next;
+		}
+		// This IS IPP_TAG_JOB, so add to jobList.
+		jobList.push_back (ipp_attributes);
+
+		while (ipp_attributes != NULL
+		       && ipp_attributes->group_tag == IPP_TAG_JOB) {
+			// Move on to the next one.
+			ipp_attributes = ipp_attributes->next;
+		}
+		// This is no longer an IPP_TAG_JOB, so go back to
+		// looking for the next IPP_TAG_JOB.
+
+		if (ipp_attributes == NULL) {
+			break;
+		}
+	}
+
+	// Go from the end and back
+	vector<ipp_attribute_t*>::iterator i = jobList.end();
+	// First move to the last element:
+	i--;
+	int count = 0;
+	while (i != jobList.begin()) {
+
+		count++;
+		if (count > numJobs) {
+			DBG ("Reached " << count << " jobs, breaking");
+			break;
+		}
+
+		CupsJob j;
+		ipp_attribute_t* ipp_attribute = (*i);
+		// Move up through the attributes now
+		while (ipp_attribute != NULL &&
+		       ipp_attribute->group_tag == IPP_TAG_JOB) {
+
+			if (!strcmp(ipp_attribute->name, "job-id") &&
+			    ipp_attribute->value_tag == IPP_TAG_INTEGER) {
+				j.setId (ipp_attribute->values[0].integer);
+				DBG ("Found job ID " << j.getId());
+			}
+			if (!strcmp(ipp_attribute->name, "copies") &&
+			    ipp_attribute->value_tag == IPP_TAG_INTEGER) {
+				j.setCopies (ipp_attribute->values[0].integer);
+			}
+			if (!strcmp(ipp_attribute->name, "job-k-octets") &&
+			    ipp_attribute->value_tag == IPP_TAG_INTEGER) {
+				j.setSizeKB (ipp_attribute->values[0].integer);
+			}
+			if (!strcmp(ipp_attribute->name, "job-name") &&
+			    ipp_attribute->value_tag == IPP_TAG_NAME) {
+				j.setName (ipp_attribute->values[0].string.text);
+			}
+			if (!strcmp(ipp_attribute->name, "job-orginating-user-name") &&
+			    ipp_attribute->value_tag == IPP_TAG_NAME) {
+				j.setUser (ipp_attribute->values[0].string.text);
+			}
+			if (!strcmp(ipp_attribute->name, "job-printer-uri") &&
+			    ipp_attribute->value_tag == IPP_TAG_URI) {
+				j.setPrinterUri (ipp_attribute->values[0].string.text);
+			}
+			if (!strcmp(ipp_attribute->name, "job-state") &&
+			    ipp_attribute->value_tag == IPP_TAG_ENUM) {
+				j.setState ((ipp_jstate_t)ipp_attribute->values[0].integer);
+			}
+			if (!strcmp(ipp_attribute->name, "time-at-creation") &&
+			    ipp_attribute->value_tag == IPP_TAG_INTEGER) {
+				j.setTime (ipp_attribute->values[0].integer);
+			}
+
+			ipp_attribute = ipp_attribute->next;
+		}
+
+		// Add the new job to the list
+		if (j.getId() != 0) {
+			jList.push_back (j);
+		}
+
+		if (ipp_attribute == NULL) {
+			break;
+		}
+	}
+}
+#else
+// This getJobList seems to be very slightly preferable:
+void
+wml::WmlCups::getJobList (string cupsPrinter,
+			  vector<CupsJob>& jList,
+			  int numJobs,
+			  string whichJobs)
+{
+	DBG ("Called");
+
+	ipp_t * jrqst;
+	ipp_t * rtn;
+	ipp_attribute_t * ipp_attributes;
+	char uri[HTTP_MAX_URI];
+
+	jrqst = ippNewRequest (IPP_GET_JOBS);
+
+	if (!cupsPrinter.empty()) {
+		httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+				  NULL, this->cupsdAddress.c_str(), 0,
+				  "/printers/%s", cupsPrinter.c_str());
+	} else {
+		snprintf (uri, HTTP_MAX_URI, "ipp://%s/", this->cupsdAddress.c_str());
+	}
+
+	ippAddString (jrqst,
+		      IPP_TAG_OPERATION,
+		      IPP_TAG_URI,
+		      "printer-uri",
+		      NULL,
+		      uri);
+
+	if (!whichJobs.empty()) {
+		ippAddString (jrqst,
+			      IPP_TAG_OPERATION,
+			      IPP_TAG_KEYWORD,
+			      "which-jobs",
+			      NULL,
+			      whichJobs.c_str());
+	}
+
+	rtn = cupsDoRequest (this->connection, jrqst, "/");
+
+	if (!rtn) {
+		// Handle error
+		throw runtime_error ("WmlCups: cupsDoRequest() failed");
+	}
+
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		eee << "WmlCups: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	/*
+	 * Would like to work backwards, ideally, but CUPS API doesn't
+	 * seem to provide for this, even though struct ipp_s has a
+	 * "prev" field since CUPS 1.2.
+	 *
+	 * This is second best - reverse the list, putting it into a
+	 * vector.
+	 */
+	vector<ipp_attribute_t*> attrList;
+	for (ipp_attributes = rtn->attrs;
+	     ipp_attributes != NULL;
+	     ipp_attributes = ipp_attributes->next) {
+		attrList.push_back (ipp_attributes);
+	}
+
+	if (attrList.empty()) {
+		DBG ("Empty list; return.");
+		return;
+	}
+
+	// Go from the end and backwards
+	vector<ipp_attribute_t*>::iterator i = attrList.end();
+	i--;
+	int count = 0;
+	while (i != attrList.begin()) {
+
+		while (i != attrList.begin()
+		       && (*i)->group_tag != IPP_TAG_JOB) {
+			// Move on to the next one back.
+			i--;
+		}
+
+		// Now, (*i)->group_tag IS IPP_TAG_JOB.
+
+		count++;
+		if (count > numJobs) {
+			DBG ("Reached " << count << " jobs, breaking");
+			break;
+		}
+
+		CupsJob j;
+		// Move back through the attributes now
+		while (i != attrList.begin() &&
+		       (*i)->group_tag == IPP_TAG_JOB) {
+
+			if (!strcmp((*i)->name, "job-id") &&
+			    (*i)->value_tag == IPP_TAG_INTEGER) {
+				j.setId ((*i)->values[0].integer);
+				DBG ("Found job ID " << j.getId());
+			}
+			if (!strcmp((*i)->name, "copies") &&
+			    (*i)->value_tag == IPP_TAG_INTEGER) {
+				j.setCopies ((*i)->values[0].integer);
+			}
+			if (!strcmp((*i)->name, "job-k-octets") &&
+			    (*i)->value_tag == IPP_TAG_INTEGER) {
+				j.setSizeKB ((*i)->values[0].integer);
+			}
+			if (!strcmp((*i)->name, "job-name") &&
+			    (*i)->value_tag == IPP_TAG_NAME) {
+				j.setName ((*i)->values[0].string.text);
+			}
+			if (!strcmp((*i)->name, "job-orginating-user-name") &&
+			    (*i)->value_tag == IPP_TAG_NAME) {
+				j.setUser ((*i)->values[0].string.text);
+			}
+			if (!strcmp((*i)->name, "job-printer-uri") &&
+			    (*i)->value_tag == IPP_TAG_URI) {
+				j.setPrinterUri ((*i)->values[0].string.text);
+			}
+			if (!strcmp((*i)->name, "job-state") &&
+			    (*i)->value_tag == IPP_TAG_ENUM) {
+				j.setState ((ipp_jstate_t)(*i)->values[0].integer);
+			}
+			if (!strcmp((*i)->name, "time-at-creation") &&
+			    (*i)->value_tag == IPP_TAG_INTEGER) {
+				j.setTime ((*i)->values[0].integer);
+			}
+
+			i--;
+		}
+
+		// Add the new job to the list
+		if (j.getId() != 0) {
+			jList.push_back (j);
+		}
+
+		// Don't think we break on (*i) being NULL here.
+	}
+}
+#endif
 
 void
 wml::WmlCups::getJobStatus (string cupsPrinter, int id, CupsJob& j)
 {
+	if (j.getId()>0) {
+		j.reset();
+	}
 	vector<CupsJob> jList;
-	this->getJobList (cupsPrinter, jList, "all");
 	if (id == 0) {
 		// Although we had to get all the blinking job information
 		// from cupsd, just copy the information from the last one:
-		j = jList.back();
+		DBG ("Call getJobList():");
+		this->getJobList (cupsPrinter, jList, 1, "all");
+		if (!jList.empty()) {
+			j = jList.front();
+		}
 	} else {
+		this->getJobList (cupsPrinter, jList, "all");
 		vector<CupsJob>::iterator i = jList.begin();
 		while (i != jList.end()) {
 			if (i->getId() == id) {

@@ -30,6 +30,7 @@ int main (int argc, char** argv)
 	// Test setAccepting
 	string thequeue(argv[1]);
 
+/*
 	vector<CupsJob> li;
 	c.getJobList (thequeue, li, "all");
 
@@ -42,15 +43,17 @@ int main (int argc, char** argv)
 		     << " time: " << i->getFormattedTime() << endl;
 
 	}
-
+*/
 	CupsJob j;
 	c.getJobStatus (thequeue, 0, j);
 	cout << "Last Job ID " << j.getId() << " has state: " << j.getState()
 	     << " time: " << j.getFormattedTime() << endl;
 
+/*
 	c.getJobStatus (thequeue, 140210, j);
 	cout << "Job ID " << j.getId() << " has state: " << j.getState()
 	     << " time: " << j.getFormattedTime() << endl;
+*/
 
 	DBGCLOSE();
 	return 0;
