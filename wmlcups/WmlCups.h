@@ -108,6 +108,27 @@ namespace wml {
 				    wml::QueueCupsStatus& qstat);
 
 		/*!
+		 * Get a list of the jobs for the printer
+		 * cupsPrinter. Can pass in whichJobs as "all" or
+		 * "completed" to show all jobs or only completed
+		 * jobs. If whichJobs is left empty, only currently
+		 * processing jobs are listed.
+		 */
+		void getJobList (std::string cupsPrinter,
+				 std::vector<wml::CupsJob>& jList,
+				 std::string whichJobs = "");
+
+		/*!
+		 * Get the Job information for the given Job ID,
+		 * placing it in CupsJob j. If id == 0, then get the
+		 * job information for the last job processed or
+		 * in-process.
+		 */
+		void getJobStatus (std::string cupsPrinter,
+				   int id,
+				   wml::CupsJob& j);
+
+		/*!
 		 * Return a string (in English) of the printer info.
 		 */
 		std::string getInfo (std::string cupsPrinter);

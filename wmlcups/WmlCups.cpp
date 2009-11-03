@@ -203,10 +203,6 @@ wml::WmlCups::getFullStatus (std::string cupsPrinter,
 		"printer-is-accepting-jobs"
 	};
 	int n_attributes = 4;
-	static const char *jobAttributes[] = {
-		"job-id"
-	};
-
 	ipp_attribute_t * ipp_attributes;
 	char * printer = NULL;
 
@@ -305,7 +301,152 @@ wml::WmlCups::getFullStatus (std::string cupsPrinter,
 
 	ippDelete (rtn);
 
+	if (gotPrinter == true) {
+		this->getJobStatus (cupsPrinter, 0, qstat.lastJob);
+	}
+
 	return gotPrinter;
+}
+
+void
+wml::WmlCups::getJobList (string cupsPrinter, vector<CupsJob>& jList, string whichJobs)
+{
+	ipp_t * jrqst;
+	ipp_t * rtn;
+	ipp_attribute_t * ipp_attributes;
+	char uri[HTTP_MAX_URI];
+
+	jrqst = ippNewRequest (IPP_GET_JOBS);
+
+	if (!cupsPrinter.empty()) {
+		httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+				  NULL, this->cupsdAddress.c_str(), 0,
+				  "/printers/%s", cupsPrinter.c_str());
+	} else {
+		snprintf (uri, HTTP_MAX_URI, "ipp://%s/", this->cupsdAddress.c_str());
+	}
+
+	ippAddString (jrqst,
+		      IPP_TAG_OPERATION,
+		      IPP_TAG_URI,
+		      "printer-uri",
+		      NULL,
+		      uri);
+
+	if (!whichJobs.empty()) {
+		ippAddString (jrqst,
+			      IPP_TAG_OPERATION,
+			      IPP_TAG_KEYWORD,
+			      "which-jobs",
+			      NULL,
+			      whichJobs.c_str());
+	}
+
+	rtn = cupsDoRequest (this->connection, jrqst, "/");
+
+	if (!rtn) {
+		// Handle error
+		throw runtime_error ("WmlCups: cupsDoRequest() failed");
+	}
+
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		eee << "WmlCups: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	/*
+	 * Would like to work backwards, ideally, but CUPS API doesn't
+	 * seem to provide for this, even though struct ipp_s has a
+	 * "prev" field since CUPS 1.2.
+	 */
+	for (ipp_attributes = rtn->attrs;
+	     ipp_attributes != NULL;
+	     ipp_attributes = ipp_attributes->next) {
+
+		while (ipp_attributes != NULL
+		       && ipp_attributes->group_tag != IPP_TAG_JOB) {
+			// Move on to the next one.
+			ipp_attributes = ipp_attributes->next;
+		}
+
+		CupsJob j;
+		while (ipp_attributes != NULL &&
+		       ipp_attributes->group_tag == IPP_TAG_JOB) {
+
+			if (!strcmp(ipp_attributes->name, "job-id") &&
+			    ipp_attributes->value_tag == IPP_TAG_INTEGER) {
+				j.setId (ipp_attributes->values[0].integer);
+				DBG ("Found job ID " << j.getId());
+			}
+			if (!strcmp(ipp_attributes->name, "copies") &&
+			    ipp_attributes->value_tag == IPP_TAG_INTEGER) {
+				j.setCopies (ipp_attributes->values[0].integer);
+			}
+			if (!strcmp(ipp_attributes->name, "job-k-octets") &&
+			    ipp_attributes->value_tag == IPP_TAG_INTEGER) {
+				j.setSizeKB (ipp_attributes->values[0].integer);
+			}
+			if (!strcmp(ipp_attributes->name, "job-name") &&
+			    ipp_attributes->value_tag == IPP_TAG_NAME) {
+				j.setName (ipp_attributes->values[0].string.text);
+			}
+			if (!strcmp(ipp_attributes->name, "job-orginating-user-name") &&
+			    ipp_attributes->value_tag == IPP_TAG_NAME) {
+				j.setUser (ipp_attributes->values[0].string.text);
+			}
+			if (!strcmp(ipp_attributes->name, "job-printer-uri") &&
+			    ipp_attributes->value_tag == IPP_TAG_URI) {
+				j.setPrinterUri (ipp_attributes->values[0].string.text);
+			}
+			if (!strcmp(ipp_attributes->name, "job-state") &&
+			    ipp_attributes->value_tag == IPP_TAG_ENUM) {
+				j.setState ((ipp_jstate_t)ipp_attributes->values[0].integer);
+			}
+			if (!strcmp(ipp_attributes->name, "time-at-creation") &&
+			    ipp_attributes->value_tag == IPP_TAG_INTEGER) {
+				j.setTime (ipp_attributes->values[0].integer);
+			}
+
+			ipp_attributes = ipp_attributes->next;
+		}
+
+		// Add the new job to the list
+		if (j.getId() != 0) {
+			jList.push_back (j);
+		}
+
+		if (ipp_attributes == NULL) {
+			break;
+		}
+	}
+}
+
+void
+wml::WmlCups::getJobStatus (string cupsPrinter, int id, CupsJob& j)
+{
+	vector<CupsJob> jList;
+	this->getJobList (cupsPrinter, jList, "all");
+	if (id == 0) {
+		// Although we had to get all the blinking job information
+		// from cupsd, just copy the information from the last one:
+		j = jList.back();
+	} else {
+		vector<CupsJob>::iterator i = jList.begin();
+		while (i != jList.end()) {
+			if (i->getId() == id) {
+				// Match!
+				j = *i;
+				return;
+			}
+			i++;
+		}
+	}
+	return;
 }
 
 string
