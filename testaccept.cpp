@@ -5,8 +5,8 @@
 #include "config.h"
 #include <futil/WmlDbg.h>
 
-#include "WmlCups.h"
-#include "WmlIppAttr.h"
+#include "CupsCtrl.h"
+#include "IppAttr.h"
 
 using namespace std;
 using namespace wml;
@@ -22,7 +22,7 @@ int main (int argc, char** argv)
 
 	//string addr ("192.168.0.6");
 	string addr ("localhost");
-	WmlCups c(addr);
+	CupsCtrl c(addr);
 
 	// Test setAccepting
 	string thequeue(argv[1]);

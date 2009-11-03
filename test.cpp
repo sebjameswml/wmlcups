@@ -5,8 +5,8 @@
 #include "config.h"
 #include <futil/WmlDbg.h>
 
-#include "WmlCups.h"
-#include "WmlIppAttr.h"
+#include "CupsCtrl.h"
+#include "IppAttr.h"
 
 using namespace std;
 using namespace wml;
@@ -24,7 +24,7 @@ int main (int argc, char** argv)
 
 	//string addr ("192.168.0.6");
 	string addr ("localhost");
-	WmlCups c(addr);
+	CupsCtrl c(addr);
 
 	// Test getStatus
 	cout << "\nTop level status function tests:\n";
@@ -39,22 +39,22 @@ int main (int argc, char** argv)
 	cout << "Cups URI is " << c.getCupsURI(printer) << endl;
 
 	cout << "\ngetPrinterAttribute() tests:\n";
-	WmlIppAttr at("printer-state-message");
+	IppAttr at("printer-state-message");
 	c.getPrinterAttribute (argv[1], at);
 	cout << "state message: " << at.getString() << endl;
 
-	WmlIppAttr at2("printer-info");
+	IppAttr at2("printer-info");
 	cout << "info: " << c.getPrinterAttribute (argv[1], at2) << endl;
 
-	WmlIppAttr at3("printer-location");
+	IppAttr at3("printer-location");
 	cout << "location: " << c.getPrinterAttribute (argv[1], at3) << endl;
 
-	WmlIppAttr at4("printer-state");
+	IppAttr at4("printer-state");
 	cout << "state: " << c.getPrinterAttribute (argv[1], at4) << endl;
 
 	cout << "\nNow setting info...\n";
 /*
-	WmlIppAttr a("printer-info");
+	IppAttr a("printer-info");
 	a.setValue ("Blah blah");
 	try {
 		c.setPrinterAttribute (argv[1], a);

@@ -7,8 +7,8 @@
  * Copyright: 2009 William Matthew Limited.
  */
 
-#ifndef _WMLCUPS_H_
-#define _WMLCUPS_H_
+#ifndef _CUPSCTRL_H_
+#define _CUPSCTRL_H_
 
 #ifdef __GNUG__
 # pragma interface
@@ -23,7 +23,7 @@ extern "C" {
 }
 
 #include "config.h"
-#include "WmlIppAttr.h"
+#include "IppAttr.h"
 #include "QueueCupsStatus.h"
 
 namespace wml {
@@ -36,12 +36,12 @@ namespace wml {
 	 * passed back as exceptions. (Or at least that was the
 	 * initial plan).
 	 */
-	class WmlCups
+	class CupsCtrl
 	{
 	public:
-		WmlCups ();
-		WmlCups (std::string addr);
-		~WmlCups ();
+		CupsCtrl ();
+		CupsCtrl (std::string addr);
+		~CupsCtrl ();
 
 		/*!
 		 * After setting address, this makes a connection to
@@ -223,7 +223,7 @@ namespace wml {
 		 * attr.getString() is returned by this function.
 		 */
 		std::string getPrinterAttribute (const char* printerName,
-						 wml::WmlIppAttr& attr);
+						 wml::IppAttr& attr);
 
 		/*!
 		 * Set an IPP attribute for printerName. attr should
@@ -231,7 +231,7 @@ namespace wml {
 		 * attribute value.
 		 */
 		void setPrinterAttribute (const char* printerName,
-					  wml::WmlIppAttr& attr);
+					  wml::IppAttr& attr);
 
 		/*!
 		 * Send a command for the queue, such as
@@ -281,4 +281,4 @@ namespace wml {
 
 } // namespace wml
 
-#endif // _WMLCUPS_H_
+#endif // _CUPSCTRL_H_

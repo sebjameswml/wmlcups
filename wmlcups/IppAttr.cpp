@@ -15,12 +15,12 @@ extern "C" {
 #include <sstream>
 #include <utility>
 
-#include "WmlIppAttr.h"
+#include "IppAttr.h"
 
 using namespace std;
 using namespace wml;
 
-wml::WmlIppAttr::WmlIppAttr () :
+wml::IppAttr::IppAttr () :
 	name(""),
 	type (IPP_TAG_UNKNOWN),
 	stringValue(""),
@@ -28,7 +28,7 @@ wml::WmlIppAttr::WmlIppAttr () :
 {
 }
 
-wml::WmlIppAttr::WmlIppAttr (const char* attributeName) :
+wml::IppAttr::IppAttr (const char* attributeName) :
 	name(attributeName),
 	type (IPP_TAG_UNKNOWN),
 	stringValue(""),
@@ -38,12 +38,12 @@ wml::WmlIppAttr::WmlIppAttr (const char* attributeName) :
 	this->determineType();
 }
 
-wml::WmlIppAttr::~WmlIppAttr ()
+wml::IppAttr::~IppAttr ()
 {
 }
 
 void
-wml::WmlIppAttr::zero (void)
+wml::IppAttr::zero (void)
 {
 	// Make sure integer is 0
 	this->setValue (0);
@@ -52,26 +52,26 @@ wml::WmlIppAttr::zero (void)
 }
 
 string
-wml::WmlIppAttr::getName (void)
+wml::IppAttr::getName (void)
 {
 	return this->name;
 }
 
 void
-wml::WmlIppAttr::setName (string s)
+wml::IppAttr::setName (string s)
 {
 	this->name = s;
 	this->determineType();
 }
 
 ipp_tag_t
-wml::WmlIppAttr::getType (void)
+wml::IppAttr::getType (void)
 {
 	return this->type;
 }
 
 string
-wml::WmlIppAttr::getString (void)
+wml::IppAttr::getString (void)
 {
 	string s("");
 	switch (this->type) {
@@ -108,32 +108,32 @@ wml::WmlIppAttr::getString (void)
 }
 
 int
-wml::WmlIppAttr::getInt (void)
+wml::IppAttr::getInt (void)
 {
 	return this->intValue;
 }
 
 void
-wml::WmlIppAttr::setValue (string s)
+wml::IppAttr::setValue (string s)
 {
 	this->stringValue = s;
 }
 
 void
-wml::WmlIppAttr::setValue (const char* c)
+wml::IppAttr::setValue (const char* c)
 {
 	string s(c);
 	this->stringValue = s;
 }
 
 void
-wml::WmlIppAttr::setValue (int i)
+wml::IppAttr::setValue (int i)
 {
 	this->intValue = i;
 }
 
 void
-wml::WmlIppAttr::determineType (void)
+wml::IppAttr::determineType (void)
 {
 	// Figure out the IPP_TAG_XXXX from  name.
 

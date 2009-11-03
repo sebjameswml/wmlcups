@@ -17,17 +17,17 @@ extern "C" {
 #include <utility>
 
 #include "QueueCupsStatus.h"
-#include "WmlIppAttr.h"
-#include "WmlCups.h"
+#include "IppAttr.h"
+#include "CupsCtrl.h"
 
 using namespace std;
 using namespace wml;
 
-wml::WmlCups::WmlCups ()
+wml::CupsCtrl::CupsCtrl ()
 {
 }
 
-wml::WmlCups::WmlCups (string addr)
+wml::CupsCtrl::CupsCtrl (string addr)
 {
 	if (addr.empty()) {
 		// This connects to the cupsd on the localhost
@@ -42,19 +42,19 @@ wml::WmlCups::WmlCups (string addr)
 	}
 
 	if (this->connection == 0) {
-		throw runtime_error ("WmlCups: Couldn't connect to the cupsd!");
+		throw runtime_error ("CupsCtrl: Couldn't connect to the cupsd!");
 	}
 
 	this->cupsdAddress = addr;
 }
 
-wml::WmlCups::~WmlCups()
+wml::CupsCtrl::~CupsCtrl()
 {
 	httpClose (this->connection);
 }
 
 void
-wml::WmlCups::initialise (void)
+wml::CupsCtrl::initialise (void)
 {
 	if (this->cupsdAddress.empty()) {
 		// This connects to the cupsd on the localhost
@@ -69,20 +69,20 @@ wml::WmlCups::initialise (void)
 	}
 
 	if (this->connection == 0) {
-		throw runtime_error ("WmlCups: Couldn't connect to the cupsd!");
+		throw runtime_error ("CupsCtrl: Couldn't connect to the cupsd!");
 	}
 }
 
 void
-wml::WmlCups::setCupsdAddress (string a)
+wml::CupsCtrl::setCupsdAddress (string a)
 {
 	this->cupsdAddress = a;
 }
 
 bool
-wml::WmlCups::getAccepting (string cupsPrinter)
+wml::CupsCtrl::getAccepting (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-is-accepting-jobs");
+	IppAttr attr("printer-is-accepting-jobs");
 
 	getPrinterAttribute (cupsPrinter.c_str(), attr);
 
@@ -94,25 +94,25 @@ wml::WmlCups::getAccepting (string cupsPrinter)
 }
 
 void
-wml::WmlCups::setAccepting (string cupsPrinter, bool accept)
+wml::CupsCtrl::setAccepting (string cupsPrinter, bool accept)
 {
 	if (accept == true) {
 		this->sendPrinterCommand (cupsPrinter.c_str(),
-					  "WmlCups",
-					  "WmlCups::setAccepting(true)",
+					  "CupsCtrl",
+					  "CupsCtrl::setAccepting(true)",
 					  CUPS_ACCEPT_JOBS);
 	} else {
 		this->sendPrinterCommand (cupsPrinter.c_str(),
-					  "WmlCups",
-					  "WmlCups::setAccepting(false)",
+					  "CupsCtrl",
+					  "CupsCtrl::setAccepting(false)",
 					  CUPS_REJECT_JOBS);
 	}
 }
 
 bool
-wml::WmlCups::getEnabled (string cupsPrinter)
+wml::CupsCtrl::getEnabled (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-state");
+	IppAttr attr("printer-state");
 
 	getPrinterAttribute (cupsPrinter.c_str(), attr);
 
@@ -125,25 +125,25 @@ wml::WmlCups::getEnabled (string cupsPrinter)
 }
 
 void
-wml::WmlCups::setEnabled (string cupsPrinter, bool enable)
+wml::CupsCtrl::setEnabled (string cupsPrinter, bool enable)
 {
 	if (enable == true) {
 		this->sendPrinterCommand (cupsPrinter.c_str(),
-					  "WmlCups",
-					  "WmlCups::setEnabled(true)",
+					  "CupsCtrl",
+					  "CupsCtrl::setEnabled(true)",
 					  IPP_RESUME_PRINTER);
 	} else {
 		this->sendPrinterCommand (cupsPrinter.c_str(),
-					  "WmlCups",
-					  "WmlCups::setEnabled(false)",
+					  "CupsCtrl",
+					  "CupsCtrl::setEnabled(false)",
 					  IPP_PAUSE_PRINTER);
 	}
 }
 
 bool
-wml::WmlCups::printerExists (string cupsPrinter)
+wml::CupsCtrl::printerExists (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-name");
+	IppAttr attr("printer-name");
 	getPrinterAttribute (cupsPrinter.c_str(), attr);
 	if (attr.getString() == cupsPrinter) {
 		return true;
@@ -152,9 +152,9 @@ wml::WmlCups::printerExists (string cupsPrinter)
 }
 
 string
-wml::WmlCups::getState (string cupsPrinter)
+wml::CupsCtrl::getState (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-state");
+	IppAttr attr("printer-state");
 	getPrinterAttribute (cupsPrinter.c_str(), attr);
 	string state("");
 	switch (attr.getInt()) {
@@ -176,21 +176,21 @@ wml::WmlCups::getState (string cupsPrinter)
 }
 
 string
-wml::WmlCups::getStateMsg (string cupsPrinter)
+wml::CupsCtrl::getStateMsg (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-state-message");
+	IppAttr attr("printer-state-message");
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
-wml::WmlCups::getStateReasons (string cupsPrinter)
+wml::CupsCtrl::getStateReasons (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-state-reasons");
+	IppAttr attr("printer-state-reasons");
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 bool
-wml::WmlCups::getFullStatus (std::string cupsPrinter,
+wml::CupsCtrl::getFullStatus (std::string cupsPrinter,
 			     wml::QueueCupsStatus& qstat)
 {
 	DBG ("Called for queue " << cupsPrinter);
@@ -222,7 +222,7 @@ wml::WmlCups::getFullStatus (std::string cupsPrinter,
 
 	if (!rtn) {
 		// Handle error
-		throw runtime_error ("WmlCups: cupsDoRequest() failed");
+		throw runtime_error ("CupsCtrl: cupsDoRequest() failed");
 	}
 
 	for (ipp_attributes = rtn->attrs;
@@ -312,7 +312,7 @@ wml::WmlCups::getFullStatus (std::string cupsPrinter,
 }
 
 void
-wml::WmlCups::getJobList (string cupsPrinter, vector<CupsJob>& jList, string whichJobs)
+wml::CupsCtrl::getJobList (string cupsPrinter, vector<CupsJob>& jList, string whichJobs)
 {
 	// Could be:
 	// this->getJobList (cupsPrinter, jList, 0, whichJobs);
@@ -352,13 +352,13 @@ wml::WmlCups::getJobList (string cupsPrinter, vector<CupsJob>& jList, string whi
 
 	if (!rtn) {
 		// Handle error
-		throw runtime_error ("WmlCups: cupsDoRequest() failed");
+		throw runtime_error ("CupsCtrl: cupsDoRequest() failed");
 	}
 
 	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
 		// Handle conflict
 		stringstream eee;
-		eee << "WmlCups: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		eee << "CupsCtrl: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
 		    << hex << cupsLastError() << " ("
 		    << this->errorString (cupsLastError()) << ")";
 		ippDelete (rtn);
@@ -440,7 +440,7 @@ wml::WmlCups::getJobList (string cupsPrinter, vector<CupsJob>& jList, string whi
  * backward through the list of jobs.
  */
 void
-wml::WmlCups::getJobList (string cupsPrinter,
+wml::CupsCtrl::getJobList (string cupsPrinter,
 			  vector<CupsJob>& jList,
 			  int numJobs,
 			  string whichJobs)
@@ -482,13 +482,13 @@ wml::WmlCups::getJobList (string cupsPrinter,
 
 	if (!rtn) {
 		// Handle error
-		throw runtime_error ("WmlCups: cupsDoRequest() failed");
+		throw runtime_error ("CupsCtrl: cupsDoRequest() failed");
 	}
 
 	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
 		// Handle conflict
 		stringstream eee;
-		eee << "WmlCups: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		eee << "CupsCtrl: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
 		    << hex << cupsLastError() << " ("
 		    << this->errorString (cupsLastError()) << ")";
 		ippDelete (rtn);
@@ -587,7 +587,7 @@ wml::WmlCups::getJobList (string cupsPrinter,
 }
 
 void
-wml::WmlCups::getJobStatus (string cupsPrinter, int id, CupsJob& j)
+wml::CupsCtrl::getJobStatus (string cupsPrinter, int id, CupsJob& j)
 {
 	if (j.getId()>0) {
 		j.reset();
@@ -617,63 +617,63 @@ wml::WmlCups::getJobStatus (string cupsPrinter, int id, CupsJob& j)
 }
 
 string
-wml::WmlCups::getInfo (string cupsPrinter)
+wml::CupsCtrl::getInfo (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-info");
+	IppAttr attr("printer-info");
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 void
-wml::WmlCups::setInfo (string cupsPrinter, string s)
+wml::CupsCtrl::setInfo (string cupsPrinter, string s)
 {
-	WmlIppAttr attr("printer-info");
+	IppAttr attr("printer-info");
 	attr.setValue (s);
 	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
-wml::WmlCups::getLocation (string cupsPrinter)
+wml::CupsCtrl::getLocation (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-location");
+	IppAttr attr("printer-location");
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 void
-wml::WmlCups::setLocation (string cupsPrinter, string s)
+wml::CupsCtrl::setLocation (string cupsPrinter, string s)
 {
-	WmlIppAttr attr("printer-location");
+	IppAttr attr("printer-location");
 	attr.setValue (s);
 	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
-wml::WmlCups::getMakeModel (string cupsPrinter)
+wml::CupsCtrl::getMakeModel (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-make-and-model");
+	IppAttr attr("printer-make-and-model");
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 void
-wml::WmlCups::setMakeModel (string cupsPrinter, string s)
+wml::CupsCtrl::setMakeModel (string cupsPrinter, string s)
 {
-	WmlIppAttr attr("printer-make-and-model");
+	IppAttr attr("printer-make-and-model");
 	attr.setValue (s);
 	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
-wml::WmlCups::getDeviceURI (string cupsPrinter)
+wml::CupsCtrl::getDeviceURI (string cupsPrinter)
 {
 	DBG ("Called");
-	WmlIppAttr attr("device-uri");
+	IppAttr attr("device-uri");
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 void
-wml::WmlCups::setDeviceURI (string cupsPrinter, string s)
+wml::CupsCtrl::setDeviceURI (string cupsPrinter, string s)
 {
 	DBG ("Called to set device uri to '" << s << "'");
-	WmlIppAttr attr("device-uri");
+	IppAttr attr("device-uri");
 	attr.setValue (s);
 	DBG ("Calling setPrinterAttribute for '" << cupsPrinter << "'...");
 	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
@@ -681,7 +681,7 @@ wml::WmlCups::setDeviceURI (string cupsPrinter, string s)
 }
 
 void
-wml::WmlCups::addPrinter (string cupsPrinter, string devURI)
+wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI)
 {
 	DBG ("Called");
 	try {
@@ -704,7 +704,7 @@ wml::WmlCups::addPrinter (string cupsPrinter, string devURI)
 }
 
 void
-wml::WmlCups::deletePrinter (string cupsPrinter)
+wml::CupsCtrl::deletePrinter (string cupsPrinter)
 {
 	DBG ("Called");
 	ipp_t * prqst;
@@ -726,7 +726,7 @@ wml::WmlCups::deletePrinter (string cupsPrinter)
 	if (!rtn) {
 		// Handle error
 		stringstream eee;
-		eee << "WmlCups: cupsDoRequest() failed in " << __FUNCTION__ << ". Error 0x"
+		eee << "CupsCtrl: cupsDoRequest() failed in " << __FUNCTION__ << ". Error 0x"
 		    << hex << cupsLastError() << " ("
 		    << this->errorString (cupsLastError()) << ")";
 		throw runtime_error (eee.str());
@@ -734,7 +734,7 @@ wml::WmlCups::deletePrinter (string cupsPrinter)
 	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
 		// Handle conflict
 		stringstream eee;
-		eee << "WmlCups: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		eee << "CupsCtrl: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
 		    << hex << cupsLastError() << " ("
 		    << this->errorString (cupsLastError()) << ")";
 		ippDelete (rtn);
@@ -746,14 +746,14 @@ wml::WmlCups::deletePrinter (string cupsPrinter)
 }
 
 string
-wml::WmlCups::getCupsURI (string cupsPrinter)
+wml::CupsCtrl::getCupsURI (string cupsPrinter)
 {
-	WmlIppAttr attr("printer-uri-supported");
+	IppAttr attr("printer-uri-supported");
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 vector<string>
-wml::WmlCups::getCupsPrinterList (void)
+wml::CupsCtrl::getCupsPrinterList (void)
 {
 	vector<string> theList;
 	ipp_t * prqst;
@@ -778,7 +778,7 @@ wml::WmlCups::getCupsPrinterList (void)
 
 	if (!rtn) {
 		// Handle error
-		throw runtime_error ("WmlCups: cupsDoRequest() failed");
+		throw runtime_error ("CupsCtrl: cupsDoRequest() failed");
 	}
 
 	for (ipp_attributes = rtn->attrs;
@@ -817,8 +817,8 @@ wml::WmlCups::getCupsPrinterList (void)
 }
 
 string
-wml::WmlCups::getPrinterAttribute (const char* printerName,
-				   WmlIppAttr& attr)
+wml::CupsCtrl::getPrinterAttribute (const char* printerName,
+				    IppAttr& attr)
 {
 	bool gotPrinter = false;
 	ipp_t * prqst;
@@ -852,7 +852,7 @@ wml::WmlCups::getPrinterAttribute (const char* printerName,
 
 	if (!rtn) {
 		// Handle error
-		throw runtime_error ("WmlCups: cupsDoRequest() failed");
+		throw runtime_error ("CupsCtrl: cupsDoRequest() failed");
 	}
 
 	for (ipp_attributes = rtn->attrs;
@@ -874,7 +874,7 @@ wml::WmlCups::getPrinterAttribute (const char* printerName,
 				// of value this is. We COULD do
 				// attr.setValue(ipp_attributes->values[0]
 				// or somesuch. Then this logic would
-				// go into WmlIppAttr
+				// go into IppAttr
 				switch (attr.getType()) {
 				case IPP_TAG_TEXT:
 				case IPP_TAG_NAME:
@@ -932,8 +932,8 @@ wml::WmlCups::getPrinterAttribute (const char* printerName,
 }
 
 void
-wml::WmlCups::setPrinterAttribute (const char* printerName,
-				   wml::WmlIppAttr& attr)
+wml::CupsCtrl::setPrinterAttribute (const char* printerName,
+				    wml::IppAttr& attr)
 {
 	ipp_t * prqst;
 	ipp_t * rtn;
@@ -959,7 +959,7 @@ wml::WmlCups::setPrinterAttribute (const char* printerName,
 	if (!rtn) {
 		// Handle error
 		stringstream eee;
-		eee << "WmlCups: cupsDoRequest() failed in " << __FUNCTION__ << ". Error 0x"
+		eee << "CupsCtrl: cupsDoRequest() failed in " << __FUNCTION__ << ". Error 0x"
 		    << hex << cupsLastError() << " ("
 		    << this->errorString (cupsLastError()) << ")";
 		throw runtime_error (eee.str());
@@ -967,7 +967,7 @@ wml::WmlCups::setPrinterAttribute (const char* printerName,
 	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
 		// Handle conflict
 		stringstream eee;
-		eee << "WmlCups: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		eee << "CupsCtrl: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
 		    << hex << cupsLastError() << " ("
 		    << this->errorString (cupsLastError()) << ")";
 		ippDelete (rtn);
@@ -979,7 +979,7 @@ wml::WmlCups::setPrinterAttribute (const char* printerName,
 }
 
 void
-wml::WmlCups::sendPrinterCommand (const char* printerName,
+wml::CupsCtrl::sendPrinterCommand (const char* printerName,
 				  string asUser,
 				  string reason,
 				  ipp_op_t command)
@@ -1012,7 +1012,7 @@ wml::WmlCups::sendPrinterCommand (const char* printerName,
 	if (!rtn) {
 		// Handle error
 		stringstream eee;
-		eee << "WmlCups: cupsDoRequest() failed in " << __FUNCTION__ << ". Error 0x"
+		eee << "CupsCtrl: cupsDoRequest() failed in " << __FUNCTION__ << ". Error 0x"
 		    << hex << cupsLastError() << " ("
 		    << this->errorString (cupsLastError()) << ")";
 		throw runtime_error (eee.str());
@@ -1020,7 +1020,7 @@ wml::WmlCups::sendPrinterCommand (const char* printerName,
 	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
 		// Handle conflict
 		stringstream eee;
-		eee << "WmlCups: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		eee << "CupsCtrl: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
 		    << hex << cupsLastError() << " ("
 		    << this->errorString (cupsLastError()) << ")";
 		ippDelete (rtn);
@@ -1032,7 +1032,7 @@ wml::WmlCups::sendPrinterCommand (const char* printerName,
 }
 
 bool
-wml::WmlCups::printerNameIsValid (string s)
+wml::CupsCtrl::printerNameIsValid (string s)
 {
 	string::size_type sz = s.size();
 	if (sz > 127) {
@@ -1048,7 +1048,7 @@ wml::WmlCups::printerNameIsValid (string s)
 }
 
 bool
-wml::WmlCups::addrIsValid (string s)
+wml::CupsCtrl::addrIsValid (string s)
 {
 	// For now, this is the same as printerNameIsValid(). Needs
 	// checking really.
@@ -1066,7 +1066,7 @@ wml::WmlCups::addrIsValid (string s)
 }
 
 bool
-wml::WmlCups::lpdqIsValid (string s)
+wml::CupsCtrl::lpdqIsValid (string s)
 {
 	// Allow alphanumerics only
 	string::size_type sz = s.size();
@@ -1085,7 +1085,7 @@ wml::WmlCups::lpdqIsValid (string s)
 }
 
 string
-wml::WmlCups::errorString (ipp_status_t err)
+wml::CupsCtrl::errorString (ipp_status_t err)
 {
 	string errStr("Unknown");
 	switch (err) {

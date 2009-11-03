@@ -9,8 +9,8 @@
  * Copyright: 2009 William Matthew Limited.
  */
 
-#ifndef _WMLIPPATTR_H_
-#define _WMLIPPATTR_H_
+#ifndef _IPPATTR_H_
+#define _IPPATTR_H_
 
 #ifdef __GNUG__
 # pragma interface
@@ -75,15 +75,15 @@ namespace wml {
 	 *
 	 * Note: I'm not planning on including a method which knows
 	 * how to query the cupsd to fill the value. This is because
-	 * we may write methods in WmlCups which fill 10 WmlIppAttr
+	 * we may write methods in WmlCups which fill 10 IppAttr
 	 * objects with a single connection to the cupsd.
 	 */
-	class WmlIppAttr
+	class IppAttr
 	{
 	public:
-		WmlIppAttr ();
-		WmlIppAttr (const char* attributeName);
-		~WmlIppAttr ();
+		IppAttr ();
+		IppAttr (const char* attributeName);
+		~IppAttr ();
 
 		/*!
 		 * Zero out any stored values.
@@ -171,5 +171,5 @@ namespace wml {
 
 } // namespace wml
 
-#endif // _WMLIPPATTR_H_
+#endif // _IPPATTR_H_
 

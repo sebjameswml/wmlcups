@@ -6,8 +6,8 @@
 #include <futil/WmlDbg.h>
 
 #include "CupsJob.h"
-#include "WmlCups.h"
-#include "WmlIppAttr.h"
+#include "CupsCtrl.h"
+#include "IppAttr.h"
 #include "QueueCupsStatus.h"
 
 using namespace std;
@@ -25,7 +25,7 @@ int main (int argc, char** argv)
 	DBGOPEN ("./testJobList.dbg");
 
 	string addr ("localhost");
-	WmlCups c(addr);
+	CupsCtrl c(addr);
 
 	// Test setAccepting
 	string thequeue(argv[1]);

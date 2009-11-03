@@ -4,8 +4,8 @@ INCLUDES = -I$(top_srcdir) -I$(top_builddir)
 
 lib_LTLIBRARIES = libwmlcups.la
 
-libwmlcups_la_SOURCES = WmlCups.cpp WmlIppAttr.cpp CupsJob.cpp
+libwmlcups_la_SOURCES = CupsCtrl.cpp IppAttr.cpp CupsJob.cpp
 
-pkginclude_HEADERS = WmlCups.h WmlIppAttr.h CupsJob.h QueueCupsStatus.h
+pkginclude_HEADERS = CupsCtrl.h IppAttr.h CupsJob.h QueueCupsStatus.h
 
 
