@@ -19,6 +19,7 @@
 #include <list>
 
 #include "config.h"
+#include <futil/WmlDbg.h>
 
 namespace wml {
 
@@ -91,6 +92,13 @@ namespace wml {
 		std::string getDirective (std::string containerId,
 					  std::string key);
 
+		void addContainer(wml::CupsdDirContainer cont);
+
+
+		void read (std::ifstream& f, int& recurslevel);
+
+		/*std::map<std::string, std::string> getDirectiveMap();*/
+
 	private:
 		/*!
 		 * The type of container - Limit, Location, Root etc
@@ -127,6 +135,9 @@ namespace wml {
 	{
 	public:
 		CupsdCtrl();
+
+		CupsdCtrl(std::string p);
+
 		~CupsdCtrl();
 
 		/*!
@@ -196,7 +207,7 @@ namespace wml {
 		 *
 		 * <Policy name> ... </Policy>
 		 *    Specifies access control for the named policy.
-		 * 
+		 *
 		 * Plus the special container "Root" which has no
 		 * parameter.
 		 *
