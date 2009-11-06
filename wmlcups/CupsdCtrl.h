@@ -17,9 +17,11 @@
 
 #include <map>
 #include <list>
+#include <queue>
 
 #include "config.h"
 #include <futil/WmlDbg.h>
+
 
 namespace wml {
 
@@ -85,17 +87,32 @@ namespace wml {
 				   std::string key, std::string value);
 
 		/*!
+		 * Wrapper around setDirective function when containerId
+		 * is not required
+		 */
+		void setDirective (std::string key, std::string value);
+
+
+		void setDirective (std::queue<std::pair<std::string, std:: string> > containerId, std::string key, std::string value);
+
+		/*!
 		 * Get a directive from the container specified by
 		 * containerId. If this->getId() == containerId, then
 		 * the directive is obtained from this->directives.
 		 */
-		std::string getDirective (std::string containerId,
-					  std::string key);
+		void getDirective (std::queue<std::pair<std::string, std::string > > containerId,
+					  std::string key, std::string& returnStr);
 
 		void addContainer(wml::CupsdDirContainer cont);
 
 
 		void read (std::ifstream& f, int& recurslevel);
+
+
+		void write(std::ofstream& ofs, int& rlev);
+
+
+		void addDir(std::string key, std::string value);
 
 		/*std::map<std::string, std::string> getDirectiveMap();*/
 
@@ -145,7 +162,7 @@ namespace wml {
 		 * containerId. Does not write value to the cupsd.conf
 		 * file.
 		 */
-		void setDirective (std::string containerId,
+		void setDirective (std::queue<std::pair<std::string, std::string> > containerId,
 				   std::string key, std::string value);
 
 		/*!
@@ -153,7 +170,7 @@ namespace wml {
 		 * containerId. The cupsd.conf file needs to have been
 		 * read first using the read() method.
 		 */
-		std::string getDirective (std::string containerId,
+		std::string getDirective (std::queue<std::pair<std::string, std::string> > containerId,
 					  std::string key);
 
 		/*!
@@ -184,6 +201,16 @@ namespace wml {
 		 * esp. when developing.
 		 */
 		std::string cupsdPath;
+
+		/*!
+		 * \brief map for storing uncontained directives.
+		 */
+		std::map<std::string, std::string> directives;
+
+		/*!
+		 * \brief vector for storing containerId.
+		 */
+		std::queue<std::pair<std::string, std::string> > containerId;
 
 		/*!
 		 * \brief Containers to hold the cupsd directives.
