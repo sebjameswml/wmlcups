@@ -100,8 +100,13 @@ namespace wml {
 		 * containerId. If this->getId() == containerId, then
 		 * the directive is obtained from this->directives.
 		 */
+		/*void getDirective (std::queue<std::pair<std::string, std::string > > containerId,
+		  std::string key, std::string& returnStr);*/
+
 		void getDirective (std::queue<std::pair<std::string, std::string > > containerId,
-					  std::string key, std::string& returnStr);
+				   std::string key, std::string& returnStr, bool valueOnly = false);
+
+
 
 		void addContainer(wml::CupsdDirContainer cont);
 
@@ -138,6 +143,12 @@ namespace wml {
 		 * can be nested.
 		 */
 		std::list<wml::CupsdDirContainer> directiveContainers;
+
+
+		void directiveValue (std::string& returnStr, std::map<std::string, std::string>::iterator& iter);
+
+
+		void fullDirective (std::string& returnStr, std::map<std::string, std::string>::iterator& iter);
 	};
 
 	/*!
@@ -171,7 +182,7 @@ namespace wml {
 		 * read first using the read() method.
 		 */
 		std::string getDirective (std::queue<std::pair<std::string, std::string> > containerId,
-					  std::string key);
+					  std::string key, bool valueOnly = false);
 
 		/*!
 		 * Read the cupsd.conf file, populating
@@ -192,7 +203,7 @@ namespace wml {
 		/*!
 		 * Restart the cupsd program.
 		 */
-		void recupsd (void);
+		void restartCups (void);
 
 	private:
 		/*!

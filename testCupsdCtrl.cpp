@@ -17,18 +17,18 @@ ofstream DBGSTREAM;
 int main (int argc, char** argv)
 {
 
-	if (argc<2) {
+/*	if (argc<2) {
 		cerr << "Usage " << argv[0] << " queue\n";
 		return -1;
-	}
+		}*/
 
 	DBGOPEN ("cupsdCtrl.dbg");
 
 	CupsdCtrl c("/etc/cups/cupsd.conf");
 
-	string s(argv[1]);
+	//string s(argv[1]);
 	//c.setDirective();is not re
-	cout << s << endl;
+	//cout << s << endl;
 	c.read();
 
 	queue<pair<string, string> > containerId;
