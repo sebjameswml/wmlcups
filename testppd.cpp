@@ -21,33 +21,18 @@ int main (int argc, char** argv)
 		return -1;
 	}
 
-	DBGOPEN ("teststatus.dbg");
-
 	string addr ("localhost");
 	CupsCtrl c(addr);
 
 	// Test setAccepting
 	string thequeue(argv[1]);
 
-	QueueCupsStatus qstat;
+	c.setPPDFromFile (thequeue, "/usr/src/wmlcups/test.ppd");
 
-	if (c.getFullStatus (thequeue, qstat) == true) {
-
-		cout << "State: " << qstat.state << '\n';
-		cout << "State msg: " << qstat.stateMsg << '\n';
-		cout << "Enabled?: " << qstat.enabled << '\n';
-		cout << "Accepting?: " << qstat.accepting << '\n';
-		cout << "Last job state: " << qstat.lastJob.getState() << '\n';
-
-	} else {
-		cout << "No such queue " << thequeue << endl;
-	}
-
-	//cout << c.getStateReasons (thequeue) << endl;
+	// This works (though c.getPPD() still doesn't return anything)
+	//c.setPPD (thequeue, "lsb/usr/foomatic-rip/openprinting-gs-builtin/Epson/Epson-ActionPrinter_3250-ap3250.ppd.gz");
 
 	cout << "Cups PPD file is: " << c.getPPD (thequeue) << endl;
-
-	DBGCLOSE();
 
 	return 0;
 }

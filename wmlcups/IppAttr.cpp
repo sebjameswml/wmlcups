@@ -137,7 +137,8 @@ wml::IppAttr::determineType (void)
 {
 	// Figure out the IPP_TAG_XXXX from  name.
 
-	string start = this->name.substr(0, 7);
+	string::size_type dash = this->name.find_first_of ('-');
+	string start = this->name.substr(0, dash);
 	if (start == "printer") {
 		// printer-something attributes
 		switch (this->name[8]) {
@@ -203,7 +204,7 @@ wml::IppAttr::determineType (void)
 			this->type = IPP_TAG_UNKNOWN;
 			break;
 		}
-	} else if (start == "device-") {
+	} else if (start == "device") {
 		// device- something attributes
 		switch (this->name[7]) {
 		case 'u':
@@ -217,7 +218,7 @@ wml::IppAttr::determineType (void)
 			this->type = IPP_TAG_UNKNOWN;
 			break;
 		}
-	} else if (start == "request") {
+	} else if (start == "requesting") {
 		// requesting-something attributes
 		switch (this->name[11]) {
 		case 'u':
@@ -229,6 +230,17 @@ wml::IppAttr::determineType (void)
 				this->type = IPP_TAG_UNKNOWN;
 			}
 
+			break;
+		default:
+			this->type = IPP_TAG_UNKNOWN;
+			break;
+		}
+	} else if (start == "ppd") {
+		switch (this->name[4]) {
+		case 'n':
+			if (this->name == "ppd-name") {
+				this->type = IPP_TAG_NAME;
+			}
 			break;
 		default:
 			this->type = IPP_TAG_UNKNOWN;

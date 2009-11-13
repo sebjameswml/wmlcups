@@ -193,10 +193,34 @@ namespace wml {
 		void setDeviceURI (std::string cupsPrinter, std::string s);
 
 		/*!
+		 * Set the PPD for the given cupsPrinter. ppdTag is
+		 * the identifier for the PPD, which must be available
+		 * on the cupsd system.
+		 */
+		void setPPD (std::string cupsPrinter, std::string ppdTag);
+
+		/*!
+		 * Set the provided PPD file for the given cupsPrinter.
+		 */
+		void setPPDFromFile (std::string cupsPrinter, std::string sourcePPD);
+
+		/*!
+		 * Get the PPD file stored in ppd-name on the cupsd
+		 * for this queue.
+		 */
+		std::string getPPD (std::string cupsPrinter);
+
+		/*!
 		 * This checks that the printer doesn't exist, then
 		 * calls setDeviceURI() to create it.
 		 */
 		void addPrinter (std::string cupsPrinter, std::string devURI);
+
+		/*!
+		 * add printer, with device URI, and at the same time,
+		 * set the PPD file.
+		 */
+		void addPrinter (std::string cupsPrinter, std::string s, std::string sourcePPD);
 
 		/*!
 		 * Delete the printer.
@@ -265,6 +289,12 @@ namespace wml {
 		 * cupsLastErrorString doesn't seem to work.
 		 */
 		std::string errorString (ipp_status_t err);
+
+		/*!
+		 * Gets the string equivalent of the http_status_t
+		 * status/error.
+		 */
+		std::string errorString (http_status_t err);
 
 	private:
 		/*!

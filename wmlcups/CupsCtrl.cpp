@@ -6,6 +6,7 @@
 #include <futil/WmlDbg.h>
 
 extern "C" {
+#include <errno.h>
 #include <cups/cups.h>
 #include <cups/language.h>
 }
@@ -16,6 +17,7 @@ extern "C" {
 #include <sstream>
 #include <utility>
 
+#include <futil/FoundryUtilities.h>
 #include "QueueCupsStatus.h"
 #include "IppAttr.h"
 #include "CupsCtrl.h"
@@ -681,6 +683,117 @@ wml::CupsCtrl::setDeviceURI (string cupsPrinter, string s)
 }
 
 void
+wml::CupsCtrl::setPPD (string cupsPrinter, string ppdTag)
+{
+	// This is one way, if sourcePPD specifies a "ppd descriptor".
+	IppAttr attr("ppd-name");
+	attr.setValue (ppdTag);
+	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
+}
+
+void
+wml::CupsCtrl::setPPDFromFile (string cupsPrinter, string sourcePPD)
+{
+	if (!FoundryUtilities::fileExists(sourcePPD)) {
+		stringstream ee;
+		ee << "The file " << sourcePPD << " doesn't exist";
+		throw runtime_error (ee.str());
+	}
+
+	// If we provide a filename, then do it like this:
+	ipp_t * prqst;
+	ipp_t * rtn;
+	char uri[HTTP_MAX_URI];
+
+	prqst = ippNewRequest (CUPS_ADD_PRINTER);
+
+	httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/printers/%s", cupsPrinter.c_str());
+
+	ippAddString(prqst,
+		     IPP_TAG_OPERATION, IPP_TAG_URI,
+		     "printer-uri", NULL, uri);
+
+	rtn = cupsDoFileRequest (this->connection,
+				 prqst,
+				 "/admin/",
+				 sourcePPD.c_str());
+	if (!rtn) {
+		// Handle error
+		stringstream eee;
+		eee << "CupsCtrl: cupsDoFileRequest() failed in "
+		    << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		throw runtime_error (eee.str());
+	}
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		eee << "CupsCtrl: cupsDoFileRequest() conflict in "
+		    << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	ippDelete(rtn);
+}
+
+string
+wml::CupsCtrl::getPPD (string cupsPrinter)
+{
+	if (cupsPrinter.empty()) {
+		throw runtime_error ("Must specify printer.");
+	}
+
+	string ppdFile = cupsPrinter + ".ppd";
+	string tmpFilePath("/tmp/ppd_");
+	tmpFilePath += ppdFile;
+	string uri("/printers/");
+	uri += ppdFile;
+
+	// Have to create tmpFilePath first:
+	ofstream f (tmpFilePath.c_str(), ios::out|ios::trunc);
+	if (!f.is_open()) {
+		throw runtime_error ("Couldn't open file");
+	} else {
+		f.close();
+	}
+
+	http_status_t rtn = cupsGetFile (this->connection,
+					 uri.c_str(),
+					 tmpFilePath.c_str());
+
+	if (rtn != HTTP_OK) {
+		stringstream ee;
+		int theErr = errno;
+		ee << "Error '" << theErr << "' getting '" << uri << "' into file '"
+		   << tmpFilePath << "': " << this->errorString (rtn);
+		throw runtime_error (ee.str());
+	}
+
+	ppd_file_t* ppd = ppdOpenFile (tmpFilePath.c_str());
+	if (ppd == (ppd_file_t*)0) {
+		throw runtime_error ("Error opening tmpFilePath...");
+	}
+
+	stringstream ss;
+	if (ppd->nickname != (char*)0) {
+		ss << ppd->nickname;
+	} else {
+		ss << "Unknown";
+	}
+	ppdClose (ppd);
+
+	unlink (tmpFilePath.c_str());
+
+	return ss.str();
+}
+
+void
 wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI)
 {
 	DBG ("Called");
@@ -696,6 +809,31 @@ wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI)
 		string ee = e.what();
 		if (ee == "Unknown") {
 			this->setDeviceURI (cupsPrinter, devURI);
+		} else {
+			// Re-throw other exceptions
+			throw e;
+		}
+	}
+}
+
+void
+wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI, string sourcePPD)
+{
+	DBG ("Called");
+	try {
+		this->getDeviceURI(cupsPrinter);
+		// If we get here without exception, printer exists,
+		// but we'll set the DeviceURI anyway:
+		DBG ("Printer already exists, setting device uri and PPD anyway");
+		this->setDeviceURI (cupsPrinter, devURI);
+		this->setPPD (cupsPrinter, sourcePPD);
+
+	} catch (const exception& e ) {
+
+		string ee = e.what();
+		if (ee == "Unknown") {
+			this->setDeviceURI (cupsPrinter, devURI);
+			this->setPPD (cupsPrinter, sourcePPD);
 		} else {
 			// Re-throw other exceptions
 			throw e;
@@ -1085,11 +1223,92 @@ wml::CupsCtrl::lpdqIsValid (string s)
 }
 
 string
+wml::CupsCtrl::errorString (http_status_t err)
+{
+	string errStr("Unknown");
+	switch (err) {
+	case HTTP_ERROR:
+		errStr = "HTTP_ERROR";
+		break;
+	case HTTP_CONTINUE:
+		errStr = "ok, continue";
+		break;
+	case HTTP_SWITCHING_PROTOCOLS:
+		errStr = "Upgrading to TLS/SSL connection";
+		break;
+	case HTTP_OK:
+		errStr = "successful-ok";
+		break;
+	case HTTP_CREATED:
+		errStr = "put cmd successful";
+		break;
+	case HTTP_ACCEPTED:
+		errStr = "delete cmd successful";
+		break;
+	case HTTP_NOT_AUTHORITATIVE:
+		errStr = "Information isn't authoritative";
+		break;
+	case HTTP_NO_CONTENT:
+		errStr = "Successful command, no new data";
+		break;
+	case HTTP_RESET_CONTENT:
+		errStr = "Content was reset/recreated";
+		break;
+	case HTTP_SERVICE_UNAVAILABLE:
+		errStr = "Service unavailable";
+		break;
+	case HTTP_UNAUTHORIZED:
+		errStr = "Unauthorized to access the host";
+		break;
+	case HTTP_AUTHORIZATION_CANCELED:
+		errStr = "User cancelled authorization";
+		break;
+	case HTTP_UPGRADE_REQUIRED:
+		errStr = "Upgrade to SSL/TLS required";
+		break;
+
+		// Cases I've not yet typed out:
+	case HTTP_PARTIAL_CONTENT:			/* Only a partial file was recieved/sent */
+	case HTTP_MULTIPLE_CHOICES:		/* Multiple files match request */
+	case HTTP_MOVED_PERMANENTLY:		/* Document has moved permanently */
+	case HTTP_MOVED_TEMPORARILY:		/* Document has moved temporarily */
+	case HTTP_SEE_OTHER:			/* See this other link... */
+	case HTTP_NOT_MODIFIED:			/* File not modified */
+	case HTTP_USE_PROXY:			/* Must use a proxy to access this URI */
+	case HTTP_BAD_REQUEST:		/* Bad request */
+	case HTTP_PAYMENT_REQUIRED:		/* Payment required */
+	case HTTP_FORBIDDEN:			/* Forbidden to access this URI */
+	case HTTP_NOT_FOUND:			/* URI was not found */
+	case HTTP_METHOD_NOT_ALLOWED:		/* Method is not allowed */
+	case HTTP_NOT_ACCEPTABLE:			/* Not Acceptable */
+	case HTTP_PROXY_AUTHENTICATION:		/* Proxy Authentication is Required */
+	case HTTP_REQUEST_TIMEOUT:			/* Request timed out */
+	case HTTP_CONFLICT:			/* Request is self-conflicting */
+	case HTTP_GONE:				/* Server has gone away */
+	case HTTP_LENGTH_REQUIRED:			/* A content length or encoding is required */
+	case HTTP_PRECONDITION:			/* Precondition failed */
+	case HTTP_REQUEST_TOO_LARGE:		/* Request entity too large */
+	case HTTP_URI_TOO_LONG:			/* URI too long */
+	case HTTP_UNSUPPORTED_MEDIATYPE:		/* The requested media type is unsupported */
+	case HTTP_REQUESTED_RANGE:			/* The requested range is not satisfiable */
+	case HTTP_EXPECTATION_FAILED:		/* The expectation given in an Expect header field was not met */
+	case HTTP_SERVER_ERROR:		/* Internal server error */
+	case HTTP_NOT_IMPLEMENTED:			/* Feature not implemented */
+	case HTTP_BAD_GATEWAY:			/* Bad gateway */
+	case HTTP_GATEWAY_TIMEOUT:			/* Gateway connection timed out */
+	case HTTP_NOT_SUPPORTED:			/* HTTP version not supported */
+	default:
+		break;
+	}
+
+	return errStr;
+}
+
+string
 wml::CupsCtrl::errorString (ipp_status_t err)
 {
 	string errStr("Unknown");
 	switch (err) {
-
 
 	case IPP_OK:
 		errStr = "successful-ok";
