@@ -27,6 +27,24 @@ int main (int argc, char** argv)
 	// Test setAccepting
 	string thequeue(argv[1]);
 
+	vector<string> theL = c.getPPDListOfMakes();
+	vector<string>::iterator i = theL.begin();
+	cout << "Makes:" << endl;
+	while (i != theL.end()) {
+		cout << *i << endl;
+		i++;
+	}
+
+	theL.clear();
+	string make = "Oki";
+	theL = c.getPPDListOfModels (make);
+	i = theL.begin();
+	cout << "Models for " << make << ":" << endl;
+	while (i != theL.end()) {
+		cout << *i << endl;
+		i++;
+	}
+
 	c.setPPDFromFile (thequeue, "/usr/src/wmlcups/test.ppd");
 
 	// This works (though c.getPPD() still doesn't return anything)

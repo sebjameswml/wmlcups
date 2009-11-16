@@ -793,6 +793,191 @@ wml::CupsCtrl::getPPD (string cupsPrinter)
 	return ss.str();
 }
 
+vector<string>
+wml::CupsCtrl::getPPDListOfMakes (void)
+{
+	vector<string> theList;
+
+	ipp_attribute_t * ipp_attributes;
+	ipp_t * prqst;
+	ipp_t * rtn;
+	char uri[HTTP_MAX_URI];
+
+	prqst = ippNewRequest (CUPS_GET_PPDS);
+
+	httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/printers/");
+
+	ippAddString (prqst,
+		      IPP_TAG_OPERATION,
+		      IPP_TAG_URI,
+		      "printer-uri",
+		      NULL,
+		      uri);
+
+	ippAddString (prqst,
+		      IPP_TAG_OPERATION,
+		      IPP_TAG_KEYWORD,
+		      "requested-attributes",
+		      NULL,
+		      "ppd-make");
+
+	rtn = cupsDoRequest (this->connection, prqst, "/");
+
+	if (!rtn) {
+		// Handle error
+		stringstream eee;
+		eee << "CupsCtrl: cupsDoFileRequest() failed in "
+		    << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		throw runtime_error (eee.str());
+	}
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		eee << "CupsCtrl: cupsDoFileRequest() conflict in "
+		    << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	for (ipp_attributes = rtn->attrs;
+	     ipp_attributes != NULL;
+	     ipp_attributes = ipp_attributes->next) {
+
+		while (ipp_attributes != NULL
+		       && ipp_attributes->group_tag != IPP_TAG_PRINTER) {
+			// Move on to the next one.
+			ipp_attributes = ipp_attributes->next;
+		}
+
+		while (ipp_attributes != NULL &&
+		       ipp_attributes->group_tag == IPP_TAG_PRINTER) {
+
+			if (!strcmp(ipp_attributes->name, "ppd-make") &&
+			    ipp_attributes->value_tag == IPP_TAG_TEXT) {
+				string p(ipp_attributes->values[0].string.text);
+				if (!p.empty()) {
+					theList.push_back (p);
+				}
+			}
+
+			ipp_attributes = ipp_attributes->next;
+		}
+
+		if (ipp_attributes == NULL) {
+			break;
+		}
+
+	} // end of for each ipp response
+
+	return theList;
+}
+
+vector<string>
+wml::CupsCtrl::getPPDListOfModels (string make)
+{
+	vector<string> theList;
+
+	ipp_attribute_t * ipp_attributes;
+	ipp_t * prqst;
+	ipp_t * rtn;
+	char uri[HTTP_MAX_URI];
+
+	prqst = ippNewRequest (CUPS_GET_PPDS);
+
+	httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/printers/");
+
+	ippAddString (prqst,
+		      IPP_TAG_OPERATION,
+		      IPP_TAG_URI,
+		      "printer-uri",
+		      NULL,
+		      uri);
+
+	ippAddString (prqst,
+		      IPP_TAG_OPERATION,
+		      IPP_TAG_TEXT,
+		      "ppd-make",
+		      NULL,
+		      make.c_str());
+
+	rtn = cupsDoRequest (this->connection, prqst, "/");
+
+	if (!rtn) {
+		// Handle error
+		stringstream eee;
+		eee << "CupsCtrl: cupsDoFileRequest() failed in "
+		    << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		throw runtime_error (eee.str());
+	}
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		eee << "CupsCtrl: cupsDoFileRequest() conflict in "
+		    << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	for (ipp_attributes = rtn->attrs;
+	     ipp_attributes != NULL;
+	     ipp_attributes = ipp_attributes->next) {
+
+		while (ipp_attributes != NULL
+		       && ipp_attributes->group_tag != IPP_TAG_PRINTER) {
+			// Move on to the next one.
+			ipp_attributes = ipp_attributes->next;
+		}
+
+		while (ipp_attributes != NULL &&
+		       ipp_attributes->group_tag == IPP_TAG_PRINTER) {
+
+			/*
+			  Example text fields which this returns:
+
+			  'ppd-name'           lsb/usr/HP/hp-psc_2400_series-hpijs.ppd.gz
+			  'ppd-make'           HP
+			  'ppd-make-and-model' HP PSC 2400 Series hpijs, 3.9.10.72
+			  'ppd-device-id'      MFG:HP;MDL:psc 2400 series;DES:psc 2400 series;
+			  'ppd-product'        HP PSC 2405 Photosmart All-in-one Printer
+			  'ppd-psversion'      (3010.000) 705
+
+			  Non-TEXT/NAME fields returned are: ppd-type,
+			  ppd-model-number, ppd-natural-language
+
+			 */
+
+			if (!strcmp(ipp_attributes->name, "ppd-make-and-model") &&
+			    ipp_attributes->value_tag == IPP_TAG_TEXT) {
+				string p(ipp_attributes->values[0].string.text);
+				if (!p.empty()) {
+					theList.push_back (p);
+				}
+			}
+
+			ipp_attributes = ipp_attributes->next;
+		}
+
+		if (ipp_attributes == NULL) {
+			break;
+		}
+
+	} // end of for each ipp response
+
+	return theList;
+}
+
 void
 wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI)
 {

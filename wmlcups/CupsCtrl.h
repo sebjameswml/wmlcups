@@ -211,6 +211,17 @@ namespace wml {
 		std::string getPPD (std::string cupsPrinter);
 
 		/*!
+		 * Obtain a list of the printer "makes" for which
+		 * there are available PPD files stored on the system.
+		 */
+		std::vector<std::string> getPPDListOfMakes (void);
+
+		/*!
+		 * Get the list of PPD drivers (models) for the given make.
+		 */
+		std::vector<std::string> getPPDListOfModels (std::string make);
+
+		/*!
 		 * This checks that the printer doesn't exist, then
 		 * calls setDeviceURI() to create it.
 		 */
