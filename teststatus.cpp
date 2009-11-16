@@ -45,7 +45,7 @@ int main (int argc, char** argv)
 
 	//cout << c.getStateReasons (thequeue) << endl;
 
-	cout << "Cups PPD file is: " << c.getPPD (thequeue) << endl;
+	cout << "Cups PPD file is: " << c.getPPDNickname (thequeue) << endl;
 
 	DBGCLOSE();
 

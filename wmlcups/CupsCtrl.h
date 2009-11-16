@@ -202,13 +202,13 @@ namespace wml {
 		/*!
 		 * Set the provided PPD file for the given cupsPrinter.
 		 */
-		void setPPDFromFile (std::string cupsPrinter, std::string sourcePPD);
+		void setPPDFromFile (std::string cupsPrinter, std::string sourcePPDFile);
 
 		/*!
 		 * Get the PPD file stored in ppd-name on the cupsd
-		 * for this queue.
+		 * for this queue and then obtain its nickname.
 		 */
-		std::string getPPD (std::string cupsPrinter);
+		std::string getPPDNickname (std::string cupsPrinter);
 
 		/*!
 		 * Obtain a list of the printer "makes" for which

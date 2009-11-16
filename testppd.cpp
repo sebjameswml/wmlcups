@@ -50,7 +50,8 @@ int main (int argc, char** argv)
 	// This works (though c.getPPD() still doesn't return anything)
 	//c.setPPD (thequeue, "lsb/usr/foomatic-rip/openprinting-gs-builtin/Epson/Epson-ActionPrinter_3250-ap3250.ppd.gz");
 
-	cout << "Cups PPD file is: " << c.getPPD (thequeue) << endl;
+	cout << "Cups PPD nickname is: " << c.getPPDNickname (thequeue)
+	     << " or (makeandmodel): " << c.getMakeModel (thequeue) << endl;
 
 	return 0;
 }

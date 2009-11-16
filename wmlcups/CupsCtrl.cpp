@@ -658,6 +658,7 @@ wml::CupsCtrl::getMakeModel (string cupsPrinter)
 void
 wml::CupsCtrl::setMakeModel (string cupsPrinter, string s)
 {
+	throw runtime_error ("Not user settable");
 	IppAttr attr("printer-make-and-model");
 	attr.setValue (s);
 	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
@@ -743,7 +744,7 @@ wml::CupsCtrl::setPPDFromFile (string cupsPrinter, string sourcePPD)
 }
 
 string
-wml::CupsCtrl::getPPD (string cupsPrinter)
+wml::CupsCtrl::getPPDNickname (string cupsPrinter)
 {
 	if (cupsPrinter.empty()) {
 		throw runtime_error ("Must specify printer.");
