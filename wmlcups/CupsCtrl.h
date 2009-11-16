@@ -24,6 +24,7 @@ extern "C" {
 
 #include "config.h"
 #include "IppAttr.h"
+#include "PpdOption.h"
 #include "QueueCupsStatus.h"
 
 namespace wml {
@@ -220,6 +221,11 @@ namespace wml {
 		 * Get the list of PPD drivers (models) for the given make.
 		 */
 		std::vector<std::string> getPPDListOfModels (std::string make);
+
+		/*!
+		 * Obtain the PPD options for the given printer.
+		 */
+		std::vector<wml::PpdOption> getPPDOptions (std::string cupsPrinter);
 
 		/*!
 		 * This checks that the printer doesn't exist, then

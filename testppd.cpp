@@ -7,6 +7,7 @@
 
 #include "CupsCtrl.h"
 #include "IppAttr.h"
+#include "PpdOption.h"
 #include "QueueCupsStatus.h"
 
 using namespace std;
@@ -52,6 +53,13 @@ int main (int argc, char** argv)
 
 	cout << "Cups PPD nickname is: " << c.getPPDNickname (thequeue)
 	     << " or (makeandmodel): " << c.getMakeModel (thequeue) << endl;
+
+	vector<PpdOption> vopts = c.getPPDOptions (thequeue);
+	vector<PpdOption>::iterator j = vopts.begin();
+	while (j != vopts.end()) {
+		cout << "Option: '" << j->getKeyword() << "'   Group: '" << j->getGroupName() << "'\n";
+		j++;
+	}
 
 	return 0;
 }

@@ -979,6 +979,73 @@ wml::CupsCtrl::getPPDListOfModels (string make)
 	return theList;
 }
 
+vector<PpdOption>
+wml::CupsCtrl::getPPDOptions (std::string cupsPrinter)
+{
+	if (cupsPrinter.empty()) {
+		throw runtime_error ("Must specify printer.");
+	}
+
+	vector<PpdOption> theOptions;
+
+	string ppdFile = cupsPrinter + ".ppd";
+	string tmpFilePath("/tmp/ppd_");
+	tmpFilePath += ppdFile;
+	string uri("/printers/");
+	uri += ppdFile;
+
+	// Have to create tmpFilePath first:
+	ofstream f (tmpFilePath.c_str(), ios::out|ios::trunc);
+	if (!f.is_open()) {
+		throw runtime_error ("Couldn't open file");
+	} else {
+		f.close();
+	}
+
+	http_status_t rtn = cupsGetFile (this->connection,
+					 uri.c_str(),
+					 tmpFilePath.c_str());
+
+	if (rtn != HTTP_OK) {
+		stringstream ee;
+		int theErr = errno;
+		ee << "Error '" << theErr << "' getting '" << uri << "' into file '"
+		   << tmpFilePath << "': " << this->errorString (rtn);
+		throw runtime_error (ee.str());
+	}
+	// ippDelete (rtn); ??
+
+	ppd_file_t* ppd = ppdOpenFile (tmpFilePath.c_str());
+
+	ppdMarkDefaults (ppd);
+
+	if (ppd == NULL) {
+		// No options.
+		return theOptions;
+	}
+
+	unsigned int i, j;
+	ppd_group_t *group;
+	ppd_option_t *option;
+	string optionList;
+	string valueList;
+
+	// Loop through option groups
+	for (i = ppd->num_groups, group = ppd->groups; i > 0; i --, group ++) {
+		// Loop through options in current group
+		for (j = group->num_options, option = group->options; j > 0; j --, option ++) {
+			PpdOption o (option);
+			o.setGroupName (group->text);
+			theOptions.push_back (o);
+		}
+	}
+
+	// Close the ppd file
+	ppdClose (ppd);
+
+	return theOptions;
+}
+
 void
 wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI)
 {
