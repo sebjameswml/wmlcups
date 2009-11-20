@@ -145,7 +145,8 @@ namespace wml {
 		 * \param value The value of the key/value pair of the directive
 		 * to be added
 	       	 */
-		void setDirective (std::queue<std::pair<std::string, std:: string> > containerId, std::string key, std::string value);
+		void setDirective (std::queue<std::pair<std::string, std:: string> > containerId,
+				   std::string key, std::string value);
 
 		/*!
 		 * \brief Get a directive
@@ -259,7 +260,8 @@ namespace wml {
 		 *
 		 * \param iter A pointer to the directive object
 		 */
-		void directiveValue (std::string& returnStr, std::map<std::string, std::string>::iterator& iter);
+		void directiveValue (std::string& returnStr,
+				     std::map<std::string, std::string>::iterator& iter);
 
 		/*!
 		 * \brief Returns a full directive
@@ -270,7 +272,8 @@ namespace wml {
 		 *
 		 * \param iter A pointer to the directive object
 		 */
-		void fullDirective (std::string& returnStr, std::map<std::string, std::string>::iterator& iter);
+		void fullDirective (std::string& returnStr,
+				    std::map<std::string, std::string>::iterator& iter);
 
 		//@}
 	};

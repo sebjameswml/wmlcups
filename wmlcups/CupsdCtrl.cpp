@@ -172,11 +172,6 @@ wml::CupsdDirContainer::addContainer(CupsdDirContainer cont)
 void
 wml::CupsdDirContainer::read (ifstream& f, int& recurslevel)
 {
-
-	for (int i = 0; i < recurslevel; i++) {
-		cout << "   ";
-	}
-	cout << "<" << this->getType() << " " << this->getParameter() << ">" << endl;
 	int pos;
 	int endpos;
 	string line;
@@ -186,35 +181,25 @@ wml::CupsdDirContainer::read (ifstream& f, int& recurslevel)
 		if (line[0] == '<') {
 			if (line[1] == '/') {
 				list<CupsdDirContainer>::iterator iter;
-
-				for (int i = 0; i < recurslevel; i++){
-					cout << "   ";
-				}
-
-				cout << "</" << this->getType() << ">" << endl;
 				recurslevel -= 1;
-
 				return;
 			} else {
 				pos = line.find(" ");
 				endpos = line.find (">");
-				CupsdDirContainer c(line.substr(1, pos-1), line.substr(pos+1,endpos - (pos+1)));
+				CupsdDirContainer c(line.substr(1, pos-1),
+						    line.substr(pos+1,endpos - (pos+1)));
 				recurslevel += 1;
 				c.read (f, recurslevel);
 
 				this->directiveContainers.push_back (c);
 			}
 		} else if (line[0] == '#') {
-
+			// It's a comment. Do nothing.
 		} else {
 			if (line.size() > 0){
 				pos = line.find (" ");
 				string key = line.substr(0, pos);
 				string value = line.substr(pos+1);
-				for (int i = 0; i < recurslevel; i++) {
-					cout << "   ";
-				}
-				cout << "   " << key << " " << value << endl;
 				this->setDirective (key, value);
 			}
 		}
@@ -225,9 +210,8 @@ void
 wml::CupsdDirContainer::write(ofstream& ofs, int& rlev)
 {
 	list<CupsdDirContainer>::iterator iter;
-	//ofs << "#Rlev = " << rlev << endl;
-	for (int i = 0; i < rlev; i++)
-	{
+
+	for (int i = 0; i < rlev; i++) {
 		ofs << "   ";
 	}
 
@@ -235,10 +219,9 @@ wml::CupsdDirContainer::write(ofstream& ofs, int& rlev)
 		ofs << "<" << this->getType() << " " << this->getParameter() << ">" << endl;
 	}
 
-	//ofs << endl;
-
 	map< string, string >::iterator mapiter;
-	for (mapiter = this->directives.begin(); mapiter != this->directives.end(); mapiter++) {
+	for (mapiter = this->directives.begin();
+	     mapiter != this->directives.end(); mapiter++) {
 		for (int i = 0; i < rlev; i++)
 		{
 			ofs << "   ";
@@ -250,15 +233,15 @@ wml::CupsdDirContainer::write(ofstream& ofs, int& rlev)
 		ofs << endl;
 	}
 
-	for (iter = this->directiveContainers.begin(); iter != this->directiveContainers.end(); iter++) {
+	for (iter = this->directiveContainers.begin();
+	     iter != this->directiveContainers.end(); iter++) {
 		rlev += 1;
 		iter->write(ofs,rlev);
 	}
 
 
 
-	for (int i = 0; i < rlev; i++)
-	{
+	for (int i = 0; i < rlev; i++) {
 		ofs << "   ";
 	}
 	if (this->getType() != "root") {
@@ -276,24 +259,22 @@ wml::CupsdDirContainer::write(ofstream& ofs, int& rlev)
  */
 //@{
 
-wml::CupsdCtrl::CupsdCtrl ():
+wml::CupsdCtrl::CupsdCtrl() :
 	cupsdPath("/etc/cups/cupsd.conf")
 {
-
 }
 
-wml::CupsdCtrl::CupsdCtrl (string p):
+wml::CupsdCtrl::CupsdCtrl (string p) :
 	cupsdPath(p)
 {
-
 }
 
-wml::CupsdCtrl::~CupsdCtrl ()
+wml::CupsdCtrl::~CupsdCtrl()
 {
 }
 
 void
-wml::CupsdCtrl::read(void)
+wml::CupsdCtrl::read (void)
 {
 	ifstream f;
 	int recurslevel = -1;
@@ -309,38 +290,35 @@ wml::CupsdCtrl::read(void)
 }
 
 void
-wml::CupsdCtrl::write(void)
+wml::CupsdCtrl::write (void)
 {
-
 	ofstream ofs;
 	int rlev = -1;
-
 
 	ofs.open(this->cupsdPath.c_str(), ios::out);
 
 	list<CupsdDirContainer>::iterator iter;
-	for (iter = this->directiveContainers.begin(); iter != this->directiveContainers.end(); iter++) {
-		//ofs << "#Adding 1 to rlev" << endl;
-		//rlev += 1;
+	for (iter = this->directiveContainers.begin();
+	     iter != this->directiveContainers.end(); iter++) {
 		iter->write(ofs, rlev);
 	}
 
 	ofs.close();
-
 }
 // Add CupsdCtrl methods....
 
 //@}
 
 void
-wml::CupsdCtrl::setDirective(queue<pair<string, string> > containerId, string key, string value)
+wml::CupsdCtrl::setDirective (queue<pair<string, string> > containerId, string key, string value)
 {
 	bool containerFound = false;
 	pair <string, string> temp = containerId.front();
 	containerId.pop();
 
 	list<CupsdDirContainer>::iterator iter;
-	for (iter = this->directiveContainers.begin(); iter != this->directiveContainers.end(); iter++) {
+	for (iter = this->directiveContainers.begin();
+	     iter != this->directiveContainers.end(); iter++) {
 		string containerIdString = temp.first + " " + temp.second;
 		if (iter->getId() == containerIdString) {
 			containerFound = true;
@@ -351,11 +329,10 @@ wml::CupsdCtrl::setDirective(queue<pair<string, string> > containerId, string ke
 	if (containerFound == false) {
 		throw runtime_error("Container not found 2");
 	}
-
 }
 
 string
-wml::CupsdCtrl::getDirective(queue<pair<string, string> > containerId, string key, bool valueOnly)
+wml::CupsdCtrl::getDirective (queue<pair<string, string> > containerId, string key, bool valueOnly)
 {
 	string returnStr;
 	bool containerFound = false;
@@ -363,7 +340,8 @@ wml::CupsdCtrl::getDirective(queue<pair<string, string> > containerId, string ke
 	pair <string, string> temp = containerId.front();
 	containerId.pop();
 	list<CupsdDirContainer>::iterator iter;
-	for (iter = this->directiveContainers.begin(); iter != this->directiveContainers.end(); iter++) {
+	for (iter = this->directiveContainers.begin();
+	     iter != this->directiveContainers.end(); iter++) {
 		string containerIdString = temp.first + " " + temp.second;
 		if (iter->getId() == containerIdString) {
 			containerFound = true;
@@ -384,7 +362,7 @@ wml::CupsdCtrl::restartCups(void)
 	if (FoundryUtilities::fileExists("/usr/sbin/recupsd")) {
 		system("/usr/sbin/recupsd");
 	} else {
-		DBG ("In the real world, I'd now restart cups. "
-		     "But, alas, this is an imaginary world");
+		throw runtime_error ("Can't re-start the CUPS daemon "
+				     "(no recupsd script).");
 	}
 }
