@@ -16,6 +16,7 @@
 
 #include <utility>
 #include <vector>
+#include <list>
 
 extern "C" {
 #include <cups/cups.h>
@@ -251,9 +252,15 @@ namespace wml {
 		std::string getCupsURI (std::string cupsPrinter);
 
 		/*!
-		 * Get a list of printer on the cupsd.
+		 * Get a list of printer on the cupsd. Return as vector.
 		 */
 		std::vector<std::string> getCupsPrinterList (void);
+
+		/*!
+		 * Like getCupsPrinterList but returns a list rather
+		 * than a vector.
+		 */
+		std::list<std::string> getCupsPrinterList2 (void);
 
 		/*!
 		 * Get the value of the attribute attr for the printer

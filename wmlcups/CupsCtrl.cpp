@@ -1207,6 +1207,70 @@ wml::CupsCtrl::getCupsPrinterList (void)
 	return theList;
 }
 
+list<string>
+wml::CupsCtrl::getCupsPrinterList2 (void)
+{
+	list<string> theList;
+	ipp_t * prqst;
+	ipp_t * rtn;
+	ipp_attribute_t * ipp_attributes;
+	static const char * printerAttributes[] = {
+		"printer-name"
+	};
+	int n_attributes = 1;
+
+	prqst = ippNewRequest (CUPS_GET_PRINTERS);
+
+	ippAddStrings(prqst,
+		      IPP_TAG_OPERATION,
+		      IPP_TAG_KEYWORD,
+		      "requested-attributes",
+		      n_attributes,
+		      NULL,
+		      printerAttributes);
+
+	rtn = cupsDoRequest (this->connection, prqst, "/");
+
+	if (!rtn) {
+		// Handle error
+		throw runtime_error ("CupsCtrl: cupsDoRequest() failed");
+	}
+
+	for (ipp_attributes = rtn->attrs;
+	     ipp_attributes != NULL;
+	     ipp_attributes = ipp_attributes->next) {
+
+		while (ipp_attributes != NULL
+		       && ipp_attributes->group_tag != IPP_TAG_PRINTER) {
+			// Move on to the next one.
+			ipp_attributes = ipp_attributes->next;
+		}
+
+		while (ipp_attributes != NULL &&
+		       ipp_attributes->group_tag == IPP_TAG_PRINTER) {
+
+			if (!strcmp(ipp_attributes->name, "printer-name") &&
+			    ipp_attributes->value_tag == IPP_TAG_NAME) {
+				string p(ipp_attributes->values[0].string.text);
+				if (!p.empty()) {
+					theList.push_back (p);
+				}
+			}
+
+			ipp_attributes = ipp_attributes->next;
+		}
+
+		if (ipp_attributes == NULL) {
+			break;
+		}
+
+	} // end of for each ipp response
+
+	ippDelete (rtn);
+
+	return theList;
+}
+
 string
 wml::CupsCtrl::getPrinterAttribute (const char* printerName,
 				    IppAttr& attr)
