@@ -57,6 +57,11 @@ namespace wml {
 		void setCupsdAddress (std::string s);
 
 		/*!
+		 * Get the cupsd address
+		 */
+		std::string getCupsdAddress (void);
+
+		/*!
 		 * Query cupsd for whether the given cupsPrinter is
 		 * accepting
 		 */

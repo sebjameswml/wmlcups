@@ -81,6 +81,12 @@ wml::CupsCtrl::setCupsdAddress (string a)
 	this->cupsdAddress = a;
 }
 
+std::string
+wml::CupsCtrl::getCupsdAddress (void)
+{
+	return this->cupsdAddress;
+}
+
 bool
 wml::CupsCtrl::getAccepting (string cupsPrinter)
 {
