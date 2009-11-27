@@ -17,6 +17,7 @@
 #endif
 
 #include <utility>
+#include <string>
 
 extern "C" {
 #include <cups/cups.h>

@@ -199,7 +199,7 @@ wml::CupsCtrl::getStateReasons (string cupsPrinter)
 
 bool
 wml::CupsCtrl::getFullStatus (std::string cupsPrinter,
-			     wml::QueueCupsStatus& qstat)
+			      wml::QueueCupsStatus& qstat)
 {
 	DBG ("Called for queue " << cupsPrinter);
 
@@ -320,7 +320,9 @@ wml::CupsCtrl::getFullStatus (std::string cupsPrinter,
 }
 
 void
-wml::CupsCtrl::getJobList (string cupsPrinter, vector<CupsJob>& jList, string whichJobs)
+wml::CupsCtrl::getJobList (string cupsPrinter,
+			   vector<CupsJob>& jList,
+			   string whichJobs)
 {
 	// Could be:
 	// this->getJobList (cupsPrinter, jList, 0, whichJobs);
@@ -449,9 +451,9 @@ wml::CupsCtrl::getJobList (string cupsPrinter, vector<CupsJob>& jList, string wh
  */
 void
 wml::CupsCtrl::getJobList (string cupsPrinter,
-			  vector<CupsJob>& jList,
-			  int numJobs,
-			  string whichJobs)
+			   vector<CupsJob>& jList,
+			   int numJobs,
+			   string whichJobs)
 {
 	DBG ("Called");
 
@@ -963,7 +965,7 @@ wml::CupsCtrl::getPPDListOfModels (string make)
 			  Non-TEXT/NAME fields returned are: ppd-type,
 			  ppd-model-number, ppd-natural-language
 
-			 */
+			*/
 
 			if (!strcmp(ipp_attributes->name, "ppd-make-and-model") &&
 			    ipp_attributes->value_tag == IPP_TAG_TEXT) {
@@ -1441,9 +1443,9 @@ wml::CupsCtrl::setPrinterAttribute (const char* printerName,
 
 void
 wml::CupsCtrl::sendPrinterCommand (const char* printerName,
-				  string asUser,
-				  string reason,
-				  ipp_op_t command)
+				   string asUser,
+				   string reason,
+				   ipp_op_t command)
 {
 	ipp_t * prqst;
 	ipp_t * rtn;
