@@ -16,6 +16,7 @@ extern "C" {
 #include <iostream>
 #include <sstream>
 #include <utility>
+#include <set>
 
 #include <futil/FoundryUtilities.h>
 #include "QueueCupsStatus.h"
@@ -994,6 +995,41 @@ wml::CupsCtrl::getPPDOptions (std::string cupsPrinter)
 		throw runtime_error ("Must specify printer.");
 	}
 
+	/*!
+	 * First job, get the user-specified options - lpoptions,
+	 * which come via cups api calls from /etc/cups/lpoptions.
+	 */
+	cups_dest_t * dests; // All destinations
+	cups_dest_t * d;     // One destination
+
+	int ndests = cupsGetDests (&dests);
+	DBG ("After first cupsGetDests(), we have " << ndests << " destinations");
+
+	d = cupsGetDest (cupsPrinter.c_str(), (const char *)0, ndests, dests);
+	if (d == (cups_dest_t*)0) {
+		DBG ("Adding dest...");
+		ndests = cupsAddDest (cupsPrinter.c_str(), (const char *)0, 0, &dests);
+		d = cupsGetDest (cupsPrinter.c_str(), (const char *)0, ndests, dests);
+	}
+
+	if (d == (cups_dest_t*)0) {
+		throw runtime_error ("Queue does not exist (dest is NULL).");
+	}
+
+	int k = 0;
+	set<string> destOptions;
+	while (k < d->num_options) {
+		//string key(d->options[i].name);
+		//destOptions.insert (key);
+		destOptions.insert (d->options[k].name);
+		k++;
+	}
+
+	/*!
+	 * Now we have the user options, we get all the options from
+	 * the PPD, overriding the default option selection with the
+	 * user option selection where necessary.
+	 */
 	vector<PpdOption> theOptions;
 
 	string ppdFile = cupsPrinter + ".ppd";
@@ -1039,19 +1075,91 @@ wml::CupsCtrl::getPPDOptions (std::string cupsPrinter)
 	string valueList;
 
 	// Loop through option groups
-	for (i = ppd->num_groups, group = ppd->groups; i > 0; i --, group ++) {
+	for (i=ppd->num_groups, group=ppd->groups; i>0; i--, group++) {
 		// Loop through options in current group
-		for (j = group->num_options, option = group->options; j > 0; j --, option ++) {
+		for (j=group->num_options, option=group->options; j>0; j--, option++) {
 			PpdOption o (option);
 			o.setGroupName (group->text);
+			// Check if user has over-ridden the PPD:
+			if (destOptions.count (o.getKeyword()) > 0) {
+				try {
+					DBG ("Setting user-set option " << o.getKeyword());
+					o.setChoiceValue (cupsGetOption (o.getKeyword().c_str(),
+									 d->num_options,
+									 d->options));
+					DBG ("After setting, the option value is "
+					     << o.getChoiceValue());
+
+				} catch (const exception& e) {
+					DBG ("Failed to set user choice in ppd.");
+				}
+			}
 			theOptions.push_back (o);
 		}
 	}
 
 	// Close the ppd file
 	ppdClose (ppd);
+	// Done with dests now
+	cupsFreeDests (ndests, dests);
 
 	return theOptions;
+}
+
+void
+wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
+			     std::string keyword,
+			     std::string value)
+{
+	DBG ("Called");
+
+	if (this->cupsdAddress != "localhost"
+	    && this->cupsdAddress != "127.0.0.1") {
+		throw runtime_error ("You can't set PPD options on a different "
+				     "server, unfortunately.");
+	}
+
+	// Get options from cupsPrinter.
+	cups_dest_t * dests; // All destinations
+	cups_dest_t * d;     // One destination
+
+	int ndests = cupsGetDests (&dests);
+	DBG ("After first cupsGetDests(), we have " << ndests << " destinations");
+
+	d = cupsGetDest (cupsPrinter.c_str(), (const char *)0, ndests, dests);
+	if (d == (cups_dest_t*)0) {
+		DBG ("Adding dest...");
+		ndests = cupsAddDest (cupsPrinter.c_str(), (const char *)0, 0, &dests);
+		d = cupsGetDest (cupsPrinter.c_str(), (const char *)0, ndests, dests);
+	}
+
+	if (d == (cups_dest_t*)0) {
+		throw runtime_error ("Queue does not exist (dest is NULL).");
+	}
+
+	int i = 0;
+	while (i < d->num_options) {
+		string key(d->options[i].name);
+		if (key == keyword) {
+			DBG ("the destination has a matching key: " << key);
+		}
+		i++;
+	}
+
+	// Add the new one (replaces existing ppd option if necessary)
+	cupsAddOption (keyword.c_str(), value.c_str(), d->num_options, &d->options);
+
+	// save the dest with cupsSaveDests2();
+	if (cupsSetDests2 (this->connection, 1, d) != 0) {
+		stringstream ee;
+		ee << "Failed to set PPD option '" << keyword << "' to '" << value << "'";
+		throw runtime_error (ee.str());
+	}
+
+	cupsFreeDests (ndests, dests);
+
+	DBG ("Returning");
+	return;
 }
 
 void

@@ -22,6 +22,8 @@ int main (int argc, char** argv)
 		return -1;
 	}
 
+	DBGOPEN ("testppd.log");
+
 	string addr ("localhost");
 	CupsCtrl c(addr);
 
@@ -61,5 +63,12 @@ int main (int argc, char** argv)
 		j++;
 	}
 
+	// Now set an option.
+	c.setPPDOption (thequeue,
+			"HPJobRetentionOption",
+			"HPJobRetentionProof");
+
+
+	DBGCLOSE();
 	return 0;
 }

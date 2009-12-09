@@ -83,7 +83,7 @@ wml::PpdOption::getKeyword (void)
 }
 
 void
-wml::PpdOption:: setKeyword (string s)
+wml::PpdOption::setKeyword (string s)
 {
 	this->keyword = s;
 }
@@ -151,3 +151,69 @@ wml::PpdOption::getNextChoice (ppd_choice_t& choice)
 	curChoice++;
 	return true;
 }
+
+string
+wml::PpdOption::getChoiceValue (void)
+{
+	string s("");
+	std::vector<ppd_choice_t>::iterator currentChoice;
+	currentChoice = this->choices.begin();
+	while (currentChoice != this->choices.end()) {
+		if (currentChoice->marked) {
+			s = currentChoice->choice;
+			break;
+		}
+		currentChoice++;
+	}
+	return s;
+}
+
+void
+wml::PpdOption::setChoiceValue (string s)
+{
+	std::vector<ppd_choice_t>::iterator currentChoice;
+	// This really sets currentChoice, based on a match of the choice value.
+	currentChoice = this->choices.begin();
+	while (currentChoice != this->choices.end()) {
+		if (currentChoice->choice == s) {
+			// Match. Mark it.
+			currentChoice->marked = 1;
+		} else {
+			currentChoice->marked = 0;
+		}
+		currentChoice++;
+	}
+}
+
+string
+wml::PpdOption::getChoiceText (void)
+{
+	string s("");
+	std::vector<ppd_choice_t>::iterator currentChoice;
+	currentChoice = this->choices.begin();
+	while (currentChoice != this->choices.end()) {
+		if (currentChoice->marked) {
+			s = currentChoice->text;
+			break;
+		}
+		currentChoice++;
+	}
+	return s;
+}
+
+void
+wml::PpdOption::setChoiceText (string s)
+{
+	std::vector<ppd_choice_t>::iterator currentChoice;
+	// This really sets currentChoice, based on a match of the text.
+	currentChoice = this->choices.begin();
+	while (currentChoice != this->choices.end()) {
+		if (currentChoice->text == s) {
+			currentChoice->marked = 1;
+		} else {
+			currentChoice->marked = 0;
+		}
+		currentChoice++;
+	}
+}
+

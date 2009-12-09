@@ -74,6 +74,26 @@ namespace wml {
 		void setText (std::string s);
 
 		/*!
+		 * Return the value of this option.
+		 */
+		std::string getChoiceValue (void);
+
+		/*!
+		 * Set the choice which has the value s
+		 */
+		void setChoiceValue (std::string s);
+
+		/*!
+		 * Return the text of the chosen option.
+		 */
+		std::string getChoiceText (void);
+
+		/*!
+		 * Set the choice which has the text s
+		 */
+		void setChoiceText (std::string s);
+
+		/*!
 		 * Return the default choice of this option.
 		 */
 		std::string getDefaultChoice (void);
@@ -113,7 +133,7 @@ namespace wml {
 		std::string keyword;
 
 		/*!
-		 * The text of the option. Should be no longer than
+		 * The text of the ppdoption. Should be no longer than
 		 * PPD_MAX_TEXT.
 		 */
 		std::string text;
@@ -137,7 +157,8 @@ namespace wml {
 
 		/*!
 		 * The current choice pointed to in choices. Used by
-		 * the getNextChoice() function.
+		 * the getNextChoice() function. Distinct from
+		 * currentChoice.
 		 */
 		std::vector<ppd_choice_t>::iterator curChoice;
 	};

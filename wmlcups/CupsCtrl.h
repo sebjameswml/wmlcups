@@ -234,6 +234,13 @@ namespace wml {
 		std::vector<wml::PpdOption> getPPDOptions (std::string cupsPrinter);
 
 		/*!
+		 * Set the PPD option identified by keyword to value.
+		 */
+		void setPPDOption (std::string cupsPrinter,
+				   std::string keyword,
+				   std::string value);
+
+		/*!
 		 * This checks that the printer doesn't exist, then
 		 * calls setDeviceURI() to create it.
 		 */
