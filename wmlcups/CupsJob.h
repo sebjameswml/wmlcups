@@ -67,7 +67,7 @@ namespace wml {
 		int id;
 
 		/*!
-		 * Number of copes.
+		 * Number of copies.
 		 */
 		int copies;
 

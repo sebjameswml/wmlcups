@@ -114,6 +114,7 @@ namespace wml {
 		bool getFullStatus (std::string cupsPrinter,
 				    wml::QueueCupsStatus& qstat);
 
+
 		/*!
 		 * Get a list of the jobs for the printer
 		 * cupsPrinter. Can pass in whichJobs as "all" or
@@ -140,7 +141,7 @@ namespace wml {
 		 */
 		void getJobList (std::string cupsPrinter,
 				 std::vector<wml::CupsJob>& jList,
-				 int numJobs,
+				 int numJobs = 0,
 				 std::string whichJobs = "");
 
 		/*!
@@ -152,6 +153,8 @@ namespace wml {
 		void getJobStatus (std::string cupsPrinter,
 				   int id,
 				   wml::CupsJob& j);
+
+		wml::CupsJob getJob (std::string id);
 
 		/*!
 		 * Return a string (in English) of the printer info.
@@ -331,6 +334,18 @@ namespace wml {
 		 * status/error.
 		 */
 		std::string errorString (http_status_t err);
+
+
+		void sendJobCommand (int jobId,
+				     std::string asUser,
+				     ipp_op_t command);
+
+		void cancelJobs (std::string printerName);
+
+		void pauseJobs (std::string printerName);
+
+		void releaseJobs (std::string printerName);
+
 
 	private:
 		/*!
