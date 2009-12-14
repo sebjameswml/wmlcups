@@ -31,6 +31,23 @@ wml::CupsJob::CupsJob (string jobName) :
 {
 }
 
+wml::CupsJob::CupsJob (int jobId) :
+	id(jobId),
+	copies(1),
+	state(IPP_JOB_PENDING)
+
+{
+}
+
+wml::CupsJob::CupsJob (int jobId, string jobName) :
+	id(jobId),
+	copies(1),
+	name (jobName),
+	state(IPP_JOB_PENDING)
+
+{
+}
+
 wml::CupsJob::~CupsJob (void)
 {
 }

@@ -29,6 +29,8 @@ namespace wml {
 	public:
 		CupsJob (void);
 		CupsJob (std::string jobName);
+		CupsJob (int jobId);
+		CupsJob (int jobId, std::string jobName);
 		~CupsJob (void);
 
 		void reset (void);
