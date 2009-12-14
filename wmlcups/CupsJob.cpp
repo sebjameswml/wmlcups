@@ -15,14 +15,23 @@ extern "C" {
 using namespace std;
 using namespace wml;
 
-wml::CupsJob::CupsJob () :
+wml::CupsJob::CupsJob (void) :
 	id(0),
 	copies(1),
 	state(IPP_JOB_PENDING)
 {
 }
 
-wml::CupsJob::~CupsJob ()
+wml::CupsJob::CupsJob (string jobName) :
+	id(0),
+	copies(1),
+	name (jobName),
+	state(IPP_JOB_PENDING)
+
+{
+}
+
+wml::CupsJob::~CupsJob (void)
 {
 }
 

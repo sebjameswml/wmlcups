@@ -27,8 +27,9 @@ namespace wml {
 	class CupsJob
 	{
 	public:
-		CupsJob();
-		~CupsJob();
+		CupsJob (void);
+		CupsJob (std::string jobName);
+		~CupsJob (void);
 
 		void reset (void);
 
