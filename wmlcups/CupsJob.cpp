@@ -208,3 +208,15 @@ wml::CupsJob::getFormattedTime (void)
 {
 	return FoundryUtilities::numToDateTime ((time_t)this->time, '/', ':');
 }
+
+void
+wml::CupsJob::setSourceIP (std::string ip)
+{
+	this->sourceIP = ip;
+}
+
+std::string
+wml::CupsJob::getSourceIP (void)
+{
+	return this->sourceIP;
+}

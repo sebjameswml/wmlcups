@@ -33,8 +33,16 @@ namespace wml {
 		CupsJob (int jobId, std::string jobName);
 		~CupsJob (void);
 
+		/*!
+		 * Reset all the attributes of this CupsJob object to
+		 * defaults.
+		 */
 		void reset (void);
 
+		/*!
+		 * Simple accessors
+		 */
+		//@{
 		void setId (int i);
 		int getId (void);
 
@@ -62,6 +70,10 @@ namespace wml {
 		void setTime (int t);
 		int getTime (void);
 		std::string getFormattedTime (void);
+
+		void setSourceIP (std::string ip);
+		std::string getSourceIP (void);
+		//@}
 
 	private:
 		/*!
@@ -109,6 +121,13 @@ namespace wml {
 		 * print.
 		 */
 		int time;
+
+		/*!
+		 * The IP address of the sending device - the IP
+		 * address of the computer which sent data to this
+		 * device.
+		 */
+		std::string sourceIP;
 	};
 
 } // namespace wml
