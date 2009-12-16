@@ -69,7 +69,7 @@ int main (int argc, char** argv)
 
 	c.deletePrinter (argv[1]);
 
-	vector<string> l = c.getCupsPrinterList();
+	vector<string> l = c.getCupsPrinterList(GET_PRINTERS_ONLY);
 	vector<string>::iterator i = l.begin();
 	cout << "Printer List:\n";
 	while (i != l.end()) {

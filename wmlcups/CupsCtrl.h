@@ -30,6 +30,20 @@ extern "C" {
 
 namespace wml {
 
+	enum GET_PRINTERS {
+		GET_PRINTERS_ONLY,
+		GET_CLASSES,
+		GET_BOTH,
+		GET_PRINTERS_N
+	};
+
+	enum QTYPE {
+		WMLCUPS_UNKNOWNTYPE,
+		WMLCUPS_PRINTER,
+		WMLCUPS_CLASS,
+		QTYPE_N
+	};
+
 	/*!
 	 * A C++ wrapper around the CUPS API, with functions to get
 	 * status information from and send commands to the cupsd.
@@ -42,7 +56,7 @@ namespace wml {
 	{
 	public:
 		CupsCtrl ();
-		CupsCtrl (std::string addr);
+		CupsCtrl (std::string addr, int port = 0);
 		~CupsCtrl ();
 
 		/*!
@@ -71,7 +85,7 @@ namespace wml {
 		 * Enable printer cupsPrinter if enable is true,
 		 * disable it otherwise.
 		 */
-		void setAccepting (std::string cupsPrinter, bool accept);
+		void setAccepting (std::string cupsPrinter, bool accept, std::string directory = "/printers/%s");
 
 		/*!
 		 * Query cupsd for whether the given cupsPrinter is
@@ -83,7 +97,7 @@ namespace wml {
 		 * Enable printer cupsPrinter if enable is true,
 		 * disable it otherwise.
 		 */
-		void setEnabled (std::string cupsPrinter, bool enable);
+		void setEnabled (std::string cupsPrinter, bool enable, std::string directory = "/printers/%s");
 
 		/*!
 		 * Is there a printer with the given name set up on
@@ -154,6 +168,11 @@ namespace wml {
 				   int id,
 				   wml::CupsJob& j);
 
+		/*!
+		 * Retrieves the job with the given id from the cups
+		 * daemon and returns a CupsJob representation of that
+		 * job
+		 */
 		wml::CupsJob getJob (std::string id);
 
 		/*!
@@ -167,6 +186,11 @@ namespace wml {
 		void setInfo (std::string cupsPrinter, std::string s);
 
 		/*!
+		 * Same as above, but works for a class rather than a printer
+		 */
+		void setClassInfo (std::string cupsPrinter, std::string s);
+
+		/*!
 		 * Return a string (in English) of the printer
 		 * location.
 		 */
@@ -176,6 +200,11 @@ namespace wml {
 		 * Set the location Cups parameter to s.
 		 */
 		void setLocation (std::string cupsPrinter, std::string s);
+
+		/*!
+		 * Same as above, but works for a class rather than a printer
+		 */
+		void setClassLocation (std::string cupsClass, std::string s);
 
 		/*!
 		 * Return a string (in English) of the printer make
@@ -193,6 +222,12 @@ namespace wml {
 		 * socket://hp3005.wml:9100
 		 */
 		std::string getDeviceURI (std::string cupsPrinter);
+
+		/*!
+		 * Similar to getDeviceURI, but returns a vector of URIs.
+		 * Useful for getting the members of a class
+		 */
+		std::vector<std::string> getMemberUris (std::string cupsPrinter);
 
 		/*!
 		 * Set the printer destination URI to s. This is the
@@ -269,7 +304,31 @@ namespace wml {
 		/*!
 		 * Get a list of printer on the cupsd. Return as vector.
 		 */
-		std::vector<std::string> getCupsPrinterList (void);
+		std::vector<std::string> getCupsPrinterList (wml::GET_PRINTERS getPrinters);
+
+		/*!
+		 * Wrapper around getCupsPrinterList. Returns a vector
+		 * containing all classes and printers
+		 */
+		std::vector<std::string> getPrinterClassesList(void);
+
+		/*!
+		 * Wrapper around getCupsPrinterList. Returns a vector
+		 * containing only printers
+		 */
+		std::vector<std::string> getPrinterList(void);
+
+		/*!
+		 * Wrapper around getCupsPrinterList. Returns a vector
+		 * containing only classes
+		 */
+		std::vector<std::string> getClassesList(void);
+
+		/*!
+		 * Determines whether the queue is a printer or a class
+		 * and returns the result as a string.
+		 */
+		wml::QTYPE getQueueType (std::string queuename);
 
 		/*!
 		 * Like getCupsPrinterList but returns a list rather
@@ -288,6 +347,16 @@ namespace wml {
 		std::string getPrinterAttribute (const char* printerName,
 						 wml::IppAttr& attr);
 
+
+		/*!
+		 * Similar to getPrinterAttribute, but returns a vector
+		 * of strings, instead of a single string. Useful when
+		 * an attribute contains more than one value, such as
+		 * the member-uris attribute of a class.
+		 */
+		std::vector<std::string> getQueueAttribute (const char* printerName,
+							    wml::IppAttr& attr);
+
 		/*!
 		 * Set an IPP attribute for printerName. attr should
 		 * have been set up with the attribute name and the
@@ -297,6 +366,21 @@ namespace wml {
 					  wml::IppAttr& attr);
 
 		/*!
+		 * Same as above, but used for classes rather than
+		 * printers
+		 */
+		void setClassAttribute (const char* printerName,
+					wml::IppAttr& attr);
+
+		/*!
+		 * Sets up the members of a class. The vector members
+		 * contains the names of the members to be added to
+		 * the class
+		 */
+		void setClassMembers (std::string className,
+				      std::vector<std::string> members);
+
+		/*!
 		 * Send a command for the queue, such as
 		 * CUPS_ACCEPT_JOBS, CUPS_REJECT_JOBS,
 		 * IPP_PAUSE_PRINTER or IPP_RESUME_PRINTER.
@@ -304,7 +388,8 @@ namespace wml {
 		void sendPrinterCommand (const char* printerName,
 					 std::string asUser,
 					 std::string reason,
-					 ipp_op_t command);
+					 ipp_op_t command,
+					 std::string directory = "/printers/%s");
 		/*!
 		 * Return true if the string s is a name which is
 		 * valid to be a CUPS printer name.
@@ -335,15 +420,31 @@ namespace wml {
 		 */
 		std::string errorString (http_status_t err);
 
-
+		/*!
+		 * General function for sending job commands (such
+		 * as cancel, etc) to the Cups daemon, to be applied
+		 * to the job with the id provided
+		 */
 		void sendJobCommand (int jobId,
 				     std::string asUser,
 				     ipp_op_t command);
 
+		/*!
+		 * Cancels all jobs on the queue with the given
+		 * printer name
+		 */
 		void cancelJobs (std::string printerName);
 
+		/*!
+		 * Pauses all jobs on the queue with the given
+		 * printer name
+		 */
 		void pauseJobs (std::string printerName);
 
+		/*!
+		 * Resumes all jobs on the queue with the given
+		 * printer name
+		 */
 		void releaseJobs (std::string printerName);
 
 

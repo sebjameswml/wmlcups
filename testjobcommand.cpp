@@ -37,7 +37,11 @@ int main (int argc, char** argv)
 	stringstream temp;
 	temp << thejob;
 	temp >> jobnum;
+
+	DBG (thejob);
 /*
+
+
 	vector<CupsJob> li;
 	c.getJobList (thequeue, li, "all");
 
@@ -57,7 +61,7 @@ string user (argv[2]);
 
 	try {
 //	q.reprintJob (jobnum, user);
-		c.getJob (thejob);
+		cout << c.getQueueType (thejob) << endl;
 	} catch (runtime_error& e) {
 		DBG ("Error occured: " << e.what());
 	}

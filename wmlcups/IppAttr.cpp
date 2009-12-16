@@ -246,7 +246,19 @@ wml::IppAttr::determineType (void)
 			this->type = IPP_TAG_UNKNOWN;
 			break;
 		}
-	} else {
+	} else if (start == "member") {
+		switch (this->name[7]) {
+		case 'u':
+			if (this->name == "member-uris") {
+				this->type = IPP_TAG_URI;
+			}
+			break;
+
+		default:
+			this->type = IPP_TAG_UNKNOWN;
+			break;
+		}
+	}  else {
 		this->type = IPP_TAG_UNKNOWN;
 	}
 }
