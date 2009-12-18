@@ -26,7 +26,6 @@ extern "C" {
 using namespace std;
 using namespace wml;
 
-
 void
 wml::CupsCtrl::sendJobCommand (int jobId,
 			       string asUser,
@@ -77,61 +76,47 @@ wml::CupsCtrl::sendJobCommand (int jobId,
 void
 wml::CupsCtrl::cancelJobs (string printerName)
 {
-
 	vector<CupsJob> jobs;
 	vector<CupsJob>::iterator iter;
 
 	this->getJobList(printerName, jobs, "");
 
 	for (iter = jobs.begin(); iter != jobs.end(); iter++) {
-
 		this->sendJobCommand (iter->getId(), "default", IPP_CANCEL_JOB);
-
 	}
 
 	return;
-
 }
 
 void
 wml::CupsCtrl::pauseJobs (string printerName)
 {
-
 	vector<CupsJob> jobs;
 	vector<CupsJob>::iterator iter;
 
 	this->getJobList(printerName, jobs, "");
 
 	for (iter = jobs.begin(); iter != jobs.end(); iter++) {
-
 		this->sendJobCommand (iter->getId(), "default", IPP_HOLD_JOB);
-
 	}
 
 	return;
-
 }
 
 void
 wml::CupsCtrl::releaseJobs (string printerName)
 {
-
 	vector<CupsJob> jobs;
 	vector<CupsJob>::iterator iter;
 
 	this->getJobList(printerName, jobs, "");
 
 	for (iter = jobs.begin(); iter != jobs.end(); iter++) {
-
 		this->sendJobCommand (iter->getId(), "default", IPP_RELEASE_JOB);
-
 	}
 
 	return;
-
 }
-
-
 
 void
 wml::CupsCtrl::getJobStatus (string cupsPrinter, int id, CupsJob& j)
@@ -162,7 +147,6 @@ wml::CupsCtrl::getJobStatus (string cupsPrinter, int id, CupsJob& j)
 	}
 	return;
 }
-
 
 CupsJob
 wml::CupsCtrl::getJob (string id)
@@ -209,14 +193,11 @@ wml::CupsCtrl::getJob (string id)
 		attrList.push_back (ipp_attributes);
 	}
 
-
 	vector<ipp_attribute_t*>::iterator i = attrList.begin();
 
 	CupsJob j;
 
-	while (i != attrList.end()) /*&&
-				      (*i)->group_tag == IPP_TAG_JOB)*/ {
-		//DBG ("made it into while, processing " << (*i)->name);
+	while (i != attrList.end()) {
 
 		if (!strcmp((*i)->name, "job-id") &&
 		    (*i)->value_tag == IPP_TAG_INTEGER) {
@@ -257,7 +238,6 @@ wml::CupsCtrl::getJob (string id)
 
 	return j;
 }
-
 
 void
 wml::CupsCtrl::getJobList (string cupsPrinter,
@@ -419,4 +399,165 @@ wml::CupsCtrl::getJobList (string cupsPrinter,
 
 		// Don't think we break on (*i) being NULL here.
 	}
+}
+
+int
+wml::CupsCtrl::createJob (string cupsQueue,
+			  string title,
+			  string asUser,
+			  string docName)
+{
+	ipp_t * prqst;
+	ipp_t * rtn;
+	char uri[HTTP_MAX_URI];
+
+	prqst = ippNewRequest (IPP_CREATE_JOB);
+
+	if (!asUser.empty()) {
+		ippAddString(prqst,
+			     IPP_TAG_OPERATION, IPP_TAG_NAME,
+			     "requesting-user-name", NULL, asUser.c_str());
+	}
+
+	httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/printers/%s", cupsQueue.c_str());
+	ippAddString (prqst, IPP_TAG_OPERATION, IPP_TAG_URI, "printer-uri",
+		      NULL, uri);
+
+	if (!title.empty()) {
+		ippAddString (prqst, IPP_TAG_OPERATION, IPP_TAG_NAME,
+			      "job-name", NULL, title.c_str());
+	}
+	if (!docName.empty()) {
+		ippAddString (prqst, IPP_TAG_OPERATION, IPP_TAG_NAME,
+			      "document-name", NULL, docName.c_str());
+	}
+
+	string dest = "/printers/"+cupsQueue;
+	rtn = cupsDoRequest (this->connection, prqst, dest.c_str());
+
+	ipp_attribute_t * attr;		/* IPP job-id attribute */
+	int jobid = 0;
+	if (rtn == NULL) {
+		stringstream ee;
+		ee << "Unable to create job (queue " << cupsQueue << "), null "
+		   << "response to cupsDoRequest, cupsLastError() returns "
+		   << this->errorString (cupsLastError());
+		throw runtime_error (ee.str());
+		jobid = 0;
+
+	} else if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		stringstream ee;
+		ee << "Unable to create job (queue " << cupsQueue << "), "
+		   << "rtn->request.status.status_code = "
+		   << this->errorString (rtn->request.status.status_code);
+		throw runtime_error (ee.str());
+		jobid = 0;
+
+	} else if ((attr = ippFindAttribute(rtn, "job-id", IPP_TAG_INTEGER)) == NULL) {
+		throw runtime_error ("No job-id attribute found in response from server!");
+		jobid = 0;
+
+ 	} else {
+		// cupsd successfully allocated a job
+		jobid = attr->values[0].integer;
+	}
+
+	if (rtn != NULL) {
+		ippDelete (rtn);
+	}
+
+	return jobid;
+}
+
+void
+wml::CupsCtrl::holdJob (int jobId, string asUser)
+{
+	this->sendJobCommand (jobId, asUser, IPP_HOLD_JOB);
+}
+
+void
+wml::CupsCtrl::releaseJob (int jobId, string asUser)
+{
+	this->sendJobCommand (jobId, asUser, IPP_RELEASE_JOB);
+}
+
+void
+wml::CupsCtrl::cancelJob (int jobId, string asUser)
+{
+	this->sendJobCommand (jobId, asUser, IPP_CANCEL_JOB);
+}
+
+void
+wml::CupsCtrl::restartJob (int jobId, string asUser)
+{
+	this->sendJobCommand (jobId, asUser, IPP_RESTART_JOB);
+}
+
+void
+wml::CupsCtrl::sendDocument (int jobId,
+			     string filePath,
+			     string asUser,
+			     string docName,
+			     string format,
+			     bool lastInSet)
+{
+	ipp_t * prqst;
+	ipp_t * rtn;
+	char uri[HTTP_MAX_URI];
+
+	prqst = ippNewRequest (IPP_SEND_DOCUMENT);
+
+	httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/jobs/%d", jobId);
+	ippAddString(prqst,
+		     IPP_TAG_OPERATION, IPP_TAG_URI,
+		     "job-uri", NULL, uri);
+
+	ippAddString(prqst,
+		     IPP_TAG_OPERATION, IPP_TAG_NAME,
+		     "requesting-user-name", NULL, asUser.c_str());
+
+	if (!docName.empty()) {
+		ippAddString (prqst, IPP_TAG_OPERATION, IPP_TAG_NAME,
+			      "document-name", NULL, docName.c_str());
+	}
+
+	if (!format.empty()) {
+		ippAddString (prqst, IPP_TAG_OPERATION, IPP_TAG_MIMETYPE,
+			      "document-format", NULL, format.c_str());
+	}
+
+	if (lastInSet) {
+		ippAddBoolean (prqst, IPP_TAG_OPERATION, "last-document", 1);
+	}
+
+	stringstream dest;
+	dest << "/jobs/" << jobId;
+	rtn = cupsDoFileRequest (this->connection, prqst,
+				 dest.str().c_str(), filePath.c_str());
+
+	if (rtn == NULL) {
+		stringstream ee;
+		ee << "Unable to print file (Job " << jobId << "), null "
+		   << "response to cupsDoFileRequest, cupsLastError() returns "
+		   << this->errorString (cupsLastError());
+		throw runtime_error (ee.str());
+
+	} else if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		stringstream ee;
+		ee << "Unable to print file (Job " << jobId << "), "
+		   << "rtn->request.status.status_code = "
+		   << this->errorString (rtn->request.status.status_code);
+		ippDelete (rtn);
+		throw runtime_error (ee.str());
+
+ 	} else {
+		DBG ("cupsd accepted file for Job" << jobId);
+	}
+
+	ippDelete (rtn);
+	return;
 }

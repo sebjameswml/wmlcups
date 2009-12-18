@@ -331,6 +331,58 @@ namespace wml {
 		wml::QTYPE getQueueType (std::string queuename);
 
 		/*!
+		 * Request that a job is created on the cupsd. Return
+		 * the job id.
+		 */
+		int createJob (std::string cupsQueue,
+			       std::string title="",
+			       std::string asUser="",
+			       std::string docName="");
+
+		/*!
+		 * As the user asUser, this IPP_HOLD_JOBs jobId
+		 */
+		void holdJob (int jobId, std::string asUser);
+
+		/*!
+		 * As the user asUser, this IPP_RELEASE_JOBs jobId
+		 */
+		void releaseJob (int jobId, std::string asUser);
+
+		/*!
+		 * As the user asUser, this IPP_CANCEL_JOBs jobId
+		 */
+		void cancelJob (int jobId, std::string asUser);
+
+		/*!
+		 * As the user asUser, this IPP_RESTART_JOBs jobId
+		 */
+		void restartJob (int jobId, std::string asUser);
+
+		/*!
+		 * Send a file specified by filePath to the cupsd,
+		 * adding it to the job with id jobId. Optionally set
+		 * the document name and the format string. If
+		 * lastInSet is false, the doc will not be printed
+		 * immediately.
+		 */
+		void sendDocument (int jobId,
+				   std::string filePath,
+				   std::string asUser,
+				   std::string docName = "",
+				   std::string format = "",
+				   bool lastInSet = true);
+		/*!
+		 * Print the file at filePath to the CUPS queue
+		 * cupsQueue. Throw exceptions if the file does not
+		 * exist, or if the cupsd refuses to print it. Return
+		 * the job id.
+		 */
+		int printFile (std::string filePath,
+			       std::string jobTitle,
+			       std::string cupsQueue);
+
+		/*!
 		 * Like getCupsPrinterList but returns a list rather
 		 * than a vector.
 		 */
@@ -394,19 +446,25 @@ namespace wml {
 		 * Return true if the string s is a name which is
 		 * valid to be a CUPS printer name.
 		 */
-		bool printerNameIsValid (std::string s);
+		static bool printerNameIsValid (std::string s);
 
 		/*!
 		 * Return true if the string s is a name which is
 		 * valid to be a CUPS device address.
 		 */
-		bool addrIsValid (std::string s);
+		static bool addrIsValid (std::string s);
 
 		/*!
 		 * Return true if the string s is a name which is
 		 * valid to be a CUPS queue or port.
 		 */
-		bool lpdqIsValid (std::string s);
+		static bool lpdqIsValid (std::string s);
+
+		/*!
+		 * Return true if the string s is a valid to be a CUPS
+		 * job title.
+		 */
+		static bool titleIsValid (std::string s);
 
 		/*!
 		 * Same effect as cupsLastErrorString(), except that

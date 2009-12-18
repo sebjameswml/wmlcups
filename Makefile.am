@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = check-news dist-bzip2
 
 SUBDIRS = wmlcups doc
 
-bin_PROGRAMS = test testenable testaccept teststatus testJobList testCupsdCtrl testppd testjobcommand testmemberuris
+bin_PROGRAMS = test testenable testaccept teststatus testJobList testCupsdCtrl testppd testjobcommand testmemberuris testPrint
 
 test_SOURCES = test.cpp
 test_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid
@@ -31,6 +31,9 @@ testjobcommand_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid
 
 testmemberuris_SOURCES = testmemberuris.cpp
 testmemberuris_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid
+
+testPrint_SOURCES = testPrint.cpp
+testPrint_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid
 
 INCLUDES = -I./wmlcups
 

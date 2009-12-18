@@ -91,7 +91,6 @@ wml::CupsCtrl::setEnabled (string cupsPrinter, bool enable, string directory)
 	}
 }
 
-
 string
 wml::CupsCtrl::getState (string cupsPrinter)
 {
@@ -269,10 +268,7 @@ wml::CupsCtrl::getLocation (string cupsPrinter)
 vector<string>
 wml::CupsCtrl::getPrinterClassesList(void)
 {
-
 	return this->getCupsPrinterList (GET_BOTH);
-
-
 }
 
 wml::QTYPE
@@ -297,4 +293,24 @@ wml::CupsCtrl::getQueueType (string queuename)
 	}
 
 	return WMLCUPS_UNKNOWNTYPE;
+}
+
+int
+wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue)
+{
+	try {
+		// Create a job, if that works, add the file.
+		int newId = this->createJob (cupsQueue, jobTitle, "", "");
+		if (newId <= 0) {
+			return newId;
+		}
+		DBG ("cupsd created new job " << newId);
+		// Finish...
+		this->sendDocument (newId, filePath, "CupsCtrl");
+		return newId;
+
+	} catch (const exception& e) {
+		DBG (e.what());
+	}
+	return 0;
 }

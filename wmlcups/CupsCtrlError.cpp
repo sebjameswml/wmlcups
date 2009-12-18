@@ -29,15 +29,13 @@ using namespace wml;
 bool
 wml::CupsCtrl::printerNameIsValid (string s)
 {
-	string::size_type sz = s.size();
-	if (sz > 127) {
+	if (s.size() > 127) {
 		return false;
 	}
-	for (unsigned int i=0; i<sz; i++) {
-		if ((s[i] >= 0 && s[i] <= ' ')
-		    || s[i] == 127 || s[i] == '#' || s[i] == '/') {
-			return false;
-		}
+	try {
+		FoundryUtilities::sanitize (s, WMLCUPS_QUEUENAME_SAFE_CHARS);
+	} catch (const exception& e) {
+		return false;
 	}
 	return true;
 }
@@ -45,17 +43,13 @@ wml::CupsCtrl::printerNameIsValid (string s)
 bool
 wml::CupsCtrl::addrIsValid (string s)
 {
-	// For now, this is the same as printerNameIsValid(). Needs
-	// checking really.
-	string::size_type sz = s.size();
-	if (sz > 127) {
+	if (s.size() > 127) {
 		return false;
 	}
-	for (unsigned int i=0; i<sz; i++) {
-		if ((s[i] >= 0 && s[i] <= ' ')
-		    || s[i] == 127 || s[i] == '#' || s[i] == '/') {
-			return false;
-		}
+	try {
+		FoundryUtilities::sanitize (s, CUPS_ADDRESS_SAFE_CHARS);
+	} catch (const exception& e) {
+		return false;
 	}
 	return true;
 }
@@ -63,18 +57,27 @@ wml::CupsCtrl::addrIsValid (string s)
 bool
 wml::CupsCtrl::lpdqIsValid (string s)
 {
-	// Allow alphanumerics only
-	string::size_type sz = s.size();
-	if (sz > 127) {
+	if (s.size() > 127) {
 		return false;
 	}
-	for (unsigned int i=0; i<sz; i++) {
-		if (s[i] < '0'
-		    || (s[i] > '9' && s[i] < 'A')
-		    || (s[i] > 'Z' && s[i] < 'a')
-		    || s[i] > 'z') {
-			return false;
-		}
+	try {
+		FoundryUtilities::sanitize (s, CHARS_NUMERIC_ALPHA);
+	} catch (const exception& e) {
+		return false;
+	}
+	return true;
+}
+
+bool
+wml::CupsCtrl::titleIsValid (string s)
+{
+	if (s.size() > 127) {
+		return false;
+	}
+	try {
+		FoundryUtilities::sanitize (s, WMLCUPS_TITLE_SAFE_CHARS);
+	} catch (const exception& e) {
+		return false;
 	}
 	return true;
 }

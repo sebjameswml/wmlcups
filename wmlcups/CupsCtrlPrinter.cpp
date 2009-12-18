@@ -301,8 +301,6 @@ wml::CupsCtrl::getDeviceURI (string cupsPrinter)
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
-
-
 void
 wml::CupsCtrl::setDeviceURI (string cupsPrinter, string s)
 {
@@ -313,8 +311,6 @@ wml::CupsCtrl::setDeviceURI (string cupsPrinter, string s)
 	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
 	DBG ("Called setPrinterAttribute...");
 }
-
-
 
 void
 wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI)
