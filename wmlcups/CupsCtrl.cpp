@@ -46,8 +46,12 @@ wml::CupsCtrl::CupsCtrl (string addr, int port)
 					       port,
 					       cupsEncryption());
 
-	if (this->connection == 0) {
-		throw runtime_error ("CupsCtrl: Couldn't connect to the cupsd!");
+	try {
+		if (this->connection == 0) {
+			throw runtime_error ("CupsCtrl: Couldn't connect to the cupsd!");
+		}
+	} catch (runtime_error& e) {
+		DBG ("EX:: Found error: " << e.what());
 	}
 
 	this->cupsdAddress = addr;
