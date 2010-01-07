@@ -456,9 +456,15 @@ namespace wml {
 
 		/*!
 		 * Return true if the string s is a name which is
-		 * valid to be a CUPS queue or port.
+		 * valid to be a destination queue.
 		 */
 		static bool lpdqIsValid (std::string s);
+
+		/*!
+		 * Return true if the string s is a name which is
+		 * valid to be a CUPS port.
+		 */
+		static bool portIsValid (std::string s);
 
 		/*!
 		 * Return true if the string s is a valid to be a CUPS

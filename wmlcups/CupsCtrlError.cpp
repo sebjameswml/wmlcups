@@ -69,6 +69,20 @@ wml::CupsCtrl::lpdqIsValid (string s)
 }
 
 bool
+wml::CupsCtrl::portIsValid (string s)
+{
+	if (s.size() > 127) {
+		return false;
+	}
+	try {
+		FoundryUtilities::sanitize (s, CHARS_NUMERIC);
+	} catch (const exception& e) {
+		return false;
+	}
+	return true;
+}
+
+bool
 wml::CupsCtrl::titleIsValid (string s)
 {
 	if (s.size() > 127) {

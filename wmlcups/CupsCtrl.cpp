@@ -256,7 +256,3 @@ wml::CupsCtrl::getCupsPrinterList2 (void)
 
 	return theList;
 }
-
-
-
-
