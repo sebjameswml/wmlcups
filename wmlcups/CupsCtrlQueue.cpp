@@ -274,6 +274,10 @@ wml::CupsCtrl::getPrinterClassesList(void)
 wml::QTYPE
 wml::CupsCtrl::getQueueType (string queuename)
 {
+	if (queuename.empty()) {
+		throw runtime_error ("Can't get queue type for empty queue name.");
+	}
+	DBG ("Called to get type for " << queuename);
 	vector<string> classes;
 	vector<string> printers;
 	classes = this->getClassesList();
