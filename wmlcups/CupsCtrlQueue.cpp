@@ -275,7 +275,8 @@ wml::QTYPE
 wml::CupsCtrl::getQueueType (string queuename)
 {
 	if (queuename.empty()) {
-		throw runtime_error ("Can't get queue type for empty queue name.");
+		throw runtime_error ("CupsCtrl::getQueueType(): "
+				     "Can't get queue type for empty queue name.");
 	}
 	DBG ("Called to get type for " << queuename);
 	vector<string> classes;
