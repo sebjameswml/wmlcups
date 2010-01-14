@@ -31,6 +31,9 @@ wml::CupsCtrl::sendJobCommand (int jobId,
 			       string asUser,
 			       ipp_op_t command)
 {
+	DBG ("Called to send command for job id " << jobId
+	     << " as user '" << asUser << "'");
+
 	ipp_t * prqst;
 	ipp_t * rtn;
 	char uri[HTTP_MAX_URI];
@@ -45,6 +48,10 @@ wml::CupsCtrl::sendJobCommand (int jobId,
 		     IPP_TAG_OPERATION, IPP_TAG_URI,
 		     "job-uri", NULL, uri);
 
+	if (asUser.empty()) {
+		DBG ("Setting user to \"guest\"");
+		asUser = "guest";
+	}
 	ippAddString(prqst,
 		     IPP_TAG_OPERATION, IPP_TAG_NAME,
 		     "requesting-user-name", NULL, asUser.c_str());
@@ -62,9 +69,15 @@ wml::CupsCtrl::sendJobCommand (int jobId,
 	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
 		// Handle conflict
 		stringstream eee;
-		eee << "CupsCtrl: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
-		    << hex << cupsLastError() << " ("
-		    << this->errorString (cupsLastError()) << ")";
+		if (cupsLastError() == IPP_NOT_AUTHORIZED) {
+			eee << "CupsCtrl: Job action not authorized for user " << asUser
+			    << ". (Error was " << this->errorString (cupsLastError()) << ")";
+		} else {
+			eee << "CupsCtrl: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+			    << hex << cupsLastError() << " ("
+			    << this->errorString (cupsLastError()) << " - "
+			    << cupsLastErrorString() << ")";
+		}
 		ippDelete (rtn);
 		throw runtime_error (eee.str());
 	}
@@ -82,6 +95,7 @@ wml::CupsCtrl::cancelJobs (string printerName)
 	this->getJobList(printerName, jobs, "");
 
 	for (iter = jobs.begin(); iter != jobs.end(); iter++) {
+		// User here may need to be "lp"
 		this->sendJobCommand (iter->getId(), "default", IPP_CANCEL_JOB);
 	}
 
@@ -97,6 +111,7 @@ wml::CupsCtrl::pauseJobs (string printerName)
 	this->getJobList(printerName, jobs, "");
 
 	for (iter = jobs.begin(); iter != jobs.end(); iter++) {
+		// User here may need to be "lp"
 		this->sendJobCommand (iter->getId(), "default", IPP_HOLD_JOB);
 	}
 
@@ -112,6 +127,7 @@ wml::CupsCtrl::releaseJobs (string printerName)
 	this->getJobList(printerName, jobs, "");
 
 	for (iter = jobs.begin(); iter != jobs.end(); iter++) {
+		// User here may need to be "lp"
 		this->sendJobCommand (iter->getId(), "default", IPP_RELEASE_JOB);
 	}
 

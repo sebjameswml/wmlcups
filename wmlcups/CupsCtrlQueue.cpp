@@ -307,6 +307,7 @@ wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue)
 		// Create a job, if that works, add the file.
 		int newId = this->createJob (cupsQueue, jobTitle, "", "");
 		if (newId <= 0) {
+			DBG ("CupsCtrl::printFile(): call to CupsCtrl::createJob failed to create a job.");
 			return newId;
 		}
 		DBG ("cupsd created new job " << newId);
