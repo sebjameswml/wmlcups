@@ -22,6 +22,7 @@ extern "C" {
 #include "QueueCupsStatus.h"
 #include "IppAttr.h"
 #include "CupsCtrl.h"
+#include "Ppd.h"
 
 using namespace std;
 using namespace wml;
@@ -222,10 +223,10 @@ wml::CupsCtrl::getPPDListOfMakes (void)
 	return theList;
 }
 
-vector<string>
+vector<Ppd>
 wml::CupsCtrl::getPPDListOfModels (string make)
 {
-	vector<string> theList;
+	vector<Ppd> theList;
 
 	ipp_attribute_t * ipp_attributes;
 	ipp_t * prqst;
@@ -284,6 +285,8 @@ wml::CupsCtrl::getPPDListOfModels (string make)
 			ipp_attributes = ipp_attributes->next;
 		}
 
+		Ppd ppd;
+
 		while (ipp_attributes != NULL &&
 		       ipp_attributes->group_tag == IPP_TAG_PRINTER) {
 
@@ -306,11 +309,74 @@ wml::CupsCtrl::getPPDListOfModels (string make)
 			    ipp_attributes->value_tag == IPP_TAG_TEXT) {
 				string p(ipp_attributes->values[0].string.text);
 				if (!p.empty()) {
-					theList.push_back (p);
+					ppd.setMakeAndModel (p);
+				}
+			}
+
+			// For selecting the printers, we need the ppd-name.
+			else if (!strcmp(ipp_attributes->name, "ppd-name") &&
+				 ipp_attributes->value_tag == IPP_TAG_NAME) {
+				string p(ipp_attributes->values[0].string.text);
+				if (!p.empty()) {
+					ppd.setName (p);
+				}
+			}
+
+			else if (!strcmp(ipp_attributes->name, "ppd-make") &&
+				 ipp_attributes->value_tag == IPP_TAG_TEXT) {
+				string p(ipp_attributes->values[0].string.text);
+				if (!p.empty()) {
+					ppd.setMake (p);
+				}
+			}
+
+			else if (!strcmp(ipp_attributes->name, "ppd-device-id") &&
+				 ipp_attributes->value_tag == IPP_TAG_TEXT) {
+				string p(ipp_attributes->values[0].string.text);
+				if (!p.empty()) {
+					ppd.setDeviceId (p);
+				}
+			}
+
+			else if (!strcmp(ipp_attributes->name, "ppd-product") &&
+				 ipp_attributes->value_tag == IPP_TAG_TEXT) {
+				string p(ipp_attributes->values[0].string.text);
+				if (!p.empty()) {
+					ppd.setProduct (p);
+				}
+			}
+
+			else if (!strcmp(ipp_attributes->name, "ppd-psversion") &&
+				 ipp_attributes->value_tag == IPP_TAG_TEXT) {
+				string p(ipp_attributes->values[0].string.text);
+				if (!p.empty()) {
+					ppd.setPsversion (p);
+				}
+			}
+
+			else if (!strcmp(ipp_attributes->name, "ppd-type") &&
+				 ipp_attributes->value_tag == IPP_TAG_INTEGER) {
+				ppd.setType (ipp_attributes->values[0].integer);
+			}
+
+			else if (!strcmp(ipp_attributes->name, "ppd-model-number") &&
+				 ipp_attributes->value_tag == IPP_TAG_INTEGER) {
+				ppd.setModelNumber (ipp_attributes->values[0].integer);
+			}
+
+			else if (!strcmp(ipp_attributes->name, "ppd-natural-language") &&
+				 ipp_attributes->value_tag == IPP_TAG_LANGUAGE) {
+				string p(ipp_attributes->values[0].string.text);
+				if (!p.empty()) {
+					ppd.setNaturalLanguage (p);
 				}
 			}
 
 			ipp_attributes = ipp_attributes->next;
+		}
+
+		if (!ppd.getMakeAndModel().empty()) {
+			theList.push_back (ppd);
 		}
 
 		if (ipp_attributes == NULL) {

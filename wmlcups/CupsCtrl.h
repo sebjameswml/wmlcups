@@ -25,8 +25,14 @@ extern "C" {
 
 #include "config.h"
 #include "IppAttr.h"
+#include "Ppd.h"
 #include "PpdOption.h"
 #include "QueueCupsStatus.h"
+
+/*!
+ * Location of the system-standard PPD files.
+ */
+#define CUPS_PPD_DIR "/usr/share/ppd"
 
 namespace wml {
 
@@ -257,14 +263,18 @@ namespace wml {
 
 		/*!
 		 * Obtain a list of the printer "makes" for which
-		 * there are available PPD files stored on the system.
+		 * there are available PPD files stored on the
+		 * system. This makes a CUPS_GET_PPDS IPP request to
+		 * the cupsd to get the information.
 		 */
 		std::vector<std::string> getPPDListOfMakes (void);
 
 		/*!
-		 * Get the list of PPD drivers (models) for the given make.
+		 * Get the list of PPD drivers (models) for the given
+		 * make. This makes a CUPS_GET_PPDS IPP request to the
+		 * cupsd to get the information.
 		 */
-		std::vector<std::string> getPPDListOfModels (std::string make);
+		std::vector<wml::Ppd> getPPDListOfModels (std::string make);
 
 		/*!
 		 * Obtain the PPD options for the given printer.

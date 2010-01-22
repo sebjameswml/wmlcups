@@ -38,20 +38,28 @@ int main (int argc, char** argv)
 		i++;
 	}
 
-	theL.clear();
 	string make = "Oki";
-	theL = c.getPPDListOfModels (make);
-	i = theL.begin();
+	vector<Ppd> fullList = c.getPPDListOfModels (make);
+	vector<Ppd>::iterator p = fullList.begin();
 	cout << "Models for " << make << ":" << endl;
-	while (i != theL.end()) {
-		cout << *i << endl;
-		i++;
+	while (p != fullList.end()) {
+		cout << p->getMakeAndModel() << "\n";
+		cout << "  ppd-name:             " << p->getName() << "\n";
+		cout << "  ppd-make:             " << p->getMake() << "\n";
+		cout << "  ppd-device-id:        " << p->getDeviceId() << "\n";
+		cout << "  ppd-product:          " << p->getProduct() << "\n";
+		cout << "  ppd-psversion:        " << p->getPsversion() << "\n";
+		cout << "  ppd-type:             " << p->getType() << "\n";
+		cout << "  ppd-model-number:     " << p->getModelNumber() << "\n";
+		cout << "  ppd-natural-language: " << p->getNaturalLanguage() << "\n";
+		p++;
 	}
 
-	c.setPPDFromFile (thequeue, "/usr/src/wmlcups/test.ppd");
+	//c.setPPDFromFile (thequeue, "/usr/src/wmlcups/test.ppd");
 
 	// This works (though c.getPPD() still doesn't return anything)
-	//c.setPPD (thequeue, "lsb/usr/foomatic-rip/openprinting-gs-builtin/Epson/Epson-ActionPrinter_3250-ap3250.ppd.gz");
+//	c.setPPD (thequeue, "lsb/usr/foomatic-rip/openprinting-gs-builtin/Epson/Epson-ActionPrinter_3250-ap3250.ppd.gz");
+	c.setPPD (thequeue, fullList.begin()->getName());
 
 	cout << "Cups PPD nickname is: " << c.getPPDNickname (thequeue)
 	     << " or (makeandmodel): " << c.getMakeModel (thequeue) << endl;
@@ -64,10 +72,11 @@ int main (int argc, char** argv)
 	}
 
 	// Now set an option.
+#ifdef TESTING_SETTING_OPTIONS
 	c.setPPDOption (thequeue,
 			"HPJobRetentionOption",
 			"HPJobRetentionProof");
-
+#endif
 
 	DBGCLOSE();
 	return 0;
