@@ -56,9 +56,7 @@ int main (int argc, char** argv)
 	}
 
 	//c.setPPDFromFile (thequeue, "/usr/src/wmlcups/test.ppd");
-
-	// This works (though c.getPPD() still doesn't return anything)
-//	c.setPPD (thequeue, "lsb/usr/foomatic-rip/openprinting-gs-builtin/Epson/Epson-ActionPrinter_3250-ap3250.ppd.gz");
+	// Or:
 	c.setPPD (thequeue, fullList.begin()->getName());
 
 	cout << "Cups PPD nickname is: " << c.getPPDNickname (thequeue)
