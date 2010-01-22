@@ -214,7 +214,7 @@ namespace wml {
 
 		/*!
 		 * Return a string (in English) of the printer make
-		 * and model.
+		 * and model (i.e. the PPD "make and model").
 		 */
 		std::string getMakeModel (std::string cupsPrinter);
 
@@ -249,6 +249,20 @@ namespace wml {
 		 * on the cupsd system.
 		 */
 		void setPPD (std::string cupsPrinter, std::string ppdTag);
+
+		/*!
+		 * Get the PPD for the queue cupsPrinter to the given
+		 * file.
+		 */
+		void getPPDToFile (std::string cupsPrinter, std::string file);
+
+		/*!
+		 * Return a PPD object containing some PPD info for
+		 * the given cupsPrinter. Does not return the
+		 * ppd-name, which is generated internally in the
+		 * cupsd, and which is not returned by this method.
+		 */
+		wml::Ppd getPPD (std::string cupsPrinter);
 
 		/*!
 		 * Set the provided PPD file for the given cupsPrinter.

@@ -87,6 +87,98 @@ wml::CupsCtrl::setPPDFromFile (string cupsPrinter, string sourcePPD)
 	ippDelete(rtn);
 }
 
+void
+wml::CupsCtrl::getPPDToFile (string cupsPrinter, string file)
+{
+	if (cupsPrinter.empty()) {
+		throw runtime_error ("Must specify printer.");
+	}
+
+	ofstream f (file.c_str(), ios::out|ios::trunc);
+	if (!f.is_open()) {
+		throw runtime_error ("Couldn't open file");
+	} else {
+		f.close();
+	}
+
+	string uri = "/printers/" + cupsPrinter + ".ppd";
+	http_status_t rtn = cupsGetFile (this->connection,
+					 uri.c_str(),
+					 file.c_str());
+
+	if (rtn != HTTP_OK) {
+		stringstream ee;
+		int theErr = errno;
+		ee << "Error '" << theErr << "' getting '" << uri << "' into file '"
+		   << file << "': " << this->errorString (rtn);
+		throw runtime_error (ee.str());
+	}
+
+	return;
+}
+
+wml::Ppd
+wml::CupsCtrl::getPPD (string cupsPrinter)
+{
+	// This gets an INCOMPLETE set of info about the PPD.
+
+	Ppd p; // For return.
+
+	if (cupsPrinter.empty()) {
+		throw runtime_error ("Must specify printer.");
+	}
+
+	string ppdFile = cupsPrinter + ".ppd";
+	string tmpFilePath("/tmp/ppd_");
+	tmpFilePath += ppdFile;
+	string uri("/printers/");
+	uri += ppdFile;
+
+	// Have to create tmpFilePath first:
+	ofstream f (tmpFilePath.c_str(), ios::out|ios::trunc);
+	if (!f.is_open()) {
+		throw runtime_error ("Couldn't open file");
+	} else {
+		f.close();
+	}
+
+	http_status_t rtn = cupsGetFile (this->connection,
+					 uri.c_str(),
+					 tmpFilePath.c_str());
+
+	if (rtn != HTTP_OK) {
+		stringstream ee;
+		int theErr = errno;
+		ee << "Error '" << theErr << "' getting '" << uri << "' into file '"
+		   << tmpFilePath << "': " << this->errorString (rtn);
+		throw runtime_error (ee.str());
+	}
+
+	ppd_file_t* ppd = ppdOpenFile (tmpFilePath.c_str());
+	if (ppd == (ppd_file_t*)0) {
+		throw runtime_error ("Error opening tmpFilePath...");
+	}
+
+	stringstream ss;
+	if (ppd->nickname != (char*)0) {
+		p.setMakeAndModel (ppd->nickname); // Right
+	}
+	if (ppd->modelname != (char*)0) {
+		//p.setName (ppd->modelname); // Wrong - this is nickname, but without the ", version"
+	}
+	if (ppd->manufacturer != (char*)0) {
+		p.setMake (ppd->manufacturer); // Right
+	}
+	if (ppd->product != (char*)0) {
+		p.setProduct (ppd->product); // Right
+	}
+	ppdClose (ppd);
+
+	unlink (tmpFilePath.c_str());
+
+	return p;
+}
+
 string
 wml::CupsCtrl::getPPDNickname (string cupsPrinter)
 {

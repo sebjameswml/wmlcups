@@ -69,6 +69,18 @@ int main (int argc, char** argv)
 		j++;
 	}
 
+	Ppd thePPD = c.getPPD (thequeue);
+	cout << "We get BACK the following: ";
+	cout << thePPD.getMakeAndModel() << "\n";
+	cout << "  ppd-name:             " << thePPD.getName() << "\n";
+	cout << "  ppd-make:             " << thePPD.getMake() << "\n";
+	cout << "  ppd-device-id:        " << thePPD.getDeviceId() << "\n";
+	cout << "  ppd-product:          " << thePPD.getProduct() << "\n";
+	cout << "  ppd-psversion:        " << thePPD.getPsversion() << "\n";
+	cout << "  ppd-type:             " << thePPD.getType() << "\n";
+	cout << "  ppd-model-number:     " << thePPD.getModelNumber() << "\n";
+	cout << "  ppd-natural-language: " << thePPD.getNaturalLanguage() << "\n";
+
 	// Now set an option.
 #ifdef TESTING_SETTING_OPTIONS
 	c.setPPDOption (thequeue,
