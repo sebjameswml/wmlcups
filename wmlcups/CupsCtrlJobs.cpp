@@ -144,12 +144,13 @@ wml::CupsCtrl::getJobStatus (string cupsPrinter, int id, CupsJob& j)
 	if (id == 0) {
 		// Although we had to get all the blinking job information
 		// from cupsd, just copy the information from the last one:
-		DBG ("Call getJobList():");
+		DBG ("Requested ID is 0, so call getJobList() to get last job information:");
 		this->getJobList (cupsPrinter, jList, 1, "all");
 		if (!jList.empty()) {
 			j = jList.front();
 		}
 	} else {
+		DBG ("Call getJobList() to get all job information and compare with id:");
 		this->getJobList (cupsPrinter, jList, "all");
 		vector<CupsJob>::iterator i = jList.begin();
 		while (i != jList.end()) {
@@ -246,7 +247,15 @@ wml::CupsCtrl::getJob (string id)
 		}
 		if (!strcmp((*i)->name, "time-at-creation") &&
 		    (*i)->value_tag == IPP_TAG_INTEGER) {
-			j.setTime ((*i)->values[0].integer);
+			j.setCreationTime ((*i)->values[0].integer);
+		}
+		if (!strcmp((*i)->name, "time-at-processing") &&
+		    (*i)->value_tag == IPP_TAG_INTEGER) {
+			j.setProcessingTime ((*i)->values[0].integer);
+		}
+		if (!strcmp((*i)->name, "time-at-completed") &&
+		    (*i)->value_tag == IPP_TAG_INTEGER) {
+			j.setCompletedTime ((*i)->values[0].integer);
 		}
 
 		i++;
@@ -260,7 +269,6 @@ wml::CupsCtrl::getJobList (string cupsPrinter,
 			   vector<CupsJob>& jList,
 			   string whichJobs)
 {
-	DBG ("Called");
 	this->getJobList (cupsPrinter, jList, 0, whichJobs);
 }
 
@@ -276,7 +284,7 @@ wml::CupsCtrl::getJobList (string cupsPrinter,
 			   int numJobs,
 			   string whichJobs)
 {
-	DBG ("Called");
+	DBG ("Called to list up to " << numJobs << " jobs");
 
 	ipp_t * jrqst;
 	ipp_t * rtn;
@@ -301,6 +309,7 @@ wml::CupsCtrl::getJobList (string cupsPrinter,
 		      uri);
 
 	if (!whichJobs.empty()) {
+		DBG ("Adding which-jobs as '" << whichJobs << "'");
 		ippAddString (jrqst,
 			      IPP_TAG_OPERATION,
 			      IPP_TAG_KEYWORD,
@@ -308,6 +317,27 @@ wml::CupsCtrl::getJobList (string cupsPrinter,
 			      NULL,
 			      whichJobs.c_str());
 	}
+
+	// We have to specify the job attributes we are interested in
+	const char * jobAttributes[10];
+	jobAttributes[0] = "job-id";
+	jobAttributes[1] = "copies";
+	jobAttributes[2] = "job-k-octets";
+	jobAttributes[3] = "job-name";
+	jobAttributes[4] = "job-originating-user-name";
+	jobAttributes[5] = "job-printer-uri";
+	jobAttributes[6] = "job-state";
+	jobAttributes[7] = "time-at-creation";
+	jobAttributes[8] = "time-at-processing";
+	jobAttributes[9] = "time-at-completed";
+	int n_attributes = 10;
+	ippAddStrings(jrqst,
+		      IPP_TAG_OPERATION,
+		      IPP_TAG_KEYWORD,
+		      "requested-attributes",
+		      n_attributes,
+		      NULL,
+		      jobAttributes);
 
 	rtn = cupsDoRequest (this->connection, jrqst, "/");
 
@@ -402,7 +432,18 @@ wml::CupsCtrl::getJobList (string cupsPrinter,
 			}
 			if (!strcmp((*i)->name, "time-at-creation") &&
 			    (*i)->value_tag == IPP_TAG_INTEGER) {
-				j.setTime ((*i)->values[0].integer);
+				DBG ("time-at-creation is " << (*i)->values[0].integer);
+				j.setCreationTime ((*i)->values[0].integer);
+			}
+			if (!strcmp((*i)->name, "time-at-processing") &&
+			    (*i)->value_tag == IPP_TAG_INTEGER) {
+				DBG ("time-at-processing is " << (*i)->values[0].integer);
+				j.setProcessingTime ((*i)->values[0].integer);
+			}
+			if (!strcmp((*i)->name, "time-at-completed") &&
+			    (*i)->value_tag == IPP_TAG_INTEGER) {
+				DBG ("time-at-completed is " << (*i)->values[0].integer);
+				j.setCompletedTime ((*i)->values[0].integer);
 			}
 
 			i--;

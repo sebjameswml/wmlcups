@@ -67,7 +67,10 @@ namespace wml {
 		void setState (ipp_jstate_t jstate);
 		std::string getState (void);
 
-		void setTime (int t);
+		void setCreationTime (int t);
+		void setProcessingTime (int t);
+		void setCompletedTime (int t);
+
 		int getTime (void);
 		std::string getFormattedTime (void);
 
@@ -118,10 +121,19 @@ namespace wml {
 		ipp_jstate_t state;
 
 		/*!
-		 * Job time - Time of completion/abortion/send of
-		 * print.
+		 * CUPS time-at-creation
 		 */
-		int time;
+		int creation_time;
+
+		/*!
+		 * CUPS time-at-processing
+		 */
+		int processing_time;
+
+		/*!
+		 * CUPS time-at-completed
+		 */
+		int completed_time;
 
 		/*!
 		 * The IP address of the sending device - the IP

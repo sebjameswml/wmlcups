@@ -20,7 +20,9 @@ wml::CupsJob::CupsJob (void) :
 	id(0),
 	copies(1),
 	state(IPP_JOB_PENDING),
-	time (0)
+	creation_time (0),
+	processing_time (0),
+	completed_time (0)
 {
 }
 
@@ -32,8 +34,9 @@ wml::CupsJob::CupsJob (string jobName) :
 	sizeKB (0),
 	cupsPages(0),
 	state(IPP_JOB_PENDING),
-	time (0)
-
+	creation_time (0),
+	processing_time (0),
+	completed_time (0)
 {
 }
 
@@ -45,8 +48,9 @@ wml::CupsJob::CupsJob (int jobId) :
 	sizeKB (0),
 	cupsPages(0),
 	state(IPP_JOB_PENDING),
-	time (0)
-
+	creation_time (0),
+	processing_time (0),
+	completed_time (0)
 {
 }
 
@@ -58,8 +62,9 @@ wml::CupsJob::CupsJob (int jobId, string jobName) :
 	sizeKB (0),
 	cupsPages(0),
 	state(IPP_JOB_PENDING),
-	time (0)
-
+	creation_time (0),
+	processing_time (0),
+	completed_time (0)
 {
 }
 
@@ -78,7 +83,9 @@ wml::CupsJob::reset (void)
 	this->cupsPages = 0;
 	this->printerUri = "";
 	this->state = IPP_JOB_PENDING;
-	this->time = 0;
+	this->creation_time = 0;
+	this->processing_time = 0;
+	this->completed_time = 0;
 }
 
 void
@@ -207,21 +214,58 @@ wml::CupsJob::getState (void)
 }
 
 void
-wml::CupsJob::setTime (int t)
+wml::CupsJob::setCreationTime (int t)
 {
-	this->time = t;
+	this->creation_time = t;
+}
+
+void
+wml::CupsJob::setProcessingTime (int t)
+{
+	this->processing_time = t;
+}
+
+void
+wml::CupsJob::setCompletedTime (int t)
+{
+	this->completed_time = t;
 }
 
 int
 wml::CupsJob::getTime (void)
 {
-	return this->time;
+	switch (this->state) {
+	case IPP_JOB_PENDING:
+		return this->creation_time; // may be processing_time
+		break;
+	case IPP_JOB_HELD:
+		return this->creation_time; // may be processing_time
+		break;
+	case IPP_JOB_PROCESSING:
+		return this->processing_time;
+		break;
+	case IPP_JOB_STOPPED:
+		return this->creation_time; // may be processing_time
+		break;
+	case IPP_JOB_CANCELED:
+		return this->completed_time;
+		break;
+	case IPP_JOB_ABORTED:
+		return this->completed_time;
+		break;
+	case IPP_JOB_COMPLETED:
+		return this->completed_time;
+		break;
+	default:
+		return this->creation_time;
+		break;
+	}
 }
 
 string
 wml::CupsJob::getFormattedTime (void)
 {
-	return FoundryUtilities::numToDateTime ((time_t)this->time, '/', ':');
+	return FoundryUtilities::numToDateTime ((time_t)this->getTime(), '/', ':');
 }
 
 void
