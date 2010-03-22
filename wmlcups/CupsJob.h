@@ -76,6 +76,7 @@ namespace wml {
 		//@}
 
 	private:
+
 		/*!
 		 * The Job ID number
 		 */

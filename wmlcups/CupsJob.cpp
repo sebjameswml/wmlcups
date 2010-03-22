@@ -9,6 +9,7 @@ extern "C" {
 #include <cups/ipp.h>
 
 #include "config.h"
+#include <futil/WmlDbg.h>
 #include <futil/FoundryUtilities.h>
 #include "CupsJob.h"
 
@@ -18,7 +19,8 @@ using namespace wml;
 wml::CupsJob::CupsJob (void) :
 	id(0),
 	copies(1),
-	state(IPP_JOB_PENDING)
+	state(IPP_JOB_PENDING),
+	time (0)
 {
 }
 
@@ -26,7 +28,11 @@ wml::CupsJob::CupsJob (string jobName) :
 	id(0),
 	copies(1),
 	name (jobName),
-	state(IPP_JOB_PENDING)
+	user (""),
+	sizeKB (0),
+	cupsPages(0),
+	state(IPP_JOB_PENDING),
+	time (0)
 
 {
 }
@@ -34,7 +40,12 @@ wml::CupsJob::CupsJob (string jobName) :
 wml::CupsJob::CupsJob (int jobId) :
 	id(jobId),
 	copies(1),
-	state(IPP_JOB_PENDING)
+	name(""),
+	user (""),
+	sizeKB (0),
+	cupsPages(0),
+	state(IPP_JOB_PENDING),
+	time (0)
 
 {
 }
@@ -43,7 +54,11 @@ wml::CupsJob::CupsJob (int jobId, string jobName) :
 	id(jobId),
 	copies(1),
 	name (jobName),
-	state(IPP_JOB_PENDING)
+	user (""),
+	sizeKB (0),
+	cupsPages(0),
+	state(IPP_JOB_PENDING),
+	time (0)
 
 {
 }
