@@ -91,7 +91,9 @@ namespace wml {
 		 * Enable printer cupsPrinter if enable is true,
 		 * disable it otherwise.
 		 */
-		void setAccepting (std::string cupsPrinter, bool accept, std::string directory = "/printers/%s");
+		void setAccepting (std::string cupsPrinter,
+				   bool accept,
+				   std::string directory = "/printers/%s");
 
 		/*!
 		 * Query cupsd for whether the given cupsPrinter is
@@ -103,7 +105,22 @@ namespace wml {
 		 * Enable printer cupsPrinter if enable is true,
 		 * disable it otherwise.
 		 */
-		void setEnabled (std::string cupsPrinter, bool enable, std::string directory = "/printers/%s");
+		void setEnabled (std::string cupsPrinter,
+				 bool enable,
+				 std::string directory = "/printers/%s");
+		/*!
+		 * Query cupsd for whether the given cupsPrinter is
+		 * shared
+		 */
+		bool getShared (std::string cupsPrinter);
+
+		/*!
+		 * Enable sharing for printer cupsPrinter if enable is
+		 * true, disable sharing otherwise.
+		 */
+		void setShared (std::string cupsPrinter,
+				bool enable,
+				std::string directory = "/printers/%s");
 
 		/*!
 		 * Is there a printer with the given name set up on
@@ -442,8 +459,17 @@ namespace wml {
 					  wml::IppAttr& attr);
 
 		/*!
-		 * Same as above, but used for classes rather than
-		 * printers
+		 * Set two IPP attributes for printerName. attrs
+		 * should have been set up with the attribute name and
+		 * the attribute value.
+		 */
+		void setPrinterAttributes (const char* printerName,
+					   wml::IppAttr& attr1,
+					   wml::IppAttr& attr2);
+
+		/*!
+		 * Same as setPrinterAttribute, but used for classes
+		 * rather than printers.
 		 */
 		void setClassAttribute (const char* printerName,
 					wml::IppAttr& attr);

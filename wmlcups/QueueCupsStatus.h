@@ -53,6 +53,11 @@ namespace wml {
 		bool accepting;
 
 		/*!
+		 * Is the printer marked as shared?
+		 */
+		bool shared;
+
+		/*!
 		 * The information about the last job processed.
 		 */
 		CupsJob lastJob;

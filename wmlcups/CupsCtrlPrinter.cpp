@@ -159,10 +159,108 @@ wml::CupsCtrl::setPrinterAttribute (const char* printerName,
 		     IPP_TAG_OPERATION, IPP_TAG_URI,
 		     "printer-uri", NULL, uri);
 
-	ippAddString(prqst, IPP_TAG_PRINTER,
-		     attr.getType(), attr.getName().c_str(),
-		     NULL,
-		     attr.getString().c_str());
+	// Add Attribute
+	switch (attr.getType()) {
+	case IPP_TAG_ENUM:
+	case IPP_TAG_INTEGER:
+		ippAddInteger (prqst, IPP_TAG_PRINTER,
+			       attr.getType(), attr.getName().c_str(),
+			       attr.getInt());
+		break;
+	case IPP_TAG_BOOLEAN:
+		ippAddBoolean (prqst, IPP_TAG_PRINTER,
+			       attr.getName().c_str(), attr.getInt());
+		break;
+	default:
+		ippAddString(prqst, IPP_TAG_PRINTER,
+			     attr.getType(), attr.getName().c_str(),
+			     NULL,
+			     attr.getString().c_str());
+		break;
+	}
+
+	rtn = cupsDoRequest (this->connection, prqst, "/admin/");
+
+	if (!rtn) {
+		// Handle error
+		stringstream eee;
+		eee << "CupsCtrl: cupsDoRequest() failed in " << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		throw runtime_error (eee.str());
+	}
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		eee << "CupsCtrl: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	ippDelete (rtn);
+	return;
+}
+
+void
+wml::CupsCtrl::setPrinterAttributes (const char* printerName,
+				     wml::IppAttr& attr1,
+				     wml::IppAttr& attr2)
+{
+	ipp_t * prqst;
+	ipp_t * rtn;
+	char uri[HTTP_MAX_URI];
+
+	prqst = ippNewRequest (CUPS_ADD_PRINTER);
+
+	httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/printers/%s", printerName);
+
+	ippAddString(prqst,
+		     IPP_TAG_OPERATION, IPP_TAG_URI,
+		     "printer-uri", NULL, uri);
+
+	// Add Attribute One
+	switch (attr1.getType()) {
+	case IPP_TAG_ENUM:
+	case IPP_TAG_INTEGER:
+		ippAddInteger (prqst, IPP_TAG_PRINTER,
+			       attr1.getType(), attr1.getName().c_str(),
+			       attr1.getInt());
+		break;
+	case IPP_TAG_BOOLEAN:
+		ippAddBoolean (prqst, IPP_TAG_PRINTER,
+			       attr1.getName().c_str(), attr1.getInt());
+		break;
+	default:
+		ippAddString(prqst, IPP_TAG_PRINTER,
+			     attr1.getType(), attr1.getName().c_str(),
+			     NULL,
+			     attr1.getString().c_str());
+		break;
+	}
+
+	// Add Attribute Two
+	switch (attr2.getType()) {
+	case IPP_TAG_ENUM:
+	case IPP_TAG_INTEGER:
+		ippAddInteger (prqst, IPP_TAG_PRINTER,
+			       attr2.getType(), attr2.getName().c_str(),
+			       attr2.getInt());
+		break;
+	case IPP_TAG_BOOLEAN:
+		ippAddBoolean (prqst, IPP_TAG_PRINTER,
+			       attr2.getName().c_str(), attr2.getInt());
+		break;
+	default:
+		ippAddString(prqst, IPP_TAG_PRINTER,
+			     attr2.getType(), attr2.getName().c_str(),
+			     NULL,
+			     attr2.getString().c_str());
+		break;
+	}
 
 	rtn = cupsDoRequest (this->connection, prqst, "/admin/");
 
@@ -245,9 +343,7 @@ wml::CupsCtrl::sendPrinterCommand (const char* printerName,
 vector<string>
 wml::CupsCtrl::getPrinterList(void)
 {
-
 	return this->getCupsPrinterList (GET_PRINTERS_ONLY);
-
 }
 
 bool
@@ -305,11 +401,42 @@ void
 wml::CupsCtrl::setDeviceURI (string cupsPrinter, string s)
 {
 	DBG ("Called to set device uri to '" << s << "'");
+
+	/*
+	 * To ensure that newly created IPP and IPPS queues get the
+	 * "shared" attribute set for them, we need to set the ppd
+	 * file when setting the device uri, or somehow ensure that
+	 * it's set. If not, the CUPS says "This is a remote printer,
+	 * and there's no filter yet, so I will force sharing off for
+	 * security reasons".
+	 */
+
+	string curPpd("");
+	try {
+		curPpd = this->getPPDNickname (cupsPrinter);
+	} catch (const exception& e) {
+		curPpd = "Unknown";
+	}
+
+	if (curPpd == "Unknown") {
+		DBG ("Initialising PPD to default");
+		try {
+			setPPDFromFile (cupsPrinter, "/usr/share/cups/model/pdf.ppd");
+		} catch (const exception& e) {
+			stringstream ee;
+			ee << "Failed to initialise PPD for Queue " << cupsPrinter
+			   << " error: "  << e.what();
+			DBG (ee.str());
+		}
+	}
+
+	/*
+	 * Now set the device URI.
+	 */
+
 	IppAttr attr("device-uri");
 	attr.setValue (s);
-	DBG ("Calling setPrinterAttribute for '" << cupsPrinter << "'...");
 	this->setPrinterAttribute (cupsPrinter.c_str(), attr);
-	DBG ("Called setPrinterAttribute...");
 }
 
 void

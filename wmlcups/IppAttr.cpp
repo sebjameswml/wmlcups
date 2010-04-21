@@ -174,6 +174,8 @@ wml::IppAttr::determineType (void)
 				this->type = IPP_TAG_TEXT;
 			} else if (this->name == "printer-is-accepting-jobs") {
 				this->type = IPP_TAG_BOOLEAN;
+			} else if (this->name == "printer-is-shared") {
+				this->type = IPP_TAG_BOOLEAN;
 			} else {
 				this->type = IPP_TAG_UNKNOWN;
 			}

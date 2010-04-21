@@ -31,7 +31,7 @@ wml::CupsCtrl::getAccepting (string cupsPrinter)
 {
 	IppAttr attr("printer-is-accepting-jobs");
 
-	getPrinterAttribute (cupsPrinter.c_str(), attr);
+	this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 
 	if (attr.getInt() > 0) {
 		return true;
@@ -63,7 +63,7 @@ wml::CupsCtrl::getEnabled (string cupsPrinter)
 {
 	IppAttr attr("printer-state");
 
-	getPrinterAttribute (cupsPrinter.c_str(), attr);
+	this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 
 	// Printer state is IPP_PRINTER_PROCESSING (4), _IDLE (3) or _STOPPED (5)
 	if (attr.getInt() == (int)IPP_PRINTER_STOPPED) {
@@ -91,11 +91,42 @@ wml::CupsCtrl::setEnabled (string cupsPrinter, bool enable, string directory)
 	}
 }
 
+bool
+wml::CupsCtrl::getShared (string cupsPrinter)
+{
+	IppAttr attr("printer-is-shared");
+	this->getPrinterAttribute (cupsPrinter.c_str(), attr);
+	if (attr.getInt()) {
+		return true;
+	}
+	return false;
+}
+
+void
+wml::CupsCtrl::setShared (string cupsPrinter, bool enable, string directory)
+{
+#ifdef WORKED_OUT_HOW_TO_SET_SHARED
+	if (enable == true) {
+		this->sendPrinterCommand (cupsPrinter.c_str(),
+					  "CupsCtrl",
+					  "CupsCtrl::setShared(true)",
+					  CUPS_PRINTER_OPTIONS flags,
+					  directory);
+	} else {
+		this->sendPrinterCommand (cupsPrinter.c_str(),
+					  "CupsCtrl",
+					  "CupsCtrl::setShared(false)",
+					  CUPS_PRINTER_OPTIONS flags,
+					  directory);
+	}
+#endif
+}
+
 string
 wml::CupsCtrl::getState (string cupsPrinter)
 {
 	IppAttr attr("printer-state");
-	getPrinterAttribute (cupsPrinter.c_str(), attr);
+	this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 	string state("");
 	switch (attr.getInt()) {
 	case (int)IPP_PRINTER_PROCESSING:
@@ -213,6 +244,16 @@ wml::CupsCtrl::getFullStatus (std::string cupsPrinter,
 					qstat.accepting = true;
 				} else {
 					qstat.accepting = false;
+				}
+			}
+
+			// Shared
+			if (!strcmp(ipp_attributes->name, "printer-is-shared") &&
+			    ipp_attributes->value_tag == IPP_TAG_BOOLEAN) {
+				if (ipp_attributes->values[0].boolean) {
+					qstat.shared = true;
+				} else {
+					qstat.shared = false;
 				}
 			}
 
