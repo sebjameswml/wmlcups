@@ -58,6 +58,8 @@ namespace wml {
 		void setSizeKB (unsigned int i);
 		unsigned int getSizeKB (void);
 
+		std::string getSizeString (void);
+
 		void setCupsPages (unsigned int i);
 		unsigned int getCupsPages (void);
 

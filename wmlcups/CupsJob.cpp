@@ -6,6 +6,7 @@ extern "C" {
 #include <time.h>
 }
 #include <string>
+#include <sstream>
 #include <cups/ipp.h>
 
 #include "config.h"
@@ -146,6 +147,25 @@ unsigned int
 wml::CupsJob::getSizeKB (void)
 {
 	return this->sizeKB;
+}
+
+string
+wml::CupsJob::getSizeString (void)
+{
+	stringstream sizeString;
+	sizeString.precision (3);
+	float sizeNum;
+	if (this->sizeKB >= 1048576) {
+		sizeNum = (float) this->sizeKB / 1048576.0f;
+		sizeString << sizeNum << " GB";
+	} else if (this->sizeKB >= 1024) {
+		sizeNum = (float) this->sizeKB / 1024.0f;
+		sizeString << sizeNum << " MB";
+	} else {
+		sizeString << this->sizeKB << " KB";
+	}
+
+	return sizeString.str();
 }
 
 void
