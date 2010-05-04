@@ -239,10 +239,22 @@ wml::CupsJob::setCreationTime (int t)
 	this->creation_time = t;
 }
 
+int
+wml::CupsJob::getCreationTime (void)
+{
+	return this->creation_time;
+}
+
 void
 wml::CupsJob::setProcessingTime (int t)
 {
 	this->processing_time = t;
+}
+
+int
+wml::CupsJob::getProcessingTime (void)
+{
+	return this->processing_time;
 }
 
 void
@@ -252,31 +264,45 @@ wml::CupsJob::setCompletedTime (int t)
 }
 
 int
+wml::CupsJob::getCompletedTime (void)
+{
+	return this->completed_time;
+}
+
+int
 wml::CupsJob::getTime (void)
 {
 	switch (this->state) {
 	case IPP_JOB_PENDING:
+		DBG ("state: IPP_JOB_PENDING, return creation_time: " << this->creation_time);
 		return this->creation_time; // may be processing_time
 		break;
 	case IPP_JOB_HELD:
+		DBG ("state: IPP_JOB_HELD, return creation_time: " << this->creation_time);
 		return this->creation_time; // may be processing_time
 		break;
 	case IPP_JOB_PROCESSING:
+		DBG ("state: IPP_JOB_PROCESSING, return processing_time: " << this->processing_time);
 		return this->processing_time;
 		break;
 	case IPP_JOB_STOPPED:
+		DBG ("state: IPP_JOB_STOPPED, return creation_time: " << this->creation_time);
 		return this->creation_time; // may be processing_time
 		break;
 	case IPP_JOB_CANCELED:
+		DBG ("state: IPP_JOB_CANCELLED, return completed_time: " << this->completed_time);
 		return this->completed_time;
 		break;
 	case IPP_JOB_ABORTED:
+		DBG ("state: IPP_JOB_ABORTED, return completed_time: " << this->completed_time);
 		return this->completed_time;
 		break;
 	case IPP_JOB_COMPLETED:
+		DBG ("state: IPP_JOB_COMPLETED, return completed_time: " << this->completed_time);
 		return this->completed_time;
 		break;
 	default:
+		DBG ("state: unknown (" << this->state << "), return creation_time: " << this->creation_time);
 		return this->creation_time;
 		break;
 	}

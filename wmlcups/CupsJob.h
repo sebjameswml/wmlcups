@@ -70,8 +70,11 @@ namespace wml {
 		std::string getState (void);
 
 		void setCreationTime (int t);
+		int getCreationTime (void);
 		void setProcessingTime (int t);
+		int getProcessingTime (void);
 		void setCompletedTime (int t);
+		int getCompletedTime (void);
 
 		int getTime (void);
 		std::string getFormattedTime (void);
