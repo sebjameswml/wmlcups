@@ -81,6 +81,9 @@ namespace wml {
 
 		void setSourceIP (std::string ip);
 		std::string getSourceIP (void);
+
+		void setDestIP (std::string ip);
+		std::string getDestIP (void);
 		//@}
 
 	private:
@@ -146,6 +149,13 @@ namespace wml {
 		 * device.
 		 */
 		std::string sourceIP;
+
+		/*!
+		 * The IP address to which the print job was sent. If
+		 * the WMLPP system has aliased IP addresses, this is
+		 * the IP address selected.
+		 */
+		std::string destIP;
 	};
 
 } // namespace wml

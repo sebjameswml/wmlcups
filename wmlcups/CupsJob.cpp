@@ -37,7 +37,9 @@ wml::CupsJob::CupsJob (string jobName) :
 	state(IPP_JOB_PENDING),
 	creation_time (0),
 	processing_time (0),
-	completed_time (0)
+	completed_time (0),
+	sourceIP(""),
+	destIP("")
 {
 }
 
@@ -51,7 +53,9 @@ wml::CupsJob::CupsJob (int jobId) :
 	state(IPP_JOB_PENDING),
 	creation_time (0),
 	processing_time (0),
-	completed_time (0)
+	completed_time (0),
+	sourceIP(""),
+	destIP("")
 {
 }
 
@@ -65,7 +69,9 @@ wml::CupsJob::CupsJob (int jobId, string jobName) :
 	state(IPP_JOB_PENDING),
 	creation_time (0),
 	processing_time (0),
-	completed_time (0)
+	completed_time (0),
+	sourceIP(""),
+	destIP("")
 {
 }
 
@@ -87,6 +93,8 @@ wml::CupsJob::reset (void)
 	this->creation_time = 0;
 	this->processing_time = 0;
 	this->completed_time = 0;
+	this->sourceIP = "";
+	this->destIP = "";
 }
 
 void
@@ -324,4 +332,16 @@ std::string
 wml::CupsJob::getSourceIP (void)
 {
 	return this->sourceIP;
+}
+
+void
+wml::CupsJob::setDestIP (std::string ip)
+{
+	this->destIP = ip;
+}
+
+std::string
+wml::CupsJob::getDestIP (void)
+{
+	return this->destIP;
 }
