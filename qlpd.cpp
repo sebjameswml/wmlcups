@@ -49,6 +49,7 @@ int main (int argc, char** argv)
 	lpd.setCallbacks (&cb);
 	string processPath = "/usr/bin/lpd";
 	list<string> args;
+	args.push_back (processPath);// lpd
 	args.push_back ("1");        // Job ID
 	args.push_back ("qlpd");     // User
 	args.push_back ("qlpd_job"); // Title

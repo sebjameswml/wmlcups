@@ -23,7 +23,7 @@
 
 #define BUFSIZE 4096   /* Size of buffer */
 
-#define SLOW_RAWPRINT_PAUSE 45000000 /* 45 second pause */
+//#define SLOW_RAWPRINT_PAUSE 45000000 /* 45 second pause */
 
 void DieWithError(char *errorMessage);  /* Error handling function */
 
