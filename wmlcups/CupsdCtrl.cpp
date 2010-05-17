@@ -360,7 +360,12 @@ void
 wml::CupsdCtrl::restartCups(void)
 {
 	if (FoundryUtilities::fileExists("/usr/sbin/recupsd")) {
-		system("/usr/sbin/recupsd");
+		int result = system("/usr/sbin/recupsd");
+		if (result == 0) {
+			DBG ("Succeeded restarting cups");
+		} else {
+			throw runtime_error ("Error restarting cups daemon");
+		}
 	} else {
 		throw runtime_error ("Can't re-start the CUPS daemon "
 				     "(no recupsd script).");
