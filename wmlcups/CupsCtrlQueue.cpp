@@ -319,7 +319,7 @@ wml::CupsCtrl::getQueueType (string queuename)
 		throw runtime_error ("CupsCtrl::getQueueType(): "
 				     "Can't get queue type for empty queue name.");
 	}
-	DBG ("Called to get type for " << queuename);
+	DBG2 ("Called to get type for " << queuename);
 	vector<string> classes;
 	vector<string> printers;
 	classes = this->getClassesList();

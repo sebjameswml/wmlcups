@@ -392,7 +392,6 @@ wml::CupsCtrl::setMakeModel (string cupsPrinter, string s)
 string
 wml::CupsCtrl::getDeviceURI (string cupsPrinter)
 {
-	DBG ("Called");
 	IppAttr attr("device-uri");
 	return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
