@@ -641,8 +641,11 @@ wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
 	// Add the new one (replaces existing ppd option if necessary)
 	cupsAddOption (keyword.c_str(), value.c_str(), d->num_options, &d->options);
 
-	// save the dest with cupsSaveDests2();
-	if (cupsSetDests2 (this->connection, 1, d) != 0) {
+	// save the dest with cupsSaveDests2(). Important - you have
+	// to save all the options here, not just those for a single
+	// queue as cupsSetDests2 empties /etc/cups/lpoptions and then
+	// writes it out afresh.
+	if (cupsSetDests2 (this->connection, ndests, dests) != 0) {
 		stringstream ee;
 		ee << "Failed to set PPD option '" << keyword << "' to '" << value << "'";
 		throw runtime_error (ee.str());
