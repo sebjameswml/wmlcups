@@ -258,7 +258,6 @@ void
 wml::CupsCtrl::setClassMembers (string className,
 				vector<string> members)
 {
-
 	ipp_t * prqst;
 	ipp_t * rtn;
 	char uri[HTTP_MAX_URI];
@@ -282,14 +281,18 @@ wml::CupsCtrl::setClassMembers (string className,
 	int i = 0;
 
 	for (iter = members.begin(); iter != members.end(); iter++) {
-
-
 		ipp_attributes->values[i].string.text = strdup(iter->c_str());
 		i++;
 	}
 
 	rtn = cupsDoRequest (this->connection, prqst, "/admin/");
 
-	ippDelete (rtn);
+	if (rtn == (ipp_t*)0) {
+		stringstream ee;
+		ee << "cupsDoRequest failed to set " << members.size()
+		   << " members for the class " << className;
+		throw runtime_error (ee.str());
+	}
 
+	ippDelete (rtn);
 }
