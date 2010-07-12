@@ -1,0 +1,54 @@
+WML CUPS
+--------
+
+This package, WML CUPS, is a set of extensions to and wrappers
+around the CUPS library, used by WML print platform software.
+
+The main class is called wml::CupsCtrl, which provides a C++ wrapper
+around the CUPS API.
+
+A number of other classes are provided :-
+
+  - wml::CupsdCtrl
+    Provides functionality for editing directives in cupsd.conf
+  - wml::CupsdDirContainer
+    A data structure that contains a CUPS directive. Used
+    by CupsdCtrl
+  - wml::IppAttr
+    Contains an IPP attribute used in transferring print data 
+    over a network. Used by wml::CupsCtrl
+  - wml::CupsJob
+    Collection of status information for a CUPS job. Essentially
+    an extension of the CUPS internal job structure, used by
+    CupsCtrl for sending jobs to print
+  - wml::Ppd
+    A data structure for containing information about a PPD file
+  - wml::PpdOption
+    A data structure for containing a PPD option. Used in setting
+    up the PPD options in wml::CupsCtrl
+
+The name comes from "Common Unix Printing System", a library used
+for controlling printing functionality in Unix/Linux.
+
+
+WML CUPS is Copyright William Matthew Ltd. 2010.
+
+Authors: Seb James <sjames@wmltd.co.uk>
+         Tamora James <tjames@wmltd.co.uk>
+         Mark Richardson <mrichardson@wmltd.co.uk>
+
+WML CUPS is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+WML CUPS is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with WML CUPS (see the file COPYING).  If not, see
+<http://www.gnu.org/licenses/>.
+
+Mark Richardson, 1st July 2010.
