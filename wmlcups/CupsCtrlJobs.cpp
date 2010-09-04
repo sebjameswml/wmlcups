@@ -87,6 +87,76 @@ wml::CupsCtrl::sendJobCommand (int jobId,
 }
 
 void
+wml::CupsCtrl::moveJob (int jobId,
+			string asUser,
+			string destQueue)
+{
+	DBG ("WARNING, UNTESTED! Called to move job id " << jobId
+	     << " as user '" << asUser
+	     << "' to queue '" << destQueue << "'");
+
+	ipp_t * prqst;
+	ipp_t * rtn;
+	char uri[HTTP_MAX_URI];
+	char desturi[HTTP_MAX_URI];
+
+	prqst = ippNewRequest (CUPS_MOVE_JOB);
+
+	httpAssembleURIf (HTTP_URI_CODING_ALL, uri, sizeof(uri), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/jobs/%d", jobId);
+
+	ippAddString (prqst,
+		      IPP_TAG_OPERATION, IPP_TAG_URI,
+		      "job-uri", NULL, uri);
+
+	if (asUser.empty()) {
+		DBG ("Setting user to \"guest\"");
+		asUser = "guest";
+	}
+	ippAddString (prqst,
+		      IPP_TAG_OPERATION, IPP_TAG_NAME,
+		      "requesting-user-name", NULL, asUser.c_str());
+
+	// Build the destination uri for the job to be moved to
+	httpAssembleURIf (HTTP_URI_CODING_ALL, desturi, sizeof(desturi), "ipp",
+			  NULL, this->cupsdAddress.c_str(), 0,
+			  "/printers/%s", destQueue.c_str());
+	ippAddString (prqst,
+		      IPP_TAG_JOB, IPP_TAG_URI,
+		      "job-printer-uri", NULL, desturi);
+
+	rtn = cupsDoRequest (this->connection, prqst, "/jobs");
+
+	if (!rtn) {
+		// Handle error
+		stringstream eee;
+		eee << "CupsCtrl: cupsDoRequest() failed in " << __FUNCTION__ << ". Error 0x"
+		    << hex << cupsLastError() << " ("
+		    << this->errorString (cupsLastError()) << ")";
+		throw runtime_error (eee.str());
+	}
+	if (rtn->request.status.status_code > IPP_OK_CONFLICT) {
+		// Handle conflict
+		stringstream eee;
+		if (cupsLastError() == IPP_NOT_AUTHORIZED) {
+			eee << "CupsCtrl: Job action not authorized for user " << asUser
+			    << ". (Error was " << this->errorString (cupsLastError()) << ")";
+		} else {
+			eee << "CupsCtrl: cupsDoRequest() conflict in " << __FUNCTION__ << ". Error 0x"
+			    << hex << cupsLastError() << " ("
+			    << this->errorString (cupsLastError()) << " - "
+			    << cupsLastErrorString() << ")";
+		}
+		ippDelete (rtn);
+		throw runtime_error (eee.str());
+	}
+
+	ippDelete (rtn);
+	return;
+}
+
+void
 wml::CupsCtrl::cancelJobs (string printerName)
 {
 	vector<CupsJob> jobs;

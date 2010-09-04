@@ -419,6 +419,12 @@ namespace wml {
 		void restartJob (int jobId, std::string asUser);
 
 		/*!
+		 * As the user asUser, move the job jobId to the queue
+		 * destQueue.
+		 */
+		void moveJob (int jobId, std::string asUser, std::string destQueue);
+
+		/*!
 		 * Send a file specified by filePath to the cupsd,
 		 * adding it to the job with id jobId. Optionally set
 		 * the document name and the format string. If
