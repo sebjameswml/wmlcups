@@ -380,19 +380,19 @@ namespace wml {
 		 * Wrapper around getCupsPrinterList. Returns a vector
 		 * containing all classes and printers
 		 */
-		std::vector<std::string> getPrinterClassesList(void);
+		std::vector<std::string> getPrinterClassesList (void);
 
 		/*!
 		 * Wrapper around getCupsPrinterList. Returns a vector
 		 * containing only printers
 		 */
-		std::vector<std::string> getPrinterList(void);
+		std::vector<std::string> getPrinterList (void);
 
 		/*!
 		 * Wrapper around getCupsPrinterList. Returns a vector
 		 * containing only classes
 		 */
-		std::vector<std::string> getClassesList(void);
+		std::vector<std::string> getClassesList (void);
 
 		/*!
 		 * Determines whether the queue is a printer or a class
