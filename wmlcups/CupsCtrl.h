@@ -54,18 +54,29 @@ extern "C" {
 
 namespace wml {
 
-	enum GET_PRINTERS {
-		GET_PRINTERS_ONLY,
-		GET_CLASSES,
-		GET_BOTH,
-		GET_PRINTERS_N
-	};
-
+	/*!
+	 * The CUPS "type" of the queue. This helps us distinguish
+	 * between printers and classes, which have some features in
+	 * common, but not all features in common. In our wml::Queue
+	 * class, the Queue has a QTYPE, to save us having the need
+	 * for wml::Queue and wml::Class classes.
+	 */
 	enum QTYPE {
 		WMLCUPS_UNKNOWNTYPE,
 		WMLCUPS_PRINTER,
 		WMLCUPS_CLASS,
 		QTYPE_N
+	};
+
+	/*!
+	 * Used to define which of printers, classes or both we want
+	 * to get in a request to the cupsd.
+	 */
+	enum GET_PRINTERS {
+		GET_PRINTERS_ONLY,
+		GET_CLASSES,
+		GET_BOTH,
+		GET_PRINTERS_N
 	};
 
 	/*!
