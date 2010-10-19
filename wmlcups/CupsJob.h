@@ -22,7 +22,8 @@
 namespace wml {
 
 	/*!
-	 * Collection of status information for a Job
+	 * Collection of status information for a Job, plus some job
+	 * control code.
 	 */
 	class CupsJob
 	{
