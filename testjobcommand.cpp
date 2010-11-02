@@ -89,7 +89,7 @@ string user (argv[2]);
 //	q.reprintJob (jobnum, user);
 		cout << c.getQueueType (thejob) << endl;
 	} catch (runtime_error& e) {
-		DBG ("Error occured: " << e.what());
+		DBG ("Error occurred: " << e.what());
 	}
 	//cout << "Last Job ID " << j.getId() << " has state: " << j.getState()
 	//  << " time: " << j.getFormattedTime() << endl;
