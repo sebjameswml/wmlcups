@@ -603,8 +603,6 @@ wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
 			     std::string keyword,
 			     std::string value)
 {
-	DBG ("Called");
-
 	if (this->cupsdAddress != "localhost"
 	    && this->cupsdAddress != "127.0.0.1") {
 		throw runtime_error ("You can't set PPD options on a different "
@@ -612,15 +610,19 @@ wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
 	}
 
 	// Get options from cupsPrinter.
-	cups_dest_t * dests; // All destinations
-	cups_dest_t * d;     // One destination
+	cups_dest_t * dests;     // All destinations
+	cups_dest_t * d;         // One destination
 
 	int ndests = cupsGetDests (&dests);
-	DBG ("After first cupsGetDests(), we have " << ndests << " destinations");
+
+#ifdef DEBUG
+	if (ndests > 0) {
+		DBG ("number of options in dests[0] is " << dests[0].num_options);
+	}
+#endif
 
 	d = cupsGetDest (cupsPrinter.c_str(), (const char *)0, ndests, dests);
 	if (d == (cups_dest_t*)0) {
-		DBG ("Adding dest...");
 		ndests = cupsAddDest (cupsPrinter.c_str(), (const char *)0, 0, &dests);
 		d = cupsGetDest (cupsPrinter.c_str(), (const char *)0, ndests, dests);
 	}
@@ -629,6 +631,8 @@ wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
 		throw runtime_error ("Queue does not exist (dest is NULL).");
 	}
 
+#ifdef DEBUG
+	// Just debugging really
 	int i = 0;
 	while (i < d->num_options) {
 		string key(d->options[i].name);
@@ -637,22 +641,110 @@ wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
 		}
 		i++;
 	}
+#endif
 
 	// Add the new one (replaces existing ppd option if necessary)
 	cupsAddOption (keyword.c_str(), value.c_str(), d->num_options, &d->options);
 
-	// save the dest with cupsSaveDests2(). Important - you have
-	// to save all the options here, not just those for a single
-	// queue as cupsSetDests2 empties /etc/cups/lpoptions and then
-	// writes it out afresh.
-	if (cupsSetDests2 (this->connection, ndests, dests) != 0) {
-		stringstream ee;
-		ee << "Failed to set PPD option '" << keyword << "' to '" << value << "'";
-		throw runtime_error (ee.str());
-	}
+	// save the dest with this->writeLpOptions, which is similar
+	// to cupsSetDests2(). Important - you have to save all the
+	// options here, as this function empties /etc/cups/lpoptions
+	// and then writes it out afresh.
+	this->writeLpOptions (ndests, dests);
 
 	cupsFreeDests (ndests, dests);
+}
+
+void
+wml::CupsCtrl::writeLpOptions (int ndests, cups_dest_t * dests)
+{
+	DBG ("Called");
+
+	// Re-write /etc/cups/lpoptions
+	ofstream f;
+	f.open ("/etc/cups/lpoptions", ios::out|ios::trunc);
+	if (!f.is_open()) {
+		DBG ("Failed to open lpoptions for write!");
+		cupsFreeDests (ndests, dests);
+		throw runtime_error ("writeLpOptions: Failed to open /etc/cups/lpoptions for write");
+	}
+
+	cups_dest_t* dest;
+	cups_option_t * option;
+	const char	*val;
+
+	int i, j, didHeading = 0;
+
+	DBG ("Main loop");
+	for (i = ndests, dest = dests; i > 0; i--, dest++) {
+
+		DBG ("Doing dest " << dest->name);
+		if (dest->instance != (char*)0 || dest->num_options != 0 || dest->is_default) {
+			DBG ("Stil doing dest " << dest->name);
+			if (dest->is_default) {
+				f << "Default " <<  dest->name;
+				if (dest->instance != (char*)0) {
+					f << "/" << dest->instance;
+				}
+				didHeading = 1;
+			} else {
+				didHeading = 0;
+			}
+
+			DBG ("Options loop");
+			for (j = dest->num_options, option = dest->options; j > 0; j--, option++) {
+
+				DBG ("Attribute test...");
+
+				// Skip printer attributes
+				IppAttr at(option->name);
+				ipp_tag_t tg = at.getGroup();
+				if (tg == IPP_TAG_PRINTER || tg == IPP_TAG_JOB) {
+					DBG ("printer or job attribute, skip it.");
+					continue;
+				}
+
+				DBG ("Got past attribute test");
+
+				// Write this option to the file:
+				if (!didHeading) {
+					f << "Dest " << dest->name;
+					if (dest->instance != (char*)0) {
+						f << "/" << dest->instance;
+					}
+					didHeading = 1;
+				}
+
+				if (option->value[0] != '\0') {
+					if (strchr(option->value, ' ') ||
+					    strchr(option->value, '\\') ||
+					    strchr(option->value, '\"') ||
+					    strchr(option->value, '\''))
+					{
+						// Add quotes to value
+						f << " " << option->name << "=\"";
+						for (val = option->value; *val; val++) {
+							if (strchr("\"\'\\", *val)) {
+								f << '\\';
+							}
+							f << *val;
+						}
+						f << '\"';
+
+					} else {
+						// The value without quotes
+						f << " " << option->name << "=" << option->value;
+					}
+				} else {
+					f << " " << option->name;
+				}
+			}
+
+			if (didHeading) { f << endl; }
+		}
+	}
+
+	f.close();
 
 	DBG ("Returning");
-	return;
 }

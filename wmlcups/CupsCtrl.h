@@ -599,6 +599,14 @@ namespace wml {
 
 	private:
 		/*!
+		 * Used by setPPDOption. Intended to do the same job
+		 * as cupsSetDests2(), but it doesn't bother to try
+		 * writing options to $HOME/.cups/lpoptions - this is
+		 * for setting system-wide options only.
+		 */
+		void writeLpOptions (int ndests, cups_dest_t * dests);
+
+		/*!
 		 * The IP or address of the CUPS server to query.
 		 */
 		std::string cupsdAddress;

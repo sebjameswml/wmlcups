@@ -15,6 +15,8 @@ extern "C" {
 #include <sstream>
 #include <utility>
 
+#include <futil/WmlDbg.h>
+
 #include "IppAttr.h"
 
 using namespace std;
@@ -23,6 +25,8 @@ using namespace wml;
 wml::IppAttr::IppAttr () :
 	name(""),
 	type (IPP_TAG_UNKNOWN),
+	group (IPP_TAG_UNKNOWN),
+	multivalue (0),
 	stringValue(""),
 	intValue(0)
 {
@@ -31,6 +35,8 @@ wml::IppAttr::IppAttr () :
 wml::IppAttr::IppAttr (const char* attributeName) :
 	name(attributeName),
 	type (IPP_TAG_UNKNOWN),
+	group (IPP_TAG_UNKNOWN),
+	multivalue (0),
 	stringValue(""),
 	intValue(0)
 {
@@ -68,6 +74,12 @@ ipp_tag_t
 wml::IppAttr::getType (void)
 {
 	return this->type;
+}
+
+ipp_tag_t
+wml::IppAttr::getGroup (void)
+{
+	return this->group;
 }
 
 string
@@ -132,10 +144,12 @@ wml::IppAttr::setValue (int i)
 	this->intValue = i;
 }
 
+#ifdef OLD
 void
 wml::IppAttr::determineType (void)
 {
-	// Figure out the IPP_TAG_XXXX from  name.
+	// Figure out the value tag and group tag (IPP_TAG_XXXX) from
+	// name.
 
 	string::size_type dash = this->name.find_first_of ('-');
 	string start = this->name.substr(0, dash);
@@ -264,3 +278,22 @@ wml::IppAttr::determineType (void)
 		this->type = IPP_TAG_UNKNOWN;
 	}
 }
+#else
+void
+wml::IppAttr::determineType (void)
+{
+	DBG ("Called to determine value_tag and group_tag from '" << this->name << "'");
+	// Work on this->name
+	for (unsigned int i = 0; i < sizeof(ipp_options)/sizeof(_ipp_option_t); ++i) {
+		string nm(ipp_options[i].name);
+		if (nm == this->name) {
+			DBG ("Got a match!");
+			this->type = ipp_options[i].value_tag;
+			this->group = ipp_options[i].group_tag;
+			this->multivalue = ipp_options[i].multivalue;
+			break;
+		}
+	}
+	DBG ("Returning");
+}
+#endif
