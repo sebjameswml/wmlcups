@@ -360,7 +360,7 @@ void
 wml::CupsdCtrl::restartCups(void)
 {
 	if (FoundryUtilities::fileExists("/usr/sbin/recupsd")) {
-		int result = system("/usr/sbin/recupsd");
+		int result = system("/bin/sudo /usr/sbin/recupsd");
 		if (result == 0) {
 			DBG ("Succeeded restarting cups");
 		} else {
