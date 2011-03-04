@@ -313,13 +313,13 @@ namespace wml {
 		/*!
 		 * \brief Constructor
 		 * Create a new CupsdCtrl object
-		 * Default constructor sets file path to /etc/cups/cupsd.conf
+		 * Default constructor sets cupsd.conf file path to /etc/cups/cupsd.conf.
 		 */
 		CupsdCtrl();
 
 		/*!
 		 * \brief Constructor
-		 * Create a new CupsdCtrl object, setting the file path to p
+		 * Create a new CupsdCtrl object, setting the cupsd.conf file path to p.
 		 */
 		CupsdCtrl(std::string p);
 
