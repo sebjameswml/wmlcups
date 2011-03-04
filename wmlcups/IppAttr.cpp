@@ -282,18 +282,18 @@ wml::IppAttr::determineType (void)
 void
 wml::IppAttr::determineType (void)
 {
-        DBG ("Called to determine value_tag and group_tag from '" << this->name << "'");
+        DBG2 ("Called to determine value_tag and group_tag from '" << this->name << "'");
         // Work on this->name
         for (unsigned int i = 0; i < sizeof(ipp_options)/sizeof(_ipp_option_t); ++i) {
                 string nm(ipp_options[i].name);
                 if (nm == this->name) {
-                        DBG ("Got a match!");
+                        DBG2 ("Got a match!");
                         this->type = ipp_options[i].value_tag;
                         this->group = ipp_options[i].group_tag;
                         this->multivalue = ipp_options[i].multivalue;
                         break;
                 }
         }
-        DBG ("Returning");
+        DBG2 ("Returning");
 }
 #endif
