@@ -407,7 +407,9 @@ namespace wml {
 		int createJob (std::string cupsQueue,
 			       std::string title="",
 			       std::string asUser="",
-			       std::string docName="");
+			       std::string docName="",
+			       int numOptions = 0,
+			       cups_option_t* options = (cups_option_t*)0);
 
 		/*!
 		 * As the user asUser, this IPP_HOLD_JOBs jobId

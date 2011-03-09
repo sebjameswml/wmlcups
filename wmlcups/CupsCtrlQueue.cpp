@@ -345,8 +345,31 @@ int
 wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue)
 {
 	try {
+		// With CUPS, you have to read the job options from
+		// lpoptions, encode them up ina cups_option_t
+		// container, then pass them in when you create the
+		// print job. The cupsd simply doesn't find them for you.
+		//
+		// Read the default options for the queue
+		//
+		int nOptions = 0;
+		cups_option_t* options = (cups_option_t*)0;
+		string lpoptions_line;
+		// Search for "Dest test "
+		ifstream f;
+		f.open ("/etc/cups/lpoptions", ios::in);
+		if (f.is_open()) {
+			while (getline (f, lpoptions_line, '\n')) {
+				if (lpoptions_line.find ("Dest " + cupsQueue + " ", 0) == 0) {
+					nOptions = cupsParseOptions (lpoptions_line.c_str(), nOptions, &options);
+					break;
+				}
+			}
+			f.close();
+		} // else no options
+
 		// Create a job, if that works, add the file.
-		int newId = this->createJob (cupsQueue, jobTitle, "", "");
+		int newId = this->createJob (cupsQueue, jobTitle, "", "", nOptions, options);
 		if (newId <= 0) {
 			DBG ("CupsCtrl::printFile(): call to CupsCtrl::createJob failed to create a job.");
 			return newId;
@@ -354,6 +377,8 @@ wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue)
 		DBG ("cupsd created new job " << newId);
 		// Finish...
 		this->sendDocument (newId, filePath, "CupsCtrl");
+
+		cupsFreeOptions (nOptions, options);
 		return newId;
 
 	} catch (const exception& e) {

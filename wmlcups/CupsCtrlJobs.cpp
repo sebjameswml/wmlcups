@@ -532,7 +532,9 @@ int
 wml::CupsCtrl::createJob (string cupsQueue,
 			  string title,
 			  string asUser,
-			  string docName)
+			  string docName,
+			  int numOptions,
+			  cups_option_t* options)
 {
 	ipp_t * prqst;
 	ipp_t * rtn;
@@ -560,6 +562,8 @@ wml::CupsCtrl::createJob (string cupsQueue,
 		ippAddString (prqst, IPP_TAG_OPERATION, IPP_TAG_NAME,
 			      "document-name", NULL, docName.c_str());
 	}
+
+	cupsEncodeOptions (prqst, numOptions, options);
 
 	string dest = "/printers/"+cupsQueue;
 	rtn = cupsDoRequest (this->connection, prqst, dest.c_str());
