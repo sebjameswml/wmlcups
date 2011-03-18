@@ -609,9 +609,12 @@ wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
 				     "server, unfortunately.");
 	}
 
-	// Get options from cupsPrinter.
-	cups_dest_t * dests;     // All destinations
-	cups_dest_t * d;         // One destination
+	// For getting dests from cupsPrinter.
+	cups_dest_t * dests = (cups_dest_t*)0;     // All destinations
+	cups_dest_t * d = (cups_dest_t*)0;         // One destination
+	// For getting options from cupsPrinter.
+	int nOptions = 0;
+	cups_option_t * options = (cups_option_t*)0;
 
 	int ndests = cupsGetDests (&dests);
 
@@ -631,9 +634,9 @@ wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
 		throw runtime_error ("Queue does not exist (dest is NULL).");
 	}
 
+	int i = 0;
 #ifdef DEBUG
 	// Just debugging really
-	int i = 0;
 	while (i < d->num_options) {
 		string key(d->options[i].name);
 		if (key == keyword) {
@@ -643,8 +646,24 @@ wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
 	}
 #endif
 
+	// Add the options for the destination to the options list:
+	for (i = 0; i < d->num_options; i++) {
+		if (cupsGetOption(d->options[i].name, nOptions, options) == NULL) {
+			nOptions = cupsAddOption (d->options[i].name,
+						  d->options[i].value,
+						  nOptions, &options);
+		}
+	}
+
 	// Add the new one (replaces existing ppd option if necessary)
-	cupsAddOption (keyword.c_str(), value.c_str(), d->num_options, &d->options);
+	string newOpt = keyword + "=" + value;
+	nOptions = cupsParseOptions (newOpt.c_str(), nOptions, &options);
+
+	// Replace the options in the dest with the new options
+	cupsFreeOptions (d->num_options, d->options);
+	d->num_options = nOptions;
+	d->options = options;
+	cupsSetDests (ndests, dests);
 
 	// save the dest with this->writeLpOptions, which is similar
 	// to cupsSetDests2(). Important - you have to save all the
@@ -696,11 +715,11 @@ wml::CupsCtrl::writeLpOptions (int ndests, cups_dest_t * dests)
 
 				DBG ("Attribute test...");
 
-				// Skip printer attributes
+				// Skip printer and job attributes
 				IppAttr at(option->name);
 				ipp_tag_t tg = at.getGroup();
 				if (tg == IPP_TAG_PRINTER || tg == IPP_TAG_JOB) {
-					DBG ("printer or job attribute, skip it.");
+					DBG (option->name << " is a printer or job attribute, skip it.");
 					continue;
 				}
 
