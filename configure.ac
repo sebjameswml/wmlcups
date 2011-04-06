@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.59)
 AC_INIT([wmlcups], [0.1], [sjames@wmltd.co.uk])
-AC_CONFIG_SRCDIR(wmlcups/cups-inetd.c)
+AC_CONFIG_SRCDIR(wmlcups/CupsCtrl.h)
 AC_REVISION([$Revision: 1.3 $])
 AC_PREFIX_DEFAULT(/usr)
 
