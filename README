@@ -30,6 +30,7 @@ A number of other classes are provided :-
     A data structure to hold a PPD option. Used in setting
     up the PPD options in wml::CupsCtrl
 
+WML CUPS depends on wml::futil (libfutil.so).
 
 WML CUPS is Copyright William Matthew Ltd. 2010.
 
