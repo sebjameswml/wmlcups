@@ -1,8 +1,11 @@
 WML CUPS
 --------
 
-This package, WML CUPS, is a set of extensions to and wrappers
-around the CUPS library, used by WML print platform software.
+This package, WML CUPS, is a set of extensions to and wrappers around
+the CUPS (Common Unix Printing System) library, used by WML print
+platform software. Also provided are some utility functions for
+transfering data using "raw port" printing and the Berkeley LPD
+protocol.
 
 The main class is called wml::CupsCtrl, which provides a C++ wrapper
 around the CUPS API.
@@ -22,13 +25,10 @@ A number of other classes are provided :-
     an extension of the CUPS internal job structure, used by
     CupsCtrl for sending jobs to print
   - wml::Ppd
-    A data structure for containing information about a PPD file
+    A data structure to hold information about a PPD file
   - wml::PpdOption
-    A data structure for containing a PPD option. Used in setting
+    A data structure to hold a PPD option. Used in setting
     up the PPD options in wml::CupsCtrl
-
-The name comes from "Common Unix Printing System", a library used
-for controlling printing functionality in Unix/Linux.
 
 
 WML CUPS is Copyright William Matthew Ltd. 2010.
@@ -51,4 +51,8 @@ You should have received a copy of the GNU General Public License
 along with WML CUPS (see the file COPYING).  If not, see
 <http://www.gnu.org/licenses/>.
 
-Mark Richardson, 1st July 2010.
+Additionally, two files are distributed with this package directly
+from CUPS; lpd.c and lpdstat.c. These have their own copyright
+notices.
+
+Seb James, 6th April 2011.

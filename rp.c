@@ -2,13 +2,11 @@
  * Shamelessly nicked from:
  * http://cs.baylor.edu/~donahoo/practical/CSockets/code/TCPEchoClient.c
  *
- * And then modified to send raw data from a file to a print server.
+ * and then modified to send raw data from a file to a print server.
  *
- * Note that this is a CLIENT, not a server. The raw input program
- * used on WML print platform devices is also called rawprint, but is
- * (currently) to be found in the wmlppctrl code module.
+ * Note that this is a CLIENT, not a server.
  *
- * Seb, Sept 1st 2008.
+ * Seb James, Sept 1st 2008.
  *
  */
 
