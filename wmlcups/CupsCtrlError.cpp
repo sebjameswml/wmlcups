@@ -134,9 +134,11 @@ wml::CupsCtrl::errorString (http_status_t err)
 	case HTTP_UNAUTHORIZED:
 		errStr = "Unauthorized to access the host";
 		break;
+#if CUPS_VERSION_MINOR > 3
 	case HTTP_AUTHORIZATION_CANCELED:
 		errStr = "User cancelled authorization";
 		break;
+#endif
 	case HTTP_UPGRADE_REQUIRED:
 		errStr = "Upgrade to SSL/TLS required";
 		break;
