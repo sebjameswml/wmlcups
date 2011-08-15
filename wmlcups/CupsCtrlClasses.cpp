@@ -57,9 +57,7 @@ wml::CupsCtrl::getMemberUris (string cupsPrinter)
 vector<string>
 wml::CupsCtrl::getClassesList(void)
 {
-
 	return this->getCupsPrinterList (GET_CLASSES);
-
 }
 
 
@@ -204,7 +202,6 @@ wml::CupsCtrl::getQueueAttribute (const char* printerName,
 	}
 
 	return results;
-
 }
 
 void
@@ -251,7 +248,6 @@ wml::CupsCtrl::setClassAttribute (const char* printerName,
 	}
 
 	ippDelete (rtn);
-	return;
 }
 
 void
