@@ -53,73 +53,73 @@ using namespace wml;
 
 int main(int argc, char **argv)
 {
-	DBGOPEN ("/tmp/memberuritest.log");
+        DBGOPEN ("/tmp/memberuritest.log");
 
-	try {
+        try {
 
-		CupsCtrl c ("127.0.0.1");
+                CupsCtrl c ("127.0.0.1");
 
-		stringstream test;
+                stringstream test;
 
-		vector<string> test2;
+                vector<string> test2;
 
-		string queuename = "newclass3";
-		vector<string>::iterator iter;
+                string queuename = "newclass3";
+                vector<string>::iterator iter;
 
-		test << c.getQueueType (queuename);
+                test << c.getQueueType (queuename);
 
-		cout << "Attempting to output member uris for class " << queuename << "..." << endl;
+                cout << "Attempting to output member uris for class " << queuename << "..." << endl;
 
-		if (test.str() == "1") {
-			cout << "printer" << endl;
-		} else if (test.str() == "2") {
-			cout << "class" << endl;
-		} else {
-			cout << "unknown" << endl;
-		}
-		test2 = c.getMemberUris (queuename);
+                if (test.str() == "1") {
+                        cout << "printer" << endl;
+                } else if (test.str() == "2") {
+                        cout << "class" << endl;
+                } else {
+                        cout << "unknown" << endl;
+                }
+                test2 = c.getMemberUris (queuename);
 
-		for (iter = test2.begin(); iter != test2.end(); iter++) {
-			cout << *iter << endl;
-		}
-
-
-
-		/*test2.push_back ("ipp://" + c.getCupsdAddress() + "/printers/kyo1300");
-		test2.push_back ("ipp://" + c.getCupsdAddress() + "/printers/hp1312-1");
-		test2.push_back ("ipp://" + c.getCupsdAddress() + "/printers/blackhole");
-
-		IppAttr attr;
+                for (iter = test2.begin(); iter != test2.end(); iter++) {
+                        cout << *iter << endl;
+                }
 
 
 
-		c.setInfo ("testclass",
-			   "testinfo");
+                /*test2.push_back ("ipp://" + c.getCupsdAddress() + "/printers/kyo1300");
+                test2.push_back ("ipp://" + c.getCupsdAddress() + "/printers/hp1312-1");
+                test2.push_back ("ipp://" + c.getCupsdAddress() + "/printers/blackhole");
 
-		c.setLocation ("testclass",
-			       "theQuadrant");
-
-		//c.setClassAttribute
-
-		c.setClassMembers ("testclass",
-
-		test2);*/
+                IppAttr attr;
 
 
 
-	} catch (const exception& e) {
+                c.setInfo ("testclass",
+                           "testinfo");
 
-		cout << "Exception: '" << e.what() << "'\n";
-		DBGSTREAM << "Exception: '" << e.what() << "'\n";
-		DBGSTREAM.flush();
-		cout << "Content-Type: text/plain\n\n";
-		cout << 0 << endl;
+                c.setLocation ("testclass",
+                               "theQuadrant");
+
+                //c.setClassAttribute
+
+                c.setClassMembers ("testclass",
+
+                test2);*/
 
 
-	}
 
-	DBGCLOSE();
+        } catch (const exception& e) {
 
-	_exit(0);
+                cout << "Exception: '" << e.what() << "'\n";
+                DBGSTREAM << "Exception: '" << e.what() << "'\n";
+                DBGSTREAM.flush();
+                cout << "Content-Type: text/plain\n\n";
+                cout << 0 << endl;
+
+
+        }
+
+        DBGCLOSE();
+
+        _exit(0);
 
 }

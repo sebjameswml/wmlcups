@@ -43,57 +43,57 @@ extern "C" {
 #include "config.h"
 
 #ifdef A_COPY_OF_IPP_TAGS
-typedef enum ipp_tag_e			/**** Format tags for attributes... ****/
+typedef enum ipp_tag_e                        /**** Format tags for attributes... ****/
 {
-  IPP_TAG_ZERO = 0x00,			/* Zero tag - used for separators */
-  IPP_TAG_OPERATION,			/* Operation group */
-  IPP_TAG_JOB,				/* Job group */
-  IPP_TAG_END,				/* End-of-attributes */
-  IPP_TAG_PRINTER,			/* Printer group */
-  IPP_TAG_UNSUPPORTED_GROUP,		/* Unsupported attributes group */
-  IPP_TAG_SUBSCRIPTION,			/* Subscription group */
-  IPP_TAG_EVENT_NOTIFICATION,		/* Event group */
-  IPP_TAG_UNSUPPORTED_VALUE = 0x10,	/* Unsupported value */
-  IPP_TAG_DEFAULT,			/* Default value */
-  IPP_TAG_UNKNOWN,			/* Unknown value */
-  IPP_TAG_NOVALUE,			/* No-value value */
-  IPP_TAG_NOTSETTABLE = 0x15,		/* Not-settable value */
-  IPP_TAG_DELETEATTR,			/* Delete-attribute value */
-  IPP_TAG_ADMINDEFINE,			/* Admin-defined value */
-  IPP_TAG_INTEGER = 0x21,		/* Integer value */
-  IPP_TAG_BOOLEAN,			/* Boolean value */
-  IPP_TAG_ENUM,				/* Enumeration value */
-  IPP_TAG_STRING = 0x30,		/* Octet string value */
-  IPP_TAG_DATE,				/* Date/time value */
-  IPP_TAG_RESOLUTION,			/* Resolution value */
-  IPP_TAG_RANGE,			/* Range value */
-  IPP_TAG_BEGIN_COLLECTION,		/* Beginning of collection value */
-  IPP_TAG_TEXTLANG,			/* Text-with-language value */
-  IPP_TAG_NAMELANG,			/* Name-with-language value */
-  IPP_TAG_END_COLLECTION,		/* End of collection value */
-  IPP_TAG_TEXT = 0x41,			/* Text value */
-  IPP_TAG_NAME,				/* Name value */
-  IPP_TAG_KEYWORD = 0x44,		/* Keyword value */
-  IPP_TAG_URI,				/* URI value */
-  IPP_TAG_URISCHEME,			/* URI scheme value */
-  IPP_TAG_CHARSET,			/* Character set value */
-  IPP_TAG_LANGUAGE,			/* Language value */
-  IPP_TAG_MIMETYPE,			/* MIME media type value */
-  IPP_TAG_MEMBERNAME,			/* Collection member name value */
-  IPP_TAG_MASK = 0x7fffffff,		/* Mask for copied attribute values */
-  IPP_TAG_COPY = -0x7fffffff-1		/* Bitflag for copied attribute values */
+  IPP_TAG_ZERO = 0x00,                        /* Zero tag - used for separators */
+  IPP_TAG_OPERATION,                        /* Operation group */
+  IPP_TAG_JOB,                                /* Job group */
+  IPP_TAG_END,                                /* End-of-attributes */
+  IPP_TAG_PRINTER,                        /* Printer group */
+  IPP_TAG_UNSUPPORTED_GROUP,                /* Unsupported attributes group */
+  IPP_TAG_SUBSCRIPTION,                        /* Subscription group */
+  IPP_TAG_EVENT_NOTIFICATION,                /* Event group */
+  IPP_TAG_UNSUPPORTED_VALUE = 0x10,        /* Unsupported value */
+  IPP_TAG_DEFAULT,                        /* Default value */
+  IPP_TAG_UNKNOWN,                        /* Unknown value */
+  IPP_TAG_NOVALUE,                        /* No-value value */
+  IPP_TAG_NOTSETTABLE = 0x15,                /* Not-settable value */
+  IPP_TAG_DELETEATTR,                        /* Delete-attribute value */
+  IPP_TAG_ADMINDEFINE,                        /* Admin-defined value */
+  IPP_TAG_INTEGER = 0x21,                /* Integer value */
+  IPP_TAG_BOOLEAN,                        /* Boolean value */
+  IPP_TAG_ENUM,                                /* Enumeration value */
+  IPP_TAG_STRING = 0x30,                /* Octet string value */
+  IPP_TAG_DATE,                                /* Date/time value */
+  IPP_TAG_RESOLUTION,                        /* Resolution value */
+  IPP_TAG_RANGE,                        /* Range value */
+  IPP_TAG_BEGIN_COLLECTION,                /* Beginning of collection value */
+  IPP_TAG_TEXTLANG,                        /* Text-with-language value */
+  IPP_TAG_NAMELANG,                        /* Name-with-language value */
+  IPP_TAG_END_COLLECTION,                /* End of collection value */
+  IPP_TAG_TEXT = 0x41,                        /* Text value */
+  IPP_TAG_NAME,                                /* Name value */
+  IPP_TAG_KEYWORD = 0x44,                /* Keyword value */
+  IPP_TAG_URI,                                /* URI value */
+  IPP_TAG_URISCHEME,                        /* URI scheme value */
+  IPP_TAG_CHARSET,                        /* Character set value */
+  IPP_TAG_LANGUAGE,                        /* Language value */
+  IPP_TAG_MIMETYPE,                        /* MIME media type value */
+  IPP_TAG_MEMBERNAME,                        /* Collection member name value */
+  IPP_TAG_MASK = 0x7fffffff,                /* Mask for copied attribute values */
+  IPP_TAG_COPY = -0x7fffffff-1                /* Bitflag for copied attribute values */
 } ipp_tag_t;
 #endif
 
 // A copy of _ipp_option_t from cups-1.4.x/cups/ipp-private.h
 #define A_COPY_OF_IPP_OPTION_T 1 // required
 #ifdef A_COPY_OF_IPP_OPTION_T
-typedef struct				/**** Attribute mapping data ****/
+typedef struct                                /**** Attribute mapping data ****/
 {
-  int		multivalue;		/* Option has multiple values? */
-  const char	*name;			/* Option/attribute name */
-  ipp_tag_t	value_tag;		/* Value tag for this attribute */
-  ipp_tag_t	group_tag;		/* Group tag for this attribute */
+  int                multivalue;                /* Option has multiple values? */
+  const char        *name;                        /* Option/attribute name */
+  ipp_tag_t        value_tag;                /* Value tag for this attribute */
+  ipp_tag_t        group_tag;                /* Group tag for this attribute */
 } _ipp_option_t;
 #endif
 

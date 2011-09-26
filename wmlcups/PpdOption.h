@@ -44,140 +44,140 @@ extern "C" {
 
 namespace wml {
 
-	/*!
-	 * A PPD option.
-	 */
-	class PpdOption
-	{
-	public:
-		PpdOption ();
-		PpdOption (ppd_option_t* o);
-		~PpdOption ();
+        /*!
+         * A PPD option.
+         */
+        class PpdOption
+        {
+        public:
+                PpdOption ();
+                PpdOption (ppd_option_t* o);
+                ~PpdOption ();
 
-		/*!
-		 * Zero out any stored values.
-		 */
-		void zero (void);
+                /*!
+                 * Zero out any stored values.
+                 */
+                void zero (void);
 
-		/*!
-		 * Get the group name.
-		 */
-		std::string getGroupName (void);
+                /*!
+                 * Get the group name.
+                 */
+                std::string getGroupName (void);
 
-		/*!
-		 * Set the group name.
-		 */
-		void setGroupName (std::string n);
+                /*!
+                 * Set the group name.
+                 */
+                void setGroupName (std::string n);
 
-		/*!
-		 * Return the keyword of this option.
-		 */
-		std::string getKeyword (void);
+                /*!
+                 * Return the keyword of this option.
+                 */
+                std::string getKeyword (void);
 
-		/*!
-		 * Set the keyword to s
-		 */
-		void setKeyword (std::string s);
+                /*!
+                 * Set the keyword to s
+                 */
+                void setKeyword (std::string s);
 
-		/*!
-		 * Return the text of this option.
-		 */
-		std::string getText (void);
+                /*!
+                 * Return the text of this option.
+                 */
+                std::string getText (void);
 
-		/*!
-		 * Set the text to s
-		 */
-		void setText (std::string s);
+                /*!
+                 * Set the text to s
+                 */
+                void setText (std::string s);
 
-		/*!
-		 * Return the value of this option.
-		 */
-		std::string getChoiceValue (void);
+                /*!
+                 * Return the value of this option.
+                 */
+                std::string getChoiceValue (void);
 
-		/*!
-		 * Set the choice which has the value s
-		 */
-		void setChoiceValue (std::string s);
+                /*!
+                 * Set the choice which has the value s
+                 */
+                void setChoiceValue (std::string s);
 
-		/*!
-		 * Return the text of the chosen option.
-		 */
-		std::string getChoiceText (void);
+                /*!
+                 * Return the text of the chosen option.
+                 */
+                std::string getChoiceText (void);
 
-		/*!
-		 * Set the choice which has the text s
-		 */
-		void setChoiceText (std::string s);
+                /*!
+                 * Set the choice which has the text s
+                 */
+                void setChoiceText (std::string s);
 
-		/*!
-		 * Return the default choice of this option.
-		 */
-		std::string getDefaultChoice (void);
+                /*!
+                 * Return the default choice of this option.
+                 */
+                std::string getDefaultChoice (void);
 
-		/*!
-		 * Set the default choice to s
-		 */
-		void setDefaultChoice (std::string s);
+                /*!
+                 * Set the default choice to s
+                 */
+                void setDefaultChoice (std::string s);
 
-		ppd_ui_t getUi (void);
+                ppd_ui_t getUi (void);
 
-		void setUi (ppd_ui_t u);
+                void setUi (ppd_ui_t u);
 
-		/*!
-		 * Returns the number of elements in this->choices.
-		 */
-		int getNumChoices (void);
+                /*!
+                 * Returns the number of elements in this->choices.
+                 */
+                int getNumChoices (void);
 
-		/*!
-		 * Get the next choice.
-		 */
-		bool getNextChoice (ppd_choice_t& choice);
+                /*!
+                 * Get the next choice.
+                 */
+                bool getNextChoice (ppd_choice_t& choice);
 
-		void resetCurChoice (void);
+                void resetCurChoice (void);
 
-	private:
-		/*!
-		 * The name of the PPD option group to which this
-		 * PpdOption belongs.
-		 */
-		std::string groupName;
+        private:
+                /*!
+                 * The name of the PPD option group to which this
+                 * PpdOption belongs.
+                 */
+                std::string groupName;
 
-		/*!
-		 * The keyword of the option. Should be no longer than
-		 * PPD_MAX_NAME.
-		 */
-		std::string keyword;
+                /*!
+                 * The keyword of the option. Should be no longer than
+                 * PPD_MAX_NAME.
+                 */
+                std::string keyword;
 
-		/*!
-		 * The text of the ppdoption. Should be no longer than
-		 * PPD_MAX_TEXT.
-		 */
-		std::string text;
+                /*!
+                 * The text of the ppdoption. Should be no longer than
+                 * PPD_MAX_TEXT.
+                 */
+                std::string text;
 
-		/*!
-		 * The default option choice. No longer than
-		 * PPD_MAX_NAME chars.
-		 */
-		std::string defaultChoice;
+                /*!
+                 * The default option choice. No longer than
+                 * PPD_MAX_NAME chars.
+                 */
+                std::string defaultChoice;
 
-		/*!
-		 * The UI type of this option - PPD_UI_BOOLEAN,
-		 * PPD_UI_PICKONE or PPD_UI_PICKMANY.
-		 */
-		ppd_ui_t ui;
+                /*!
+                 * The UI type of this option - PPD_UI_BOOLEAN,
+                 * PPD_UI_PICKONE or PPD_UI_PICKMANY.
+                 */
+                ppd_ui_t ui;
 
-		/*!
-		 * The available choices for the option.
-		 */
-		std::vector<ppd_choice_t> choices;
+                /*!
+                 * The available choices for the option.
+                 */
+                std::vector<ppd_choice_t> choices;
 
-		/*!
-		 * The current choice pointed to in choices. Used by
-		 * the getNextChoice() function. Distinct from
-		 * currentChoice.
-		 */
-		std::vector<ppd_choice_t>::iterator curChoice;
-	};
+                /*!
+                 * The current choice pointed to in choices. Used by
+                 * the getNextChoice() function. Distinct from
+                 * currentChoice.
+                 */
+                std::vector<ppd_choice_t>::iterator curChoice;
+        };
 
 } // namespace wml
 

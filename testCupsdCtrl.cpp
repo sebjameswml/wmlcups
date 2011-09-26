@@ -43,29 +43,29 @@ ofstream DBGSTREAM;
 int main (int argc, char** argv)
 {
 
-/*	if (argc<2) {
-		cerr << "Usage " << argv[0] << " queue\n";
-		return -1;
-		}*/
+/*        if (argc<2) {
+                cerr << "Usage " << argv[0] << " queue\n";
+                return -1;
+                }*/
 
-	DBGOPEN ("cupsdCtrl.dbg");
+        DBGOPEN ("cupsdCtrl.dbg");
 
-	CupsdCtrl c("/etc/cups/cupsd.conf");
+        CupsdCtrl c("/etc/cups/cupsd.conf");
 
-	//string s(argv[1]);
-	//c.setDirective();is not re
-	//cout << s << endl;
-	c.read();
+        //string s(argv[1]);
+        //c.setDirective();is not re
+        //cout << s << endl;
+        c.read();
 
-	queue<pair<string, string> > containerId;
-	containerId.push(make_pair("root",""));
-	containerId.push(make_pair("Location","/admin/conf"));
-	//containerId.push(make_pair("Limit", "All"));
-	c.setDirective(containerId, "AuthType", "notDefault");
-	cout << "Directive is: " << c.getDirective(containerId, "AuthType") << endl;
-	c.write();
+        queue<pair<string, string> > containerId;
+        containerId.push(make_pair("root",""));
+        containerId.push(make_pair("Location","/admin/conf"));
+        //containerId.push(make_pair("Limit", "All"));
+        c.setDirective(containerId, "AuthType", "notDefault");
+        cout << "Directive is: " << c.getDirective(containerId, "AuthType") << endl;
+        c.write();
 
-	DBGCLOSE();
+        DBGCLOSE();
 
-	return 0;
+        return 0;
 }

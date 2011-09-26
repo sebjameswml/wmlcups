@@ -37,49 +37,49 @@
 
 namespace wml {
 
-	/*!
-	 * Collection of status information for Queue.
-	 *
-	 * A small struct to hold Queue status, and only status. A
-	 * data container to pass into the WmlCups function
-	 * getStatus(). Holds queue status and info about the last
-	 * print job processed.
-	 *
-	 */
-	struct QueueCupsStatus
-	{
-		/*!
-		 * The state of the queue. Stored here as a string for
-		 * simplicity, even though this will use a bit more
-		 * memory than storing as a number.
-		 */
-		std::string state;
+        /*!
+         * Collection of status information for Queue.
+         *
+         * A small struct to hold Queue status, and only status. A
+         * data container to pass into the WmlCups function
+         * getStatus(). Holds queue status and info about the last
+         * print job processed.
+         *
+         */
+        struct QueueCupsStatus
+        {
+                /*!
+                 * The state of the queue. Stored here as a string for
+                 * simplicity, even though this will use a bit more
+                 * memory than storing as a number.
+                 */
+                std::string state;
 
-		/*!
-		 * The printer state message.
-		 */
-		std::string stateMsg;
+                /*!
+                 * The printer state message.
+                 */
+                std::string stateMsg;
 
-		/*!
-		 * Enabled?
-		 */
-		bool enabled;
+                /*!
+                 * Enabled?
+                 */
+                bool enabled;
 
-		/*!
-		 * Accepting?
-		 */
-		bool accepting;
+                /*!
+                 * Accepting?
+                 */
+                bool accepting;
 
-		/*!
-		 * Is the printer marked as shared?
-		 */
-		bool shared;
+                /*!
+                 * Is the printer marked as shared?
+                 */
+                bool shared;
 
-		/*!
-		 * The information about the last job processed.
-		 */
-		CupsJob lastJob;
-	};
+                /*!
+                 * The information about the last job processed.
+                 */
+                CupsJob lastJob;
+        };
 
 } // namespace wml
 

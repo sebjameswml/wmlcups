@@ -24,8 +24,8 @@ using namespace std;
 using namespace wml;
 
 wml::Ppd::Ppd (void) :
-	type (0),
-	modelNumber(0)
+        type (0),
+        modelNumber(0)
 {
 }
 
@@ -36,107 +36,107 @@ wml::Ppd::~Ppd (void)
 void
 wml::Ppd::setName (std::string s)
 {
-	this->name = s;
+        this->name = s;
 }
 
 void
 wml::Ppd::setMakeAndModel (std::string s)
 {
-	this->makeAndModel = s;
+        this->makeAndModel = s;
 }
 
 void
 wml::Ppd::setMake (std::string s)
 {
-	this->make = s;
+        this->make = s;
 }
 
 void
 wml::Ppd::setDeviceId (std::string s)
 {
-	this->deviceId = s;
+        this->deviceId = s;
 }
 
 void
 wml::Ppd::setProduct (std::string s)
 {
-	this->product = s;
+        this->product = s;
 }
 
 void
 wml::Ppd::setPsversion (std::string s)
 {
-	this->psversion = s;
+        this->psversion = s;
 }
 
 void
 wml::Ppd::setType (int i)
 {
-	this->type = i;
+        this->type = i;
 }
 
 void
 wml::Ppd::setModelNumber (int i)
 {
-	this->modelNumber = i;
+        this->modelNumber = i;
 }
 
 void
 wml::Ppd::setNaturalLanguage (string s)
 {
-	this->naturalLanguage = s;
+        this->naturalLanguage = s;
 }
 
 std::string
 wml::Ppd::getName (void)
 {
-	return this->name;
+        return this->name;
 }
 
 std::string
 wml::Ppd::getMakeAndModel (void)
 {
-	return this->makeAndModel;
+        return this->makeAndModel;
 }
 
 std::string
 wml::Ppd::getMake (void)
 {
-	return this->make;
+        return this->make;
 }
 
 std::string
 wml::Ppd::getDeviceId (void)
 {
-	return this->deviceId;
+        return this->deviceId;
 }
 
 std::string
 wml::Ppd::getProduct (void)
 {
-	return this->product;
+        return this->product;
 }
 
 std::string
 wml::Ppd::getPsversion (void)
 {
-	return this->psversion;
+        return this->psversion;
 }
 
 int
 wml::Ppd::getType (void)
 {
-	return this->type;
+        return this->type;
 }
 
 int
 wml::Ppd::getModelNumber (void)
 {
-	return this->modelNumber;
+        return this->modelNumber;
 }
 
 std::string
 wml::Ppd::getNaturalLanguage (void)
 {
-	return this->naturalLanguage;
+        return this->naturalLanguage;
 }

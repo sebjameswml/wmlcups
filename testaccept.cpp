@@ -41,23 +41,23 @@ ofstream DBGSTREAM;
 
 int main (int argc, char** argv)
 {
-	if (argc<3) {
-		cerr << "Usage " << argv[0] << " queue yes|no\n";
-		return -1;
-	}
+        if (argc<3) {
+                cerr << "Usage " << argv[0] << " queue yes|no\n";
+                return -1;
+        }
 
-	//string addr ("192.168.0.6");
-	string addr ("localhost");
-	CupsCtrl c(addr);
+        //string addr ("192.168.0.6");
+        string addr ("localhost");
+        CupsCtrl c(addr);
 
-	// Test setAccepting
-	string thequeue(argv[1]);
-	string accept(argv[2]);
+        // Test setAccepting
+        string thequeue(argv[1]);
+        string accept(argv[2]);
 
-	if (accept == "yes") {
-		c.setAccepting (thequeue, true);
-	} else {
-		c.setAccepting (thequeue, false);
-	}
-	return 0;
+        if (accept == "yes") {
+                c.setAccepting (thequeue, true);
+        } else {
+                c.setAccepting (thequeue, false);
+        }
+        return 0;
 }

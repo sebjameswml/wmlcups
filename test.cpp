@@ -15,68 +15,68 @@ ofstream DBGSTREAM;
 
 int main (int argc, char** argv)
 {
-	if (argc<2) {
-		cerr << "Usage " << argv[0] << " queue\n";
-		return -1;
-	}
+        if (argc<2) {
+                cerr << "Usage " << argv[0] << " queue\n";
+                return -1;
+        }
 
-	DBGOPEN ("/tmp/wmlcups.log");
+        DBGOPEN ("/tmp/wmlcups.log");
 
-	//string addr ("192.168.0.6");
-	string addr ("localhost");
-	CupsCtrl c(addr);
+        //string addr ("192.168.0.6");
+        string addr ("localhost");
+        CupsCtrl c(addr);
 
-	// Test getStatus
-	cout << "\nTop level status function tests:\n";
-	string printer(argv[1]);
-	cout << "getEnabled says " << printer << (c.getEnabled (printer) ? " is " : " isn't ") << "enabled\n";
-	cout << "getAccepting says " << printer << (c.getAccepting (printer) ? " is " : " isn't ") << "accepting jobs\n";
-	cout << "getState says " << printer << " state is " << c.getState(printer) << endl;
-	cout << "getInfo says " << printer << " info is " << c.getInfo(printer) << endl;
-	cout << "getLocation says " << printer << " location is " << c.getLocation(printer) << endl;
-	cout << "getMakeModel says " << printer << " make and model is " << c.getMakeModel(printer) << endl;
-	cout << "Device URI is " << c.getDeviceURI(printer) << endl;
-	cout << "Cups URI is " << c.getCupsURI(printer) << endl;
+        // Test getStatus
+        cout << "\nTop level status function tests:\n";
+        string printer(argv[1]);
+        cout << "getEnabled says " << printer << (c.getEnabled (printer) ? " is " : " isn't ") << "enabled\n";
+        cout << "getAccepting says " << printer << (c.getAccepting (printer) ? " is " : " isn't ") << "accepting jobs\n";
+        cout << "getState says " << printer << " state is " << c.getState(printer) << endl;
+        cout << "getInfo says " << printer << " info is " << c.getInfo(printer) << endl;
+        cout << "getLocation says " << printer << " location is " << c.getLocation(printer) << endl;
+        cout << "getMakeModel says " << printer << " make and model is " << c.getMakeModel(printer) << endl;
+        cout << "Device URI is " << c.getDeviceURI(printer) << endl;
+        cout << "Cups URI is " << c.getCupsURI(printer) << endl;
 
-	cout << "\ngetPrinterAttribute() tests:\n";
-	IppAttr at("printer-state-message");
-	c.getPrinterAttribute (argv[1], at);
-	cout << "state message: " << at.getString() << endl;
+        cout << "\ngetPrinterAttribute() tests:\n";
+        IppAttr at("printer-state-message");
+        c.getPrinterAttribute (argv[1], at);
+        cout << "state message: " << at.getString() << endl;
 
-	IppAttr at2("printer-info");
-	cout << "info: " << c.getPrinterAttribute (argv[1], at2) << endl;
+        IppAttr at2("printer-info");
+        cout << "info: " << c.getPrinterAttribute (argv[1], at2) << endl;
 
-	IppAttr at3("printer-location");
-	cout << "location: " << c.getPrinterAttribute (argv[1], at3) << endl;
+        IppAttr at3("printer-location");
+        cout << "location: " << c.getPrinterAttribute (argv[1], at3) << endl;
 
-	IppAttr at4("printer-state");
-	cout << "state: " << c.getPrinterAttribute (argv[1], at4) << endl;
+        IppAttr at4("printer-state");
+        cout << "state: " << c.getPrinterAttribute (argv[1], at4) << endl;
 
-	cout << "\nNow setting info...\n";
+        cout << "\nNow setting info...\n";
 /*
-	IppAttr a("printer-info");
-	a.setValue ("Blah blah");
-	try {
-		c.setPrinterAttribute (argv[1], a);
-	} catch (const exception& e) {
-		cerr << "error: " << e.what() << endl;
-	}
-	a.setValue ("nono");
-	cout << "info is now: " << c.getPrinterAttribute (argv[1], a) << endl;
+        IppAttr a("printer-info");
+        a.setValue ("Blah blah");
+        try {
+                c.setPrinterAttribute (argv[1], a);
+        } catch (const exception& e) {
+                cerr << "error: " << e.what() << endl;
+        }
+        a.setValue ("nono");
+        cout << "info is now: " << c.getPrinterAttribute (argv[1], a) << endl;
 */
-	c.setInfo (argv[1], "Test description of printer");
-	c.setLocation (argv[1], "The Quadrant");
+        c.setInfo (argv[1], "Test description of printer");
+        c.setLocation (argv[1], "The Quadrant");
 
-	c.deletePrinter (argv[1]);
+        c.deletePrinter (argv[1]);
 
-	vector<string> l = c.getCupsPrinterList(GET_PRINTERS_ONLY);
-	vector<string>::iterator i = l.begin();
-	cout << "Printer List:\n";
-	while (i != l.end()) {
-		cout << *i << endl;
-		i++;
-	}
+        vector<string> l = c.getCupsPrinterList(GET_PRINTERS_ONLY);
+        vector<string>::iterator i = l.begin();
+        cout << "Printer List:\n";
+        while (i != l.end()) {
+                cout << *i << endl;
+                i++;
+        }
 
-	DBGCLOSE();
-	return 0;
+        DBGCLOSE();
+        return 0;
 }

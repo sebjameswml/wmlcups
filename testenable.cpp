@@ -41,28 +41,28 @@ ofstream DBGSTREAM;
 
 int main (int argc, char** argv)
 {
-	if (argc<3) {
-		cerr << "Usage " << argv[0] << " queue yes|no\n";
-		return -1;
-	}
-	DBGOPEN ("testenable.log");
+        if (argc<3) {
+                cerr << "Usage " << argv[0] << " queue yes|no\n";
+                return -1;
+        }
+        DBGOPEN ("testenable.log");
 
-	//string addr ("192.168.0.6");
-	string addr ("localhost");
-	CupsCtrl c(addr);
+        //string addr ("192.168.0.6");
+        string addr ("localhost");
+        CupsCtrl c(addr);
 
-	// Test setEnable
-	string thequeue(argv[1]);
-	string enable(argv[2]);
+        // Test setEnable
+        string thequeue(argv[1]);
+        string enable(argv[2]);
 
-	c.setShared (thequeue, true);
+        c.setShared (thequeue, true);
 
-	if (enable == "yes") {
-		c.setEnabled (thequeue, true);
-	} else {
-		c.setEnabled (thequeue, false);
-	}
+        if (enable == "yes") {
+                c.setEnabled (thequeue, true);
+        } else {
+                c.setEnabled (thequeue, false);
+        }
 
-	DBGCLOSE();
-	return 0;
+        DBGCLOSE();
+        return 0;
 }

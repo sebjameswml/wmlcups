@@ -42,38 +42,38 @@ ofstream DBGSTREAM;
 
 int main (int argc, char** argv)
 {
-	if (argc<2) {
-		cerr << "Usage " << argv[0] << " queue\n";
-		return -1;
-	}
+        if (argc<2) {
+                cerr << "Usage " << argv[0] << " queue\n";
+                return -1;
+        }
 
-	DBGOPEN ("teststatus.dbg");
+        DBGOPEN ("teststatus.dbg");
 
-	string addr ("localhost");
-	CupsCtrl c(addr);
+        string addr ("localhost");
+        CupsCtrl c(addr);
 
-	// Test setAccepting
-	string thequeue(argv[1]);
+        // Test setAccepting
+        string thequeue(argv[1]);
 
-	QueueCupsStatus qstat;
+        QueueCupsStatus qstat;
 
-	if (c.getFullStatus (thequeue, qstat) == true) {
+        if (c.getFullStatus (thequeue, qstat) == true) {
 
-		cout << "State: " << qstat.state << '\n';
-		cout << "State msg: " << qstat.stateMsg << '\n';
-		cout << "Enabled?: " << qstat.enabled << '\n';
-		cout << "Accepting?: " << qstat.accepting << '\n';
-		cout << "Last job state: " << qstat.lastJob.getState() << '\n';
+                cout << "State: " << qstat.state << '\n';
+                cout << "State msg: " << qstat.stateMsg << '\n';
+                cout << "Enabled?: " << qstat.enabled << '\n';
+                cout << "Accepting?: " << qstat.accepting << '\n';
+                cout << "Last job state: " << qstat.lastJob.getState() << '\n';
 
-	} else {
-		cout << "No such queue " << thequeue << endl;
-	}
+        } else {
+                cout << "No such queue " << thequeue << endl;
+        }
 
-	//cout << c.getStateReasons (thequeue) << endl;
+        //cout << c.getStateReasons (thequeue) << endl;
 
-	cout << "Cups PPD file is: " << c.getPPDNickname (thequeue) << endl;
+        cout << "Cups PPD file is: " << c.getPPDNickname (thequeue) << endl;
 
-	DBGCLOSE();
+        DBGCLOSE();
 
-	return 0;
+        return 0;
 }
