@@ -1,0 +1,56 @@
+## gitignore / C++.gitignore
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+## gitignore / Autotools.gitignore
+
+# http://www.gnu.org/software/automake
+
+Makefile.in
+
+# http://www.gnu.org/software/autoconf
+
+autom4te.cache
+aclocal.m4
+compile
+configure
+depcomp
+install-sh
+missing
+
+## Misc WML extras
+.deps
+.libs
+Makefile
+config.*
+doc/Doxyfile
+doc/html/
+libtool
+ltmain.sh
+wmlcups/stamp-h1
+
+lpd
+lpdstat
+qlpd
+rp
+test
+testCupsdCtrl
+testJobList
+testPrint
+testaccept
+testenable
+testjobcommand
+testmemberuris
+testppd
+teststatus
