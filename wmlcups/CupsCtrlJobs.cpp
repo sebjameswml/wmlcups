@@ -590,7 +590,7 @@ wml::CupsCtrl::createJob (string cupsQueue,
                 throw runtime_error ("No job-id attribute found in response from server!");
                 jobid = 0;
 
-         } else {
+        } else {
                 // cupsd successfully allocated a job
                 jobid = attr->values[0].integer;
         }
@@ -685,7 +685,7 @@ wml::CupsCtrl::sendDocument (int jobId,
                 ippDelete (rtn);
                 throw runtime_error (ee.str());
 
-         } else {
+        } else {
                 DBG ("cupsd accepted file for Job" << jobId);
         }
 
