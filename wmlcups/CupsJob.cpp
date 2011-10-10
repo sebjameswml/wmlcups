@@ -104,7 +104,7 @@ wml::CupsJob::setId (int i)
 }
 
 int
-wml::CupsJob::getId (void)
+wml::CupsJob::getId (void) const
 {
         return this->id;
 }
@@ -116,7 +116,7 @@ wml::CupsJob::setCopies (int i)
 }
 
 int
-wml::CupsJob::getCopies (void)
+wml::CupsJob::getCopies (void) const
 {
         return this->copies;
 }
@@ -128,7 +128,7 @@ wml::CupsJob::setName (std::string s)
 }
 
 std::string
-wml::CupsJob::getName (void)
+wml::CupsJob::getName (void) const
 {
         return this->name;
 }
@@ -140,7 +140,7 @@ wml::CupsJob::setUser (std::string s)
 }
 
 std::string
-wml::CupsJob::getUser (void)
+wml::CupsJob::getUser (void) const
 {
         return this->user;
 }
@@ -152,13 +152,13 @@ wml::CupsJob::setSizeKB (unsigned int i)
 }
 
 unsigned int
-wml::CupsJob::getSizeKB (void)
+wml::CupsJob::getSizeKB (void) const
 {
         return this->sizeKB;
 }
 
 string
-wml::CupsJob::getSizeString (void)
+wml::CupsJob::getSizeString (void) const
 {
         stringstream sizeString;
         sizeString.precision (3);
@@ -183,7 +183,7 @@ wml::CupsJob::setCupsPages (unsigned int i)
 }
 
 unsigned int
-wml::CupsJob::getCupsPages (void)
+wml::CupsJob::getCupsPages (void) const
 {
         return this->cupsPages;
 }
@@ -195,7 +195,7 @@ wml::CupsJob::setPrinterUri (std::string s)
 }
 
 std::string
-wml::CupsJob::getPrinterUri (void)
+wml::CupsJob::getPrinterUri (void) const
 {
         return this->printerUri;
 }
@@ -207,7 +207,7 @@ wml::CupsJob::setState (ipp_jstate_t jstate)
 }
 
 std::string
-wml::CupsJob::getState (void)
+wml::CupsJob::getState (void) const
 {
         string s;
 
@@ -248,7 +248,7 @@ wml::CupsJob::setCreationTime (int t)
 }
 
 int
-wml::CupsJob::getCreationTime (void)
+wml::CupsJob::getCreationTime (void) const
 {
         return this->creation_time;
 }
@@ -260,7 +260,7 @@ wml::CupsJob::setProcessingTime (int t)
 }
 
 int
-wml::CupsJob::getProcessingTime (void)
+wml::CupsJob::getProcessingTime (void) const
 {
         return this->processing_time;
 }
@@ -272,13 +272,13 @@ wml::CupsJob::setCompletedTime (int t)
 }
 
 int
-wml::CupsJob::getCompletedTime (void)
+wml::CupsJob::getCompletedTime (void) const
 {
         return this->completed_time;
 }
 
 int
-wml::CupsJob::getTime (void)
+wml::CupsJob::getTime (void) const
 {
         switch (this->state) {
         case IPP_JOB_PENDING:
@@ -317,7 +317,7 @@ wml::CupsJob::getTime (void)
 }
 
 string
-wml::CupsJob::getFormattedTime (void)
+wml::CupsJob::getFormattedTime (void) const
 {
         return FoundryUtilities::numToDateTime ((time_t)this->getTime(), '/', ':');
 }
@@ -329,7 +329,7 @@ wml::CupsJob::setSourceIP (std::string ip)
 }
 
 std::string
-wml::CupsJob::getSourceIP (void)
+wml::CupsJob::getSourceIP (void) const
 {
         return this->sourceIP;
 }
@@ -341,7 +341,7 @@ wml::CupsJob::setDestIP (std::string ip)
 }
 
 std::string
-wml::CupsJob::getDestIP (void)
+wml::CupsJob::getDestIP (void) const
 {
         return this->destIP;
 }

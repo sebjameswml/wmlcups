@@ -45,46 +45,46 @@ namespace wml {
                  */
                 //@{
                 void setId (int i);
-                int getId (void);
+                int getId (void) const;
 
                 void setCopies (int i);
-                int getCopies (void);
+                int getCopies (void) const;
 
                 void setName (std::string s);
-                std::string getName (void);
+                std::string getName (void) const;
 
                 void setUser (std::string s);
-                std::string getUser (void);
+                std::string getUser (void) const;
 
                 void setSizeKB (unsigned int i);
-                unsigned int getSizeKB (void);
+                unsigned int getSizeKB (void) const;
 
-                std::string getSizeString (void);
+                std::string getSizeString (void) const;
 
                 void setCupsPages (unsigned int i);
-                unsigned int getCupsPages (void);
+                unsigned int getCupsPages (void) const;
 
                 void setPrinterUri (std::string s);
-                std::string getPrinterUri (void);
+                std::string getPrinterUri (void) const;
 
                 void setState (ipp_jstate_t jstate);
-                std::string getState (void);
+                std::string getState (void) const;
 
                 void setCreationTime (int t);
-                int getCreationTime (void);
+                int getCreationTime (void) const;
                 void setProcessingTime (int t);
-                int getProcessingTime (void);
+                int getProcessingTime (void) const;
                 void setCompletedTime (int t);
-                int getCompletedTime (void);
+                int getCompletedTime (void) const;
 
-                int getTime (void);
-                std::string getFormattedTime (void);
+                int getTime (void) const;
+                std::string getFormattedTime (void) const;
 
                 void setSourceIP (std::string ip);
-                std::string getSourceIP (void);
+                std::string getSourceIP (void) const;
 
                 void setDestIP (std::string ip);
-                std::string getDestIP (void);
+                std::string getDestIP (void) const;
                 //@}
 
         private:
