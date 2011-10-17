@@ -1,6 +1,6 @@
 CLEANFILES = *~
 
-INCLUDES = -I$(top_srcdir) -I$(top_builddir)
+INCLUDES = -I$(top_srcdir) -I$(top_builddir) $(GLIBMM_CFLAGS)
 
 lib_LTLIBRARIES = libwmlcups.la
 

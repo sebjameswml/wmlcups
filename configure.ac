@@ -157,6 +157,9 @@ if test "$wmlcups_debug" = yes; then
   AC_DEFINE(DEBUG, 1, [Define if debug logging is enabled])
 fi
 
+dnl pkg-config to check for glibmm-2.4. Ubuntu 10.04 has ??, wmlpp2 has 2.20.1.
+PKG_CHECK_MODULES(GLIBMM, glibmm-2.4 >= 2.20.1)
+
 dnl Always output certain files
 AC_CONFIG_FILES([Makefile wmlcups/Makefile doc/Makefile doc/Doxyfile])
 
