@@ -531,7 +531,12 @@ namespace wml {
                                          std::string directory = "/printers/%s");
                 /*!
                  * Return true if the string s is a name which is
-                 * valid to be a CUPS printer name.
+                 * valid to be a CUPS printer name. Note that this is
+                 * more restrictive about which characters are
+                 * permitted in the printer name than is CUPS itself,
+                 * limiting the allowed characters to numerals,
+                 * letters of the alphabet (upper and lower cases),
+                 * the underscore character and the dash character.
                  */
                 static bool printerNameIsValid (std::string s);
 
@@ -543,13 +548,20 @@ namespace wml {
 
                 /*!
                  * Return true if the string s is a name which is
-                 * valid to be a destination queue.
+                 * valid to be an LPD destination queue. As with
+                 * printerNameIsValid, this is more retrictive than
+                 * the LPD protocol itself (as described in RFC
+                 * 1179). The same set of characters are allowed as
+                 * for CupsCtrl::printerNameIsValid.
                  */
                 static bool lpdqIsValid (std::string s);
 
                 /*!
-                 * Return true if the string s is a name which is
-                 * valid to be a CUPS port.
+                 * Return true if the string s describes a port which
+                 * is valid to be a raw port for TCP/IP data
+                 * transfer. Currently, this simply ensures that the
+                 * string is a set of numbers. Range checking of the
+                 * port value is left to client code.
                  */
                 static bool portIsValid (std::string s);
 

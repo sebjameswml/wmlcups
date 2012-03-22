@@ -61,7 +61,12 @@ wml::CupsCtrl::lpdqIsValid (string s)
                 return false;
         }
         try {
-                FoundryUtilities::sanitize (s, CHARS_NUMERIC_ALPHA);
+                // Allow same characters in LPD queue name as allowed
+                // in IPP printer name. That means
+                // CHARS_NUMERIC_ALPHA, '_' and
+                // '-'. WMLCUPS_QUEUENAME_SAFE_CHARS is defined in
+                // futil/FoundryUtilities.h.
+                FoundryUtilities::sanitize (s, WMLCUPS_QUEUENAME_SAFE_CHARS);
         } catch (const exception& e) {
                 return false;
         }
