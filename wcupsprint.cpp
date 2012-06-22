@@ -44,11 +44,12 @@ ofstream DBGSTREAM;
 int main (int argc, char** argv)
 {
         if (argc<3) {
+                cerr << argv[0] << ": Print a file to a queue\n";
                 cerr << "Usage " << argv[0] << " queue filepath\n";
                 return -1;
         }
 
-        DBGOPEN ("./testPrint.dbg");
+        DBGOPEN ("wcupsprint.log");
 
         string addr ("localhost");
         CupsCtrl c(addr);
@@ -57,17 +58,8 @@ int main (int argc, char** argv)
         string thequeue(argv[1]);
         string fpath (argv[2]);
 
-        int id = c.createJob (thequeue, "testtitle", "", "");
-        cout << "createJob created job with id " << id << endl;
-        c.sendDocument (id, fpath, "CupsCtrl");
-        cout << "Sent file to the job with id " << id << endl;
-
-        //cout << "Sleep 15 seconds...\n";
-        //usleep (15000000);
-
-        // Or, the above two in a single call:
-        //id = c.printFile (fpath, "testprint", thequeue);
-        //cout << "File printed on job with id " << id << endl;
+        int id = c.printFile (fpath, "testprint", thequeue);
+        cout << "File printed on job with id " << id << endl;
 
         DBGCLOSE();
         return 0;

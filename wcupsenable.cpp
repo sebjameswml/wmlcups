@@ -42,22 +42,27 @@ ofstream DBGSTREAM;
 int main (int argc, char** argv)
 {
         if (argc<3) {
+                cerr << argv[0] << ": Set queue enabled/disabled\n";
                 cerr << "Usage " << argv[0] << " queue yes|no\n";
                 return -1;
         }
+        DBGOPEN ("wcupsenable.log");
 
-        //string addr ("192.168.0.6");
         string addr ("localhost");
         CupsCtrl c(addr);
 
-        // Test setAccepting
+        // Test setEnable
         string thequeue(argv[1]);
-        string accept(argv[2]);
+        string enable(argv[2]);
 
-        if (accept == "yes") {
-                c.setAccepting (thequeue, true);
+        c.setShared (thequeue, true);
+
+        if (enable == "yes") {
+                c.setEnabled (thequeue, true);
         } else {
-                c.setAccepting (thequeue, false);
+                c.setEnabled (thequeue, false);
         }
+
+        DBGCLOSE();
         return 0;
 }

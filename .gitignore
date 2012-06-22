@@ -47,9 +47,9 @@ rp
 test
 testCupsdCtrl
 testJobList
-testPrint
-testaccept
-testenable
+wcupsprint
+wcupsaccept
+wcupsenable
 testjobcommand
 testmemberuris
 testppd

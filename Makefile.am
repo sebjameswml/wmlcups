@@ -3,16 +3,16 @@ AUTOMAKE_OPTIONS = check-news dist-bzip2
 
 SUBDIRS = wmlcups doc
 
-bin_PROGRAMS = test testenable testaccept teststatus testJobList testCupsdCtrl testppd testjobcommand testmemberuris testPrint rp lpd lpdstat qlpd
+bin_PROGRAMS = test teststatus testJobList testCupsdCtrl testppd testjobcommand testmemberuris rp lpd lpdstat qlpd wcupsprint wcupsaccept wcupsenable
 
 test_SOURCES = test.cpp
 test_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid -lmagic $(GLIBMM_LIBS)
 
-testenable_SOURCES = testenable.cpp
-testenable_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid -lmagic $(GLIBMM_LIBS)
+wcupsenable_SOURCES = wcupsenable.cpp
+wcupsenable_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid -lmagic $(GLIBMM_LIBS)
 
-testaccept_SOURCES = testaccept.cpp
-testaccept_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid -lmagic $(GLIBMM_LIBS)
+wcupsaccept_SOURCES = wcupsaccept.cpp
+wcupsaccept_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid -lmagic $(GLIBMM_LIBS)
 
 teststatus_SOURCES = teststatus.cpp
 teststatus_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid -lmagic $(GLIBMM_LIBS)
@@ -32,8 +32,8 @@ testjobcommand_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid -lmagic $(GLI
 testmemberuris_SOURCES = testmemberuris.cpp
 testmemberuris_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid -lmagic $(GLIBMM_LIBS)
 
-testPrint_SOURCES = testPrint.cpp
-testPrint_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid -lmagic $(GLIBMM_LIBS)
+wcupsprint_SOURCES = wcupsprint.cpp
+wcupsprint_LDADD = wmlcups/libwmlcups.la -lcups -lfutil -luuid -lmagic $(GLIBMM_LIBS)
 
 qlpd_SOURCES = qlpd.cpp
 qlpd_LDADD = -lfutil -luuid -lmagic $(GLIBMM_LIBS)
