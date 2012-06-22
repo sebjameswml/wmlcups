@@ -344,6 +344,7 @@ wml::CupsCtrl::getQueueType (string queuename)
 int
 wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue)
 {
+        int newId = 0;
         try {
                 // With CUPS, you have to read the job options from
                 // lpoptions, encode them up ina cups_option_t
@@ -369,7 +370,7 @@ wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue)
                 } // else no options
 
                 // Create a job, if that works, add the file.
-                int newId = this->createJob (cupsQueue, jobTitle, "", "", nOptions, options);
+                newId = this->createJob (cupsQueue, jobTitle, "", "", nOptions, options);
                 if (newId <= 0) {
                         DBG ("CupsCtrl::printFile(): call to CupsCtrl::createJob failed to create a job.");
                         return newId;
@@ -383,6 +384,16 @@ wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue)
 
         } catch (const exception& e) {
                 DBG (e.what());
+                string em(e.what());
+                // If this is an error in which the job couldn't be
+                // created, then we need to remove the job.
+                if (newId > 0) {
+                        string::size_type pos = 0;
+                        if ((pos = em.find ("Unable to print file", 0)) != string::npos) {
+                                DBG ("Cancelling job as we failed to print file to the job.");
+                                this->cancelJob (newId, "");
+                        }
+                }
         }
         return 0;
 }
