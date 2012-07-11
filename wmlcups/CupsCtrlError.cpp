@@ -27,13 +27,14 @@ using namespace std;
 using namespace wml;
 
 bool
-wml::CupsCtrl::printerNameIsValid (string s)
+wml::CupsCtrl::printerNameIsValid (const string& s)
 {
         if (s.size() > 127) {
                 return false;
         }
         try {
-                FoundryUtilities::sanitize (s, WMLCUPS_QUEUENAME_SAFE_CHARS);
+                string tmp (s);
+                FoundryUtilities::sanitize (tmp, WMLCUPS_QUEUENAME_SAFE_CHARS);
         } catch (const exception& e) {
                 return false;
         }
@@ -41,13 +42,14 @@ wml::CupsCtrl::printerNameIsValid (string s)
 }
 
 bool
-wml::CupsCtrl::addrIsValid (string s)
+wml::CupsCtrl::addrIsValid (const string& s)
 {
         if (s.size() > 127) {
                 return false;
         }
         try {
-                FoundryUtilities::sanitize (s, CUPS_ADDRESS_SAFE_CHARS);
+                string tmp (s);
+                FoundryUtilities::sanitize (tmp, CUPS_ADDRESS_SAFE_CHARS);
         } catch (const exception& e) {
                 return false;
         }
@@ -55,7 +57,7 @@ wml::CupsCtrl::addrIsValid (string s)
 }
 
 bool
-wml::CupsCtrl::lpdqIsValid (string s)
+wml::CupsCtrl::lpdqIsValid (const string& s)
 {
         if (s.size() > 127) {
                 return false;
@@ -66,7 +68,8 @@ wml::CupsCtrl::lpdqIsValid (string s)
                 // CHARS_NUMERIC_ALPHA, '_' and
                 // '-'. WMLCUPS_QUEUENAME_SAFE_CHARS is defined in
                 // futil/FoundryUtilities.h.
-                FoundryUtilities::sanitize (s, WMLCUPS_QUEUENAME_SAFE_CHARS);
+                string tmp (s);
+                FoundryUtilities::sanitize (tmp, WMLCUPS_QUEUENAME_SAFE_CHARS);
         } catch (const exception& e) {
                 return false;
         }
@@ -74,13 +77,14 @@ wml::CupsCtrl::lpdqIsValid (string s)
 }
 
 bool
-wml::CupsCtrl::portIsValid (string s)
+wml::CupsCtrl::portIsValid (const string& s)
 {
         if (s.size() > 127) {
                 return false;
         }
         try {
-                FoundryUtilities::sanitize (s, CHARS_NUMERIC);
+                string tmp (s);
+                FoundryUtilities::sanitize (tmp, CHARS_NUMERIC);
         } catch (const exception& e) {
                 return false;
         }
@@ -88,13 +92,14 @@ wml::CupsCtrl::portIsValid (string s)
 }
 
 bool
-wml::CupsCtrl::titleIsValid (string s)
+wml::CupsCtrl::titleIsValid (const string& s)
 {
         if (s.size() > 127) {
                 return false;
         }
         try {
-                FoundryUtilities::sanitize (s, WMLCUPS_TITLE_SAFE_CHARS);
+                string tmp (s);
+                FoundryUtilities::sanitize (tmp, WMLCUPS_TITLE_SAFE_CHARS);
         } catch (const exception& e) {
                 return false;
         }
@@ -102,7 +107,7 @@ wml::CupsCtrl::titleIsValid (string s)
 }
 
 string
-wml::CupsCtrl::errorString (http_status_t err)
+wml::CupsCtrl::errorString (const http_status_t err) const
 {
         string errStr("Unknown");
         switch (err) {
@@ -186,7 +191,7 @@ wml::CupsCtrl::errorString (http_status_t err)
 }
 
 string
-wml::CupsCtrl::errorString (ipp_status_t err)
+wml::CupsCtrl::errorString (const ipp_status_t err) const
 {
         string errStr("Unknown");
         switch (err) {

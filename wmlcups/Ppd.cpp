@@ -34,109 +34,109 @@ wml::Ppd::~Ppd (void)
 }
 
 void
-wml::Ppd::setName (std::string s)
+wml::Ppd::setName (const std::string& s)
 {
         this->name = s;
 }
 
 void
-wml::Ppd::setMakeAndModel (std::string s)
+wml::Ppd::setMakeAndModel (const std::string& s)
 {
         this->makeAndModel = s;
 }
 
 void
-wml::Ppd::setMake (std::string s)
+wml::Ppd::setMake (const std::string& s)
 {
         this->make = s;
 }
 
 void
-wml::Ppd::setDeviceId (std::string s)
+wml::Ppd::setDeviceId (const std::string& s)
 {
         this->deviceId = s;
 }
 
 void
-wml::Ppd::setProduct (std::string s)
+wml::Ppd::setProduct (const std::string& s)
 {
         this->product = s;
 }
 
 void
-wml::Ppd::setPsversion (std::string s)
+wml::Ppd::setPsversion (const std::string& s)
 {
         this->psversion = s;
 }
 
 void
-wml::Ppd::setType (int i)
+wml::Ppd::setType (const int i)
 {
         this->type = i;
 }
 
 void
-wml::Ppd::setModelNumber (int i)
+wml::Ppd::setModelNumber (const int i)
 {
         this->modelNumber = i;
 }
 
 void
-wml::Ppd::setNaturalLanguage (string s)
+wml::Ppd::setNaturalLanguage (const string& s)
 {
         this->naturalLanguage = s;
 }
 
 std::string
-wml::Ppd::getName (void)
+wml::Ppd::getName (void) const
 {
         return this->name;
 }
 
 std::string
-wml::Ppd::getMakeAndModel (void)
+wml::Ppd::getMakeAndModel (void) const
 {
         return this->makeAndModel;
 }
 
 std::string
-wml::Ppd::getMake (void)
+wml::Ppd::getMake (void) const
 {
         return this->make;
 }
 
 std::string
-wml::Ppd::getDeviceId (void)
+wml::Ppd::getDeviceId (void) const
 {
         return this->deviceId;
 }
 
 std::string
-wml::Ppd::getProduct (void)
+wml::Ppd::getProduct (void) const
 {
         return this->product;
 }
 
 std::string
-wml::Ppd::getPsversion (void)
+wml::Ppd::getPsversion (void) const
 {
         return this->psversion;
 }
 
 int
-wml::Ppd::getType (void)
+wml::Ppd::getType (void) const
 {
         return this->type;
 }
 
 int
-wml::Ppd::getModelNumber (void)
+wml::Ppd::getModelNumber (void) const
 {
         return this->modelNumber;
 }
 
 std::string
-wml::Ppd::getNaturalLanguage (void)
+wml::Ppd::getNaturalLanguage (void) const
 {
         return this->naturalLanguage;
 }

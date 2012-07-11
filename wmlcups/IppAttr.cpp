@@ -58,32 +58,32 @@ wml::IppAttr::zero (void)
 }
 
 string
-wml::IppAttr::getName (void)
+wml::IppAttr::getName (void) const
 {
         return this->name;
 }
 
 void
-wml::IppAttr::setName (string s)
+wml::IppAttr::setName (const string& s)
 {
         this->name = s;
         this->determineType();
 }
 
 ipp_tag_t
-wml::IppAttr::getType (void)
+wml::IppAttr::getType (void) const
 {
         return this->type;
 }
 
 ipp_tag_t
-wml::IppAttr::getGroup (void)
+wml::IppAttr::getGroup (void) const
 {
         return this->group;
 }
 
 string
-wml::IppAttr::getString (void)
+wml::IppAttr::getString (void) const
 {
         string s("");
         switch (this->type) {
@@ -120,13 +120,13 @@ wml::IppAttr::getString (void)
 }
 
 int
-wml::IppAttr::getInt (void)
+wml::IppAttr::getInt (void) const
 {
         return this->intValue;
 }
 
 void
-wml::IppAttr::setValue (string s)
+wml::IppAttr::setValue (const string& s)
 {
         this->stringValue = s;
 }
@@ -139,7 +139,7 @@ wml::IppAttr::setValue (const char* c)
 }
 
 void
-wml::IppAttr::setValue (int i)
+wml::IppAttr::setValue (const int i)
 {
         this->intValue = i;
 }

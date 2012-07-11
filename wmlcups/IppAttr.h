@@ -271,42 +271,42 @@ namespace wml {
                 /*!
                  * Return the name of this attribute.
                  */
-                std::string getName (void);
+                std::string getName (void) const;
 
                 /*!
                  * Set the attribute name to s.
                  */
-                void setName (std::string s);
+                void setName (const std::string& s);
 
                 /*!
                  * Return the type tag of this attribute. In cups (i.e
                  * in _ipp_option_t) this is really called the
                  * "value_tag"
                  */
-                ipp_tag_t getType (void);
+                ipp_tag_t getType (void) const;
                 //ipp_tag_t getValueTag (void);
 
                 /*!
                  * Return the group tag of this attribute.
                  */
-                ipp_tag_t getGroup (void);
+                ipp_tag_t getGroup (void) const;
 
                 /*!
                  * Get the string value of this IPP attribute, if
                  * applicable.
                  */
-                std::string getString (void);
+                std::string getString (void) const;
 
                 /*!
                  * Get the integer value of this IPP attribute, if
                  * applicable.
                  */
-                int getInt (void);
+                int getInt (void) const;
 
                 /*!
                  * Set the stringValue to s.
                  */
-                void setValue (std::string s);
+                void setValue (const std::string& s);
 
                 /*!
                  * Set stringValue to string pointed at by c.
@@ -316,7 +316,7 @@ namespace wml {
                 /*!
                  * Set the integer value to i.
                  */
-                void setValue (int i);
+                void setValue (const int i);
 
         private:
                 /*!

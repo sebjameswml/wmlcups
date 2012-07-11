@@ -33,7 +33,7 @@ wml::PpdOption::PpdOption () :
         this->curChoice = this->choices.begin();
 }
 
-wml::PpdOption::PpdOption (ppd_option_t* o) :
+wml::PpdOption::PpdOption (const ppd_option_t* o) :
         groupName(""),
         keyword(o->keyword),
         text(o->text),
@@ -65,67 +65,67 @@ wml::PpdOption::zero (void)
 }
 
 string
-wml::PpdOption::getGroupName (void)
+wml::PpdOption::getGroupName (void) const
 {
         return this->groupName;
 }
 
 void
-wml::PpdOption::setGroupName (string s)
+wml::PpdOption::setGroupName (const string& s)
 {
         this->groupName = s;
 }
 
 string
-wml::PpdOption::getKeyword (void)
+wml::PpdOption::getKeyword (void) const
 {
         return this->keyword;
 }
 
 void
-wml::PpdOption::setKeyword (string s)
+wml::PpdOption::setKeyword (const string& s)
 {
         this->keyword = s;
 }
 
 string
-wml::PpdOption::getText (void)
+wml::PpdOption::getText (void) const
 {
         return this->text;
 }
 
 void
-wml::PpdOption::setText (string s)
+wml::PpdOption::setText (const string& s)
 {
         this->text = s;
 }
 
 string
-wml::PpdOption::getDefaultChoice (void)
+wml::PpdOption::getDefaultChoice (void) const
 {
         return this->defaultChoice;
 }
 
 void
-wml::PpdOption::setDefaultChoice (string s)
+wml::PpdOption::setDefaultChoice (const string& s)
 {
         this->defaultChoice = s;
 }
 
 ppd_ui_t
-wml::PpdOption::getUi (void)
+wml::PpdOption::getUi (void) const
 {
         return this->ui;
 }
 
 void
-wml::PpdOption::setUi (ppd_ui_t u)
+wml::PpdOption::setUi (const ppd_ui_t u)
 {
-        this->ui = u;;
+        this->ui = u;
 }
 
 int
-wml::PpdOption::getNumChoices (void)
+wml::PpdOption::getNumChoices (void) const
 {
         return this->choices.size();
 }
@@ -143,20 +143,20 @@ wml::PpdOption::getNextChoice (ppd_choice_t& choice)
                 return false;
         }
 
-        string cchoice (curChoice->choice);
+        string cchoice (this->curChoice->choice);
 
         DBG ("Next choice is " + cchoice);
 
-        choice = *curChoice;
-        curChoice++;
+        choice = *(this->curChoice);
+        this->curChoice++;
         return true;
 }
 
 string
-wml::PpdOption::getChoiceValue (void)
+wml::PpdOption::getChoiceValue (void) const
 {
         string s("");
-        std::vector<ppd_choice_t>::iterator currentChoice;
+        std::vector<ppd_choice_t>::const_iterator currentChoice;
         currentChoice = this->choices.begin();
         while (currentChoice != this->choices.end()) {
                 if (currentChoice->marked) {
@@ -169,7 +169,7 @@ wml::PpdOption::getChoiceValue (void)
 }
 
 void
-wml::PpdOption::setChoiceValue (string s)
+wml::PpdOption::setChoiceValue (const string& s)
 {
         std::vector<ppd_choice_t>::iterator currentChoice;
         // This really sets currentChoice, based on a match of the choice value.
@@ -186,10 +186,10 @@ wml::PpdOption::setChoiceValue (string s)
 }
 
 string
-wml::PpdOption::getChoiceText (void)
+wml::PpdOption::getChoiceText (void) const
 {
         string s("");
-        std::vector<ppd_choice_t>::iterator currentChoice;
+        std::vector<ppd_choice_t>::const_iterator currentChoice;
         currentChoice = this->choices.begin();
         while (currentChoice != this->choices.end()) {
                 if (currentChoice->marked) {
@@ -202,7 +202,7 @@ wml::PpdOption::getChoiceText (void)
 }
 
 void
-wml::PpdOption::setChoiceText (string s)
+wml::PpdOption::setChoiceText (const string& s)
 {
         std::vector<ppd_choice_t>::iterator currentChoice;
         // This really sets currentChoice, based on a match of the text.

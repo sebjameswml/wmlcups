@@ -27,12 +27,13 @@ using namespace std;
 using namespace wml;
 
 void
-wml::CupsCtrl::sendJobCommand (int jobId,
-                               string asUser,
-                               ipp_op_t command)
+wml::CupsCtrl::sendJobCommand (const int jobId,
+                               const string& user,
+                               const ipp_op_t command) const
 {
         DBG ("Called to send command for job id " << jobId
-             << " as user '" << asUser << "'");
+             << " as user '" << user << "'");
+        string asUser (user);
 
         ipp_t * prqst;
         ipp_t * rtn;
@@ -87,13 +88,14 @@ wml::CupsCtrl::sendJobCommand (int jobId,
 }
 
 void
-wml::CupsCtrl::moveJob (int jobId,
-                        string asUser,
-                        string destQueue)
+wml::CupsCtrl::moveJob (const int jobId,
+                        const string& user,
+                        const string& destQueue) const
 {
         DBG ("WARNING, UNTESTED! Called to move job id " << jobId
-             << " as user '" << asUser
+             << " as user '" << user
              << "' to queue '" << destQueue << "'");
+        string asUser (user);
 
         ipp_t * prqst;
         ipp_t * rtn;
@@ -157,7 +159,7 @@ wml::CupsCtrl::moveJob (int jobId,
 }
 
 void
-wml::CupsCtrl::cancelJobs (string printerName)
+wml::CupsCtrl::cancelJobs (const string& printerName) const
 {
         vector<CupsJob> jobs;
         vector<CupsJob>::iterator iter;
@@ -173,7 +175,7 @@ wml::CupsCtrl::cancelJobs (string printerName)
 }
 
 void
-wml::CupsCtrl::pauseJobs (string printerName)
+wml::CupsCtrl::pauseJobs (const string& printerName) const
 {
         vector<CupsJob> jobs;
         vector<CupsJob>::iterator iter;
@@ -189,7 +191,7 @@ wml::CupsCtrl::pauseJobs (string printerName)
 }
 
 void
-wml::CupsCtrl::releaseJobs (string printerName)
+wml::CupsCtrl::releaseJobs (const string& printerName) const
 {
         vector<CupsJob> jobs;
         vector<CupsJob>::iterator iter;
@@ -205,7 +207,7 @@ wml::CupsCtrl::releaseJobs (string printerName)
 }
 
 void
-wml::CupsCtrl::getJobStatus (string cupsPrinter, int id, CupsJob& j)
+wml::CupsCtrl::getJobStatus (const string& cupsPrinter, const int id, CupsJob& j) const
 {
         if (j.getId()>0) {
                 j.reset();
@@ -236,7 +238,7 @@ wml::CupsCtrl::getJobStatus (string cupsPrinter, int id, CupsJob& j)
 }
 
 CupsJob
-wml::CupsCtrl::getJob (string id)
+wml::CupsCtrl::getJob (const string& id) const
 {
         DBG ("Called");
 
@@ -335,9 +337,9 @@ wml::CupsCtrl::getJob (string id)
 }
 
 void
-wml::CupsCtrl::getJobList (string cupsPrinter,
+wml::CupsCtrl::getJobList (const string& cupsPrinter,
                            vector<CupsJob>& jList,
-                           string whichJobs)
+                           const string& whichJobs) const
 {
         this->getJobList (cupsPrinter, jList, 0, whichJobs);
 }
@@ -349,10 +351,10 @@ wml::CupsCtrl::getJobList (string cupsPrinter,
  * backward through the list of jobs.
  */
 void
-wml::CupsCtrl::getJobList (string cupsPrinter,
+wml::CupsCtrl::getJobList (const string& cupsPrinter,
                            vector<CupsJob>& jList,
-                           int numJobs,
-                           string whichJobs)
+                           const int numJobs,
+                           const string& whichJobs) const
 {
         DBG ("Called to list up to " << numJobs << " jobs");
 
@@ -529,12 +531,12 @@ wml::CupsCtrl::getJobList (string cupsPrinter,
 }
 
 int
-wml::CupsCtrl::createJob (string cupsQueue,
-                          string title,
-                          string asUser,
-                          string docName,
-                          int numOptions,
-                          cups_option_t* options)
+wml::CupsCtrl::createJob (const string& cupsQueue,
+                          const string& title,
+                          const string& asUser,
+                          const string& docName,
+                          const int numOptions,
+                          cups_option_t* options) const
 {
         ipp_t * prqst;
         ipp_t * rtn;
@@ -603,36 +605,36 @@ wml::CupsCtrl::createJob (string cupsQueue,
 }
 
 void
-wml::CupsCtrl::holdJob (int jobId, string asUser)
+wml::CupsCtrl::holdJob (const int jobId, const string& asUser) const
 {
         this->sendJobCommand (jobId, asUser, IPP_HOLD_JOB);
 }
 
 void
-wml::CupsCtrl::releaseJob (int jobId, string asUser)
+wml::CupsCtrl::releaseJob (const int jobId, const string& asUser) const
 {
         this->sendJobCommand (jobId, asUser, IPP_RELEASE_JOB);
 }
 
 void
-wml::CupsCtrl::cancelJob (int jobId, string asUser)
+wml::CupsCtrl::cancelJob (const int jobId, const string& asUser) const
 {
         this->sendJobCommand (jobId, asUser, IPP_CANCEL_JOB);
 }
 
 void
-wml::CupsCtrl::restartJob (int jobId, string asUser)
+wml::CupsCtrl::restartJob (const int jobId, const string& asUser) const
 {
         this->sendJobCommand (jobId, asUser, IPP_RESTART_JOB);
 }
 
 void
-wml::CupsCtrl::sendDocument (int jobId,
-                             string filePath,
-                             string asUser,
-                             string docName,
-                             string format,
-                             bool lastInSet)
+wml::CupsCtrl::sendDocument (const int jobId,
+                             const string& filePath,
+                             const string& asUser,
+                             const string& docName,
+                             const string& format,
+                             const bool lastInSet) const
 {
         ipp_t * prqst;
         ipp_t * rtn;

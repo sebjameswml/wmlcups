@@ -69,7 +69,7 @@ namespace wml {
                  *
                  * \param p The parameter of the new container
                  */
-                CupsdDirContainer(std::string t, std::string p);
+                CupsdDirContainer(const std::string& t, const std::string& p);
 
                 /*!
                  * \brief Destructor
@@ -94,14 +94,14 @@ namespace wml {
                  *
                  * \return The type of the container in a string
                  */
-                std::string getType (void);
+                std::string getType (void) const;
 
                 /*!
                  * \brief Getter for parameter
                  *
                  * \return The parameter of the container in a string
                  */
-                std::string getParameter (void);
+                std::string getParameter (void) const;
 
                 /*!
                  * \brief Setter for parameter
@@ -109,7 +109,7 @@ namespace wml {
                  *
                  * \param p The new parameter of the container
                  */
-                void setParameter (std::string p);
+                void setParameter (const std::string& p);
 
                 /*!
                  * \brief Getter for complete container ID
@@ -129,7 +129,7 @@ namespace wml {
                  *
                  * \return The ID of the container in a string
                  */
-                std::string getId(void);
+                std::string getId (void) const;
 
                 /*!
                  * Set a directive in the container specified by
@@ -137,13 +137,13 @@ namespace wml {
                  * the directive is placed in this->directives.
                  */
                 void setDirective (std::string containerId,
-                                   std::string key, std::string value);
+                                   const std::string& key, const std::string& value);
 
                 /*!
                  * Wrapper around setDirective function when containerId
                  * is not required
                  */
-                void setDirective (std::string key, std::string value);
+                void setDirective (const std::string& key, const std::string& value);
 
                 /*!
                  * \brief Set a directive
@@ -163,7 +163,7 @@ namespace wml {
                  * to be added
                         */
                 void setDirective (std::queue<std::pair<std::string, std:: string> > containerId,
-                                   std::string key, std::string value);
+                                   const std::string& key, const std::string& value);
 
                 /*!
                  * \brief Get a directive
@@ -188,7 +188,7 @@ namespace wml {
                  *
                  */
                 void getDirective (std::queue<std::pair<std::string, std::string > > containerId,
-                                   std::string key, std::string& returnStr, bool valueOnly = false);
+                                   const std::string& key, std::string& returnStr, const bool valueOnly = false) const;
 
                 /*!
                  * \brief Add a sub-container to this container
@@ -278,7 +278,7 @@ namespace wml {
                  * \param iter A pointer to the directive object
                  */
                 void directiveValue (std::string& returnStr,
-                                     std::map<std::string, std::string>::iterator& iter);
+                                     std::map<std::string, std::string>::const_iterator& iter) const;
 
                 /*!
                  * \brief Returns a full directive
@@ -290,7 +290,7 @@ namespace wml {
                  * \param iter A pointer to the directive object
                  */
                 void fullDirective (std::string& returnStr,
-                                    std::map<std::string, std::string>::iterator& iter);
+                                    std::map<std::string, std::string>::const_iterator& iter) const;
 
                 //@}
         };
@@ -321,7 +321,7 @@ namespace wml {
                  * \brief Constructor
                  * Create a new CupsdCtrl object, setting the cupsd.conf file path to p.
                  */
-                CupsdCtrl(std::string p);
+                CupsdCtrl (const std::string& p);
 
                 /*!
                  * \brief Deconstructor
@@ -363,7 +363,7 @@ namespace wml {
                  * or the directives value
                  */
                 std::string getDirective (std::queue<std::pair<std::string, std::string> > containerId,
-                                          std::string key, bool valueOnly = false);
+                                          const std::string& key, const bool valueOnly = false) const;
 
                 /*!
                  * \brief Read in the file specified
@@ -387,7 +387,7 @@ namespace wml {
                 /*!
                  * \brief Restart the cupsd program.
                  */
-                void restartCups (void);
+                void restartCups (void) const;
 
         private:
                 /*!

@@ -27,7 +27,7 @@ wml::CupsJob::CupsJob (void) :
 {
 }
 
-wml::CupsJob::CupsJob (string jobName) :
+wml::CupsJob::CupsJob (const string& jobName) :
         id(0),
         copies(1),
         name (jobName),
@@ -43,7 +43,7 @@ wml::CupsJob::CupsJob (string jobName) :
 {
 }
 
-wml::CupsJob::CupsJob (int jobId) :
+wml::CupsJob::CupsJob (const int jobId) :
         id(jobId),
         copies(1),
         name(""),
@@ -59,7 +59,7 @@ wml::CupsJob::CupsJob (int jobId) :
 {
 }
 
-wml::CupsJob::CupsJob (int jobId, string jobName) :
+wml::CupsJob::CupsJob (const int jobId, const string& jobName) :
         id(jobId),
         copies(1),
         name (jobName),
@@ -98,7 +98,7 @@ wml::CupsJob::reset (void)
 }
 
 void
-wml::CupsJob::setId (int i)
+wml::CupsJob::setId (const int i)
 {
         this->id = i;
 }
@@ -110,7 +110,7 @@ wml::CupsJob::getId (void) const
 }
 
 void
-wml::CupsJob::setCopies (int i)
+wml::CupsJob::setCopies (const int i)
 {
         this->copies = i;
 }
@@ -122,7 +122,7 @@ wml::CupsJob::getCopies (void) const
 }
 
 void
-wml::CupsJob::setName (std::string s)
+wml::CupsJob::setName (const std::string& s)
 {
         this->name = s;
 }
@@ -134,7 +134,7 @@ wml::CupsJob::getName (void) const
 }
 
 void
-wml::CupsJob::setUser (std::string s)
+wml::CupsJob::setUser (const std::string& s)
 {
         this->user = s;
 }
@@ -146,7 +146,7 @@ wml::CupsJob::getUser (void) const
 }
 
 void
-wml::CupsJob::setSizeKB (unsigned int i)
+wml::CupsJob::setSizeKB (const unsigned int i)
 {
         this->sizeKB = i;
 }
@@ -177,7 +177,7 @@ wml::CupsJob::getSizeString (void) const
 }
 
 void
-wml::CupsJob::setCupsPages (unsigned int i)
+wml::CupsJob::setCupsPages (const unsigned int i)
 {
         this->cupsPages = i;
 }
@@ -189,7 +189,7 @@ wml::CupsJob::getCupsPages (void) const
 }
 
 void
-wml::CupsJob::setPrinterUri (std::string s)
+wml::CupsJob::setPrinterUri (const std::string& s)
 {
         this->printerUri = s;
 }
@@ -201,7 +201,7 @@ wml::CupsJob::getPrinterUri (void) const
 }
 
 void
-wml::CupsJob::setState (ipp_jstate_t jstate)
+wml::CupsJob::setState (const ipp_jstate_t jstate)
 {
         this->state = jstate;
 }
@@ -242,7 +242,7 @@ wml::CupsJob::getState (void) const
 }
 
 void
-wml::CupsJob::setCreationTime (int t)
+wml::CupsJob::setCreationTime (const int t)
 {
         this->creation_time = t;
 }
@@ -254,7 +254,7 @@ wml::CupsJob::getCreationTime (void) const
 }
 
 void
-wml::CupsJob::setProcessingTime (int t)
+wml::CupsJob::setProcessingTime (const int t)
 {
         this->processing_time = t;
 }
@@ -266,7 +266,7 @@ wml::CupsJob::getProcessingTime (void) const
 }
 
 void
-wml::CupsJob::setCompletedTime (int t)
+wml::CupsJob::setCompletedTime (const int t)
 {
         this->completed_time = t;
 }
@@ -323,7 +323,7 @@ wml::CupsJob::getFormattedTime (void) const
 }
 
 void
-wml::CupsJob::setSourceIP (std::string ip)
+wml::CupsJob::setSourceIP (const std::string& ip)
 {
         this->sourceIP = ip;
 }
@@ -335,7 +335,7 @@ wml::CupsJob::getSourceIP (void) const
 }
 
 void
-wml::CupsJob::setDestIP (std::string ip)
+wml::CupsJob::setDestIP (const std::string& ip)
 {
         this->destIP = ip;
 }
