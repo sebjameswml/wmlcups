@@ -342,7 +342,7 @@ wml::CupsCtrl::getQueueType (string queuename)
 }
 
 int
-wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue)
+wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue, string asUser)
 {
         int newId = 0;
         try {
@@ -370,7 +370,7 @@ wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue)
                 } // else no options
 
                 // Create a job, if that works, add the file.
-                newId = this->createJob (cupsQueue, jobTitle, "", "", nOptions, options);
+                newId = this->createJob (cupsQueue, jobTitle, asUser.c_str(), "", nOptions, options);
                 if (newId <= 0) {
                         DBG ("CupsCtrl::printFile(): call to CupsCtrl::createJob failed to create a job.");
                         return newId;

@@ -458,7 +458,8 @@ namespace wml {
                  */
                 int printFile (std::string filePath,
                                std::string jobTitle,
-                               std::string cupsQueue);
+                               std::string cupsQueue,
+                               std::string asUser = "");
 
                 /*!
                  * Like getCupsPrinterList but returns a list rather
