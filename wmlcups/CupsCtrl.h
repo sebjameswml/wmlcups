@@ -178,7 +178,8 @@ namespace wml {
                  * was found and status was set, false otherwise.
                  */
                 bool getFullStatus (std::string cupsPrinter,
-                                    wml::QueueCupsStatus& qstat);
+                                    wml::QueueCupsStatus& qstat,
+                                    bool includeJobStatus = true);
 
 
                 /*!

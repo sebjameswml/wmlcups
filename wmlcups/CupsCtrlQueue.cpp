@@ -162,7 +162,8 @@ wml::CupsCtrl::getStateReasons (string cupsPrinter)
 
 bool
 wml::CupsCtrl::getFullStatus (std::string cupsPrinter,
-                              wml::QueueCupsStatus& qstat)
+                              wml::QueueCupsStatus& qstat,
+                              bool includeJobStatus)
 {
         DBG ("Called for queue " << cupsPrinter);
 
@@ -284,7 +285,7 @@ wml::CupsCtrl::getFullStatus (std::string cupsPrinter,
 
         ippDelete (rtn);
 
-        if (gotPrinter == true) {
+        if (gotPrinter == true && includeJobStatus == true) {
                 DBG ("Calling getJobStatus now");
                 this->getJobStatus (cupsPrinter, 0, qstat.lastJob);
         }
