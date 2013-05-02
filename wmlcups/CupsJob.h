@@ -77,6 +77,9 @@ namespace wml {
                 void setCompletedTime (int t);
                 int getCompletedTime (void) const;
 
+                void setCurrentFilter (std::string s);
+                std::string getCurrentFilter (void) const;
+
                 int getTime (void) const;
                 std::string getFormattedTime (void) const;
 
@@ -143,6 +146,13 @@ namespace wml {
                  * CUPS time-at-completed
                  */
                 int completed_time;
+
+                /*!
+                 * WML addition. The current working filter
+                 * program. This is used when building status or error
+                 * PDF output pages.
+                 */
+                std::string currentFilter;
 
                 /*!
                  * The IP address of the sending device - the IP
