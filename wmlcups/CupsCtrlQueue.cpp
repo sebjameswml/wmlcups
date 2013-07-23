@@ -27,7 +27,7 @@ using namespace std;
 using namespace wml;
 
 bool
-wml::CupsCtrl::getAccepting (string cupsPrinter)
+wml::CupsCtrl::getAccepting (const string& cupsPrinter) const
 {
         IppAttr attr("printer-is-accepting-jobs");
 
@@ -41,7 +41,7 @@ wml::CupsCtrl::getAccepting (string cupsPrinter)
 }
 
 void
-wml::CupsCtrl::setAccepting (string cupsPrinter, bool accept, string directory)
+wml::CupsCtrl::setAccepting (const string& cupsPrinter, const bool accept, const string& directory)
 {
         if (accept == true) {
                 this->sendPrinterCommand (cupsPrinter.c_str(),
@@ -59,7 +59,7 @@ wml::CupsCtrl::setAccepting (string cupsPrinter, bool accept, string directory)
 }
 
 bool
-wml::CupsCtrl::getEnabled (string cupsPrinter)
+wml::CupsCtrl::getEnabled (const string& cupsPrinter) const
 {
         IppAttr attr("printer-state");
 
@@ -74,7 +74,7 @@ wml::CupsCtrl::getEnabled (string cupsPrinter)
 }
 
 void
-wml::CupsCtrl::setEnabled (string cupsPrinter, bool enable, string directory)
+wml::CupsCtrl::setEnabled (const string& cupsPrinter, const bool enable, const string& directory)
 {
         if (enable == true) {
                 this->sendPrinterCommand (cupsPrinter.c_str(),
@@ -92,7 +92,7 @@ wml::CupsCtrl::setEnabled (string cupsPrinter, bool enable, string directory)
 }
 
 bool
-wml::CupsCtrl::getShared (string cupsPrinter)
+wml::CupsCtrl::getShared (const string& cupsPrinter) const
 {
         IppAttr attr("printer-is-shared");
         this->getPrinterAttribute (cupsPrinter.c_str(), attr);
@@ -103,7 +103,7 @@ wml::CupsCtrl::getShared (string cupsPrinter)
 }
 
 void
-wml::CupsCtrl::setShared (string cupsPrinter, bool enable, string directory)
+wml::CupsCtrl::setShared (const string& cupsPrinter, const bool enable, const string& directory)
 {
 #ifdef WORKED_OUT_HOW_TO_SET_SHARED
         if (enable == true) {
@@ -123,7 +123,7 @@ wml::CupsCtrl::setShared (string cupsPrinter, bool enable, string directory)
 }
 
 string
-wml::CupsCtrl::getState (string cupsPrinter)
+wml::CupsCtrl::getState (const string& cupsPrinter) const
 {
         IppAttr attr("printer-state");
         this->getPrinterAttribute (cupsPrinter.c_str(), attr);
@@ -147,23 +147,23 @@ wml::CupsCtrl::getState (string cupsPrinter)
 }
 
 string
-wml::CupsCtrl::getStateMsg (string cupsPrinter)
+wml::CupsCtrl::getStateMsg (const string& cupsPrinter) const
 {
         IppAttr attr("printer-state-message");
         return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
-wml::CupsCtrl::getStateReasons (string cupsPrinter)
+wml::CupsCtrl::getStateReasons (const string& cupsPrinter) const
 {
         IppAttr attr("printer-state-reasons");
         return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 bool
-wml::CupsCtrl::getFullStatus (std::string cupsPrinter,
+wml::CupsCtrl::getFullStatus (const std::string& cupsPrinter,
                               wml::QueueCupsStatus& qstat,
-                              bool includeJobStatus)
+                              const bool includeJobStatus) const
 {
         DBG ("Called for queue " << cupsPrinter);
 
@@ -294,27 +294,27 @@ wml::CupsCtrl::getFullStatus (std::string cupsPrinter,
 }
 
 string
-wml::CupsCtrl::getInfo (string cupsPrinter)
+wml::CupsCtrl::getInfo (const string& cupsPrinter) const
 {
         IppAttr attr("printer-info");
         return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 string
-wml::CupsCtrl::getLocation (string cupsPrinter)
+wml::CupsCtrl::getLocation (const string& cupsPrinter) const
 {
         IppAttr attr("printer-location");
         return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 vector<string>
-wml::CupsCtrl::getPrinterClassesList(void)
+wml::CupsCtrl::getPrinterClassesList(void) const
 {
         return this->getCupsPrinterList (GET_BOTH);
 }
 
 wml::QTYPE
-wml::CupsCtrl::getQueueType (string queuename)
+wml::CupsCtrl::getQueueType (const string& queuename) const
 {
         if (queuename.empty()) {
                 throw runtime_error ("CupsCtrl::getQueueType(): "
@@ -343,7 +343,7 @@ wml::CupsCtrl::getQueueType (string queuename)
 }
 
 int
-wml::CupsCtrl::printFile (string filePath, string jobTitle, string cupsQueue, string asUser)
+wml::CupsCtrl::printFile (const string& filePath, const string& jobTitle, const string& cupsQueue, const string& asUser) const
 {
         int newId = 0;
         try {

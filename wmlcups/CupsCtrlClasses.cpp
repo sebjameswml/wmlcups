@@ -28,7 +28,7 @@ using namespace wml;
 
 
 void
-wml::CupsCtrl::setClassInfo (string cupsClass, string s)
+wml::CupsCtrl::setClassInfo (const string& cupsClass, const string& s)
 {
         IppAttr attr("printer-info");
         attr.setValue (s);
@@ -37,7 +37,7 @@ wml::CupsCtrl::setClassInfo (string cupsClass, string s)
 
 
 void
-wml::CupsCtrl::setClassLocation (string cupsClass, string s)
+wml::CupsCtrl::setClassLocation (const string& cupsClass, const string& s)
 {
         IppAttr attr("printer-location");
         attr.setValue (s);
@@ -46,7 +46,7 @@ wml::CupsCtrl::setClassLocation (string cupsClass, string s)
 
 
 vector<string>
-wml::CupsCtrl::getMemberUris (string cupsPrinter)
+wml::CupsCtrl::getMemberUris (const string& cupsPrinter) const
 {
         DBG ("Called");
         IppAttr attr("member-uris");
@@ -55,7 +55,7 @@ wml::CupsCtrl::getMemberUris (string cupsPrinter)
 
 
 vector<string>
-wml::CupsCtrl::getClassesList(void)
+wml::CupsCtrl::getClassesList(void) const
 {
         return this->getCupsPrinterList (GET_CLASSES);
 }
@@ -63,7 +63,7 @@ wml::CupsCtrl::getClassesList(void)
 
 vector<string>
 wml::CupsCtrl::getQueueAttribute (const char* printerName,
-                                  IppAttr& attr)
+                                  IppAttr& attr) const
 {
         bool gotPrinter = false;
         ipp_t * prqst;
@@ -251,7 +251,7 @@ wml::CupsCtrl::setClassAttribute (const char* printerName,
 }
 
 void
-wml::CupsCtrl::setClassMembers (string className,
+wml::CupsCtrl::setClassMembers (const string& className,
                                 vector<string> members)
 {
         ipp_t * prqst;

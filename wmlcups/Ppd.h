@@ -70,30 +70,30 @@ namespace wml {
                  * Setters
                  */
                 //@{
-                void setName (std::string s);
-                void setMakeAndModel (std::string s);
-                void setMake (std::string s);
-                void setDeviceId (std::string s);
-                void setProduct (std::string s);
-                void setPsversion (std::string s);
-                void setType (int i);
-                void setModelNumber (int i);
-                void setNaturalLanguage (std::string s);
+                void setName (const std::string& s);
+                void setMakeAndModel (const std::string& s);
+                void setMake (const std::string& s);
+                void setDeviceId (const std::string& s);
+                void setProduct (const std::string& s);
+                void setPsversion (const std::string& s);
+                void setType (const int i);
+                void setModelNumber (const int i);
+                void setNaturalLanguage (const std::string& s);
                 //@}
 
                 /*!
                  * Getters
                  */
                 //@{
-                std::string getName (void);
-                std::string getMakeAndModel (void);
-                std::string getMake (void);
-                std::string getDeviceId (void);
-                std::string getProduct (void);
-                std::string getPsversion (void);
-                int getType (void);
-                int getModelNumber (void);
-                std::string getNaturalLanguage (void);
+                std::string getName (void) const;
+                std::string getMakeAndModel (void) const;
+                std::string getMake (void) const;
+                std::string getDeviceId (void) const;
+                std::string getProduct (void) const;
+                std::string getPsversion (void) const;
+                int getType (void) const;
+                int getModelNumber (void) const;
+                std::string getNaturalLanguage (void) const;
                 //@}
 
         private:

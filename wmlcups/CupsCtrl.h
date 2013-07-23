@@ -103,73 +103,73 @@ namespace wml {
                 /*!
                  * Sets the cupsd address.
                  */
-                void setCupsdAddress (std::string s);
+                void setCupsdAddress (const std::string& s);
 
                 /*!
                  * Get the cupsd address
                  */
-                std::string getCupsdAddress (void);
+                std::string getCupsdAddress (void) const;
 
                 /*!
                  * Query cupsd for whether the given cupsPrinter is
                  * accepting
                  */
-                bool getAccepting (std::string cupsPrinter);
+                bool getAccepting (const std::string& cupsPrinter) const;
 
                 /*!
                  * Enable printer cupsPrinter if enable is true,
                  * disable it otherwise.
                  */
-                void setAccepting (std::string cupsPrinter,
-                                   bool accept,
-                                   std::string directory = "/printers/%s");
+                void setAccepting (const std::string& cupsPrinter,
+                                   const bool accept,
+                                   const std::string& directory = "/printers/%s");
 
                 /*!
                  * Query cupsd for whether the given cupsPrinter is
                  * enabled
                  */
-                bool getEnabled (std::string cupsPrinter);
+                bool getEnabled (const std::string& cupsPrinter) const;
 
                 /*!
                  * Enable printer cupsPrinter if enable is true,
                  * disable it otherwise.
                  */
-                void setEnabled (std::string cupsPrinter,
-                                 bool enable,
-                                 std::string directory = "/printers/%s");
+                void setEnabled (const std::string& cupsPrinter,
+                                 const bool enable,
+                                 const std::string& directory = "/printers/%s");
                 /*!
                  * Query cupsd for whether the given cupsPrinter is
                  * shared
                  */
-                bool getShared (std::string cupsPrinter);
+                bool getShared (const std::string& cupsPrinter) const;
 
                 /*!
                  * Enable sharing for printer cupsPrinter if enable is
                  * true, disable sharing otherwise.
                  */
-                void setShared (std::string cupsPrinter,
-                                bool enable,
-                                std::string directory = "/printers/%s");
+                void setShared (const std::string& cupsPrinter,
+                                const bool enable,
+                                const std::string& directory = "/printers/%s");
 
                 /*!
                  * Is there a printer with the given name set up on
                  * the cupsd?
                  */
-                bool printerExists (std::string cupsPrinter);
+                bool printerExists (const std::string& cupsPrinter) const;
 
                 /*!
                  * Return a string (in English) of the printer state.
                  */
-                std::string getState (std::string cupsPrinter);
+                std::string getState (const std::string& cupsPrinter) const;
 
                 /*!
                  * Return a string (in English) of the printer state
                  * message, which is not the same as the printer
                  * state.
                  */
-                std::string getStateMsg (std::string cupsPrinter);
+                std::string getStateMsg (const std::string& cupsPrinter) const;
 
-                std::string getStateReasons (std::string cupsPrinter);
+                std::string getStateReasons (const std::string& cupsPrinter) const;
 
                 /*!
                  * Get all status info for the queue cupsPrinter in
@@ -177,10 +177,9 @@ namespace wml {
                  * the results in qstat. Return true if the printer
                  * was found and status was set, false otherwise.
                  */
-                bool getFullStatus (std::string cupsPrinter,
+                bool getFullStatus (const std::string& cupsPrinter,
                                     wml::QueueCupsStatus& qstat,
-                                    bool includeJobStatus = true);
-
+                                    const bool includeJobStatus = true) const;
 
                 /*!
                  * Get a list of the jobs for the printer
@@ -189,9 +188,9 @@ namespace wml {
                  * jobs. If whichJobs is left empty, only currently
                  * processing jobs are listed.
                  */
-                void getJobList (std::string cupsPrinter,
+                void getJobList (const std::string& cupsPrinter,
                                  std::vector<wml::CupsJob>& jList,
-                                 std::string whichJobs = "");
+                                 const std::string& whichJobs = "") const;
 
                 /*!
                  * Get a list of the jobs for the printer
@@ -206,10 +205,10 @@ namespace wml {
                  * This should be faster if you only want to get the
                  * information of the last one (or few) jobs.
                  */
-                void getJobList (std::string cupsPrinter,
+                void getJobList (const std::string& cupsPrinter,
                                  std::vector<wml::CupsJob>& jList,
-                                 int numJobs = 0,
-                                 std::string whichJobs = "");
+                                 const int numJobs = 0,
+                                 const std::string& whichJobs = "") const;
 
                 /*!
                  * Get the Job information for the given Job ID,
@@ -217,70 +216,70 @@ namespace wml {
                  * job information for the last job processed or
                  * in-process.
                  */
-                void getJobStatus (std::string cupsPrinter,
-                                   int id,
-                                   wml::CupsJob& j);
+                void getJobStatus (const std::string& cupsPrinter,
+                                   const int id,
+                                   wml::CupsJob& j) const;
 
                 /*!
                  * Retrieves the job with the given id from the cups
                  * daemon and returns a CupsJob representation of that
                  * job
                  */
-                wml::CupsJob getJob (std::string id);
+                wml::CupsJob getJob (const std::string& id) const;
 
                 /*!
                  * Return a string (in English) of the printer info.
                  */
-                std::string getInfo (std::string cupsPrinter);
+                std::string getInfo (const std::string& cupsPrinter) const;
 
                 /*!
                  * Set the info Cups parameter to s.
                  */
-                void setInfo (std::string cupsPrinter, std::string s);
+                void setInfo (const std::string& cupsPrinter, const std::string& s);
 
                 /*!
                  * Same as above, but works for a class rather than a printer
                  */
-                void setClassInfo (std::string cupsPrinter, std::string s);
+                void setClassInfo (const std::string& cupsPrinter, const std::string& s);
 
                 /*!
                  * Return a string (in English) of the printer
                  * location.
                  */
-                std::string getLocation (std::string cupsPrinter);
+                std::string getLocation (const std::string& cupsPrinter) const;
 
                 /*!
                  * Set the location Cups parameter to s.
                  */
-                void setLocation (std::string cupsPrinter, std::string s);
+                void setLocation (const std::string& cupsPrinter, const std::string& s);
 
                 /*!
                  * Same as above, but works for a class rather than a printer
                  */
-                void setClassLocation (std::string cupsClass, std::string s);
+                void setClassLocation (const std::string& cupsClass, const std::string& s);
 
                 /*!
                  * Return a string (in English) of the printer make
                  * and model (i.e. the PPD "make and model").
                  */
-                std::string getMakeModel (std::string cupsPrinter);
+                std::string getMakeModel (const std::string& cupsPrinter) const;
 
                 /*!
                  * Set the make and model string
                  */
-                void setMakeModel (std::string cupsPrinter, std::string s);
+                void setMakeModel (const std::string& cupsPrinter, const std::string& s);
 
                 /*!
                  * Return the printer destination URI. Something like:
                  * socket://hp3005.wml:9100
                  */
-                std::string getDeviceURI (std::string cupsPrinter);
+                std::string getDeviceURI (const std::string& cupsPrinter) const;
 
                 /*!
                  * Similar to getDeviceURI, but returns a vector of URIs.
                  * Useful for getting the members of a class
                  */
-                std::vector<std::string> getMemberUris (std::string cupsPrinter);
+                std::vector<std::string> getMemberUris (const std::string& cupsPrinter) const;
 
                 /*!
                  * Set the printer destination URI to s. This is the
@@ -288,20 +287,20 @@ namespace wml {
                  * doesn't exist a new one is added with the given
                  * device uri.
                  */
-                void setDeviceURI (std::string cupsPrinter, std::string s);
+                void setDeviceURI (const std::string& cupsPrinter, const std::string& s);
 
                 /*!
                  * Set the PPD for the given cupsPrinter. ppdTag is
                  * the identifier for the PPD, which must be available
                  * on the cupsd system.
                  */
-                void setPPD (std::string cupsPrinter, std::string ppdTag);
+                void setPPD (const std::string& cupsPrinter, const std::string& ppdTag);
 
                 /*!
                  * Get the PPD for the queue cupsPrinter to the given
                  * file.
                  */
-                void getPPDToFile (std::string cupsPrinter, std::string file);
+                void getPPDToFile (const std::string& cupsPrinter, const std::string& file) const;
 
                 /*!
                  * Return a PPD object containing some PPD info for
@@ -309,18 +308,18 @@ namespace wml {
                  * ppd-name, which is generated internally in the
                  * cupsd, and which is not returned by this method.
                  */
-                wml::Ppd getPPD (std::string cupsPrinter);
+                wml::Ppd getPPD (const std::string& cupsPrinter) const;
 
                 /*!
                  * Set the provided PPD file for the given cupsPrinter.
                  */
-                void setPPDFromFile (std::string cupsPrinter, std::string sourcePPDFile);
+                void setPPDFromFile (const std::string& cupsPrinter, const std::string& sourcePPDFile);
 
                 /*!
                  * Get the PPD file stored in ppd-name on the cupsd
                  * for this queue and then obtain its nickname.
                  */
-                std::string getPPDNickname (std::string cupsPrinter);
+                std::string getPPDNickname (const std::string& cupsPrinter) const;
 
                 /*!
                  * Obtain a list of the printer "makes" for which
@@ -328,115 +327,115 @@ namespace wml {
                  * system. This makes a CUPS_GET_PPDS IPP request to
                  * the cupsd to get the information.
                  */
-                std::vector<std::string> getPPDListOfMakes (void);
+                std::vector<std::string> getPPDListOfMakes (void) const;
 
                 /*!
                  * Get the list of PPD drivers (models) for the given
                  * make. This makes a CUPS_GET_PPDS IPP request to the
                  * cupsd to get the information.
                  */
-                std::vector<wml::Ppd> getPPDListOfModels (std::string make);
+                std::vector<wml::Ppd> getPPDListOfModels (const std::string& make) const;
 
                 /*!
                  * Obtain the PPD options for the given printer.
                  */
-                std::vector<wml::PpdOption> getPPDOptions (std::string cupsPrinter);
+                std::vector<wml::PpdOption> getPPDOptions (const std::string& cupsPrinter) const;
 
                 /*!
                  * Set the PPD option identified by keyword to value.
                  */
-                void setPPDOption (std::string cupsPrinter,
-                                   std::string keyword,
-                                   std::string value);
+                void setPPDOption (const std::string& cupsPrinter,
+                                   const std::string& keyword,
+                                   const std::string& value);
 
                 /*!
                  * This checks that the printer doesn't exist, then
                  * calls setDeviceURI() to create it.
                  */
-                void addPrinter (std::string cupsPrinter, std::string devURI);
+                void addPrinter (const std::string& cupsPrinter, const std::string& devURI);
 
                 /*!
                  * add printer, with device URI, and at the same time,
                  * set the PPD file.
                  */
-                void addPrinter (std::string cupsPrinter, std::string s, std::string sourcePPD);
+                void addPrinter (const std::string& cupsPrinter, const std::string& s, const std::string& sourcePPD);
 
                 /*!
                  * Delete the printer.
                  */
-                void deletePrinter (std::string cupsPrinter);
+                void deletePrinter (const std::string& cupsPrinter);
 
                 /*!
                  * Return the "cups" URI for the queue. Something
                  * like: ipp://circle.wml:631/printers/hp3005
                  */
-                std::string getCupsURI (std::string cupsPrinter);
+                std::string getCupsURI (const std::string& cupsPrinter) const;
 
                 /*!
                  * Get a list of printer on the cupsd. Return as vector.
                  */
-                std::vector<std::string> getCupsPrinterList (wml::GET_PRINTERS getPrinters);
+                std::vector<std::string> getCupsPrinterList (wml::GET_PRINTERS getPrinters) const;
 
                 /*!
                  * Wrapper around getCupsPrinterList. Returns a vector
                  * containing all classes and printers
                  */
-                std::vector<std::string> getPrinterClassesList (void);
+                std::vector<std::string> getPrinterClassesList (void) const;
 
                 /*!
                  * Wrapper around getCupsPrinterList. Returns a vector
                  * containing only printers
                  */
-                std::vector<std::string> getPrinterList (void);
+                std::vector<std::string> getPrinterList (void) const;
 
                 /*!
                  * Wrapper around getCupsPrinterList. Returns a vector
                  * containing only classes
                  */
-                std::vector<std::string> getClassesList (void);
+                std::vector<std::string> getClassesList (void) const;
 
                 /*!
                  * Determines whether the queue is a printer or a class
                  * and returns the result as a string.
                  */
-                wml::QTYPE getQueueType (std::string queuename);
+                wml::QTYPE getQueueType (const std::string& queuename) const;
 
                 /*!
                  * Request that a job is created on the cupsd. Return
                  * the job id.
                  */
-                int createJob (std::string cupsQueue,
-                               std::string title="",
-                               std::string asUser="",
-                               std::string docName="",
-                               int numOptions = 0,
-                               cups_option_t* options = (cups_option_t*)0);
+                int createJob (const std::string& cupsQueue,
+                               const std::string& title="",
+                               const std::string& asUser="",
+                               const std::string& docName="",
+                               const int numOptions = 0,
+                               cups_option_t* options = (cups_option_t*)0) const;
 
                 /*!
                  * As the user asUser, this IPP_HOLD_JOBs jobId
                  */
-                void holdJob (int jobId, std::string asUser);
+                void holdJob (const int jobId, const std::string& asUser) const;
 
                 /*!
                  * As the user asUser, this IPP_RELEASE_JOBs jobId
                  */
-                void releaseJob (int jobId, std::string asUser);
+                void releaseJob (const int jobId, const std::string& asUser) const;
 
                 /*!
                  * As the user asUser, this IPP_CANCEL_JOBs jobId
                  */
-                void cancelJob (int jobId, std::string asUser);
+                void cancelJob (const int jobId, const std::string& asUser) const;
 
                 /*!
                  * As the user asUser, this IPP_RESTART_JOBs jobId
                  */
-                void restartJob (int jobId, std::string asUser);
+                void restartJob (const int jobId, const std::string& asUser) const;
 
                 /*!
                  * As the user asUser, move the job jobId to the queue
                  * destQueue.
                  */
-                void moveJob (int jobId, std::string asUser, std::string destQueue);
+                void moveJob (const int jobId, const std::string& asUser, const std::string& destQueue) const;
 
                 /*!
                  * Send a file specified by filePath to the cupsd,
@@ -445,28 +444,28 @@ namespace wml {
                  * lastInSet is false, the doc will not be printed
                  * immediately.
                  */
-                void sendDocument (int jobId,
-                                   std::string filePath,
-                                   std::string asUser,
-                                   std::string docName = "",
-                                   std::string format = "",
-                                   bool lastInSet = true);
+                void sendDocument (const int jobId,
+                                   const std::string& filePath,
+                                   const std::string& asUser,
+                                   const std::string& docName = "",
+                                   const std::string& format = "",
+                                   const bool lastInSet = true) const;
                 /*!
                  * Print the file at filePath to the CUPS queue
                  * cupsQueue. Throw exceptions if the file does not
                  * exist, or if the cupsd refuses to print it. Return
                  * the job id.
                  */
-                int printFile (std::string filePath,
-                               std::string jobTitle,
-                               std::string cupsQueue,
-                               std::string asUser = "");
+                int printFile (const std::string& filePath,
+                               const std::string& jobTitle,
+                               const std::string& cupsQueue,
+                               const std::string& asUser = "") const;
 
                 /*!
                  * Like getCupsPrinterList but returns a list rather
                  * than a vector.
                  */
-                std::list<std::string> getCupsPrinterList2 (void);
+                std::list<std::string> getCupsPrinterList2 (void) const;
 
                 /*!
                  * Get the value of the attribute attr for the printer
@@ -477,8 +476,7 @@ namespace wml {
                  * attr.getString() is returned by this function.
                  */
                 std::string getPrinterAttribute (const char* printerName,
-                                                 wml::IppAttr& attr);
-
+                                                 wml::IppAttr& attr) const;
 
                 /*!
                  * Similar to getPrinterAttribute, but returns a vector
@@ -487,7 +485,7 @@ namespace wml {
                  * the member-uris attribute of a class.
                  */
                 std::vector<std::string> getQueueAttribute (const char* printerName,
-                                                            wml::IppAttr& attr);
+                                                            wml::IppAttr& attr) const;
 
                 /*!
                  * Set an IPP attribute for printerName. attr should
@@ -495,7 +493,7 @@ namespace wml {
                  * attribute value.
                  */
                 void setPrinterAttribute (const char* printerName,
-                                          wml::IppAttr& attr);
+                                          const wml::IppAttr& attr);
 
                 /*!
                  * Set two IPP attributes for printerName. attrs
@@ -503,8 +501,8 @@ namespace wml {
                  * the attribute value.
                  */
                 void setPrinterAttributes (const char* printerName,
-                                           wml::IppAttr& attr1,
-                                           wml::IppAttr& attr2);
+                                           const wml::IppAttr& attr1,
+                                           const wml::IppAttr& attr2);
 
                 /*!
                  * Same as setPrinterAttribute, but used for classes
@@ -518,7 +516,7 @@ namespace wml {
                  * contains the names of the members to be added to
                  * the class
                  */
-                void setClassMembers (std::string className,
+                void setClassMembers (const std::string& className,
                                       std::vector<std::string> members);
 
                 /*!
@@ -527,10 +525,11 @@ namespace wml {
                  * IPP_PAUSE_PRINTER or IPP_RESUME_PRINTER.
                  */
                 void sendPrinterCommand (const char* printerName,
-                                         std::string asUser,
-                                         std::string reason,
-                                         ipp_op_t command,
-                                         std::string directory = "/printers/%s");
+                                         const std::string& asUser,
+                                         const std::string& reason,
+                                         const ipp_op_t command,
+                                         const std::string& directory = "/printers/%s") const;
+
                 /*!
                  * Return true if the string s is a name which is
                  * valid to be a CUPS printer name. Note that this is
@@ -540,13 +539,13 @@ namespace wml {
                  * letters of the alphabet (upper and lower cases),
                  * the underscore character and the dash character.
                  */
-                static bool printerNameIsValid (std::string s);
+                static bool printerNameIsValid (const std::string& s);
 
                 /*!
                  * Return true if the string s is a name which is
                  * valid to be a CUPS device address.
                  */
-                static bool addrIsValid (std::string s);
+                static bool addrIsValid (const std::string& s);
 
                 /*!
                  * Return true if the string s is a name which is
@@ -556,7 +555,7 @@ namespace wml {
                  * 1179). The same set of characters are allowed as
                  * for CupsCtrl::printerNameIsValid.
                  */
-                static bool lpdqIsValid (std::string s);
+                static bool lpdqIsValid (const std::string& s);
 
                 /*!
                  * Return true if the string s describes a port which
@@ -565,53 +564,52 @@ namespace wml {
                  * string is a set of numbers. Range checking of the
                  * port value is left to client code.
                  */
-                static bool portIsValid (std::string s);
+                static bool portIsValid (const std::string& s);
 
                 /*!
                  * Return true if the string s is a valid to be a CUPS
                  * job title.
                  */
-                static bool titleIsValid (std::string s);
+                static bool titleIsValid (const std::string& s);
 
                 /*!
                  * Same effect as cupsLastErrorString(), except that
                  * cupsLastErrorString doesn't seem to work.
                  */
-                std::string errorString (ipp_status_t err);
+                std::string errorString (const ipp_status_t err) const;
 
                 /*!
                  * Gets the string equivalent of the http_status_t
                  * status/error.
                  */
-                std::string errorString (http_status_t err);
+                std::string errorString (const http_status_t err) const;
 
                 /*!
                  * General function for sending job commands (such
                  * as cancel, etc) to the Cups daemon, to be applied
                  * to the job with the id provided
                  */
-                void sendJobCommand (int jobId,
-                                     std::string asUser,
-                                     ipp_op_t command);
+                void sendJobCommand (const int jobId,
+                                     const std::string& asUser,
+                                     const ipp_op_t command) const;
 
                 /*!
                  * Cancels all jobs on the queue with the given
                  * printer name
                  */
-                void cancelJobs (std::string printerName);
+                void cancelJobs (const std::string& printerName) const;
 
                 /*!
                  * Pauses all jobs on the queue with the given
                  * printer name
                  */
-                void pauseJobs (std::string printerName);
+                void pauseJobs (const std::string& printerName) const;
 
                 /*!
                  * Resumes all jobs on the queue with the given
                  * printer name
                  */
-                void releaseJobs (std::string printerName);
-
+                void releaseJobs (const std::string& printerName) const;
 
         private:
                 /*!
@@ -620,7 +618,7 @@ namespace wml {
                  * writing options to $HOME/.cups/lpoptions - this is
                  * for setting system-wide options only.
                  */
-                void writeLpOptions (int ndests, cups_dest_t * dests);
+                void writeLpOptions (const int ndests, cups_dest_t * dests) const;
 
                 /*!
                  * The IP or address of the CUPS server to query.

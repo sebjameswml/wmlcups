@@ -28,7 +28,7 @@ using namespace wml;
 
 string
 wml::CupsCtrl::getPrinterAttribute (const char* printerName,
-                                    IppAttr& attr)
+                                    IppAttr& attr) const
 {
         bool gotPrinter = false;
         ipp_t * prqst;
@@ -143,7 +143,7 @@ wml::CupsCtrl::getPrinterAttribute (const char* printerName,
 
 void
 wml::CupsCtrl::setPrinterAttribute (const char* printerName,
-                                    wml::IppAttr& attr)
+                                    const wml::IppAttr& attr)
 {
         ipp_t * prqst;
         ipp_t * rtn;
@@ -205,8 +205,8 @@ wml::CupsCtrl::setPrinterAttribute (const char* printerName,
 
 void
 wml::CupsCtrl::setPrinterAttributes (const char* printerName,
-                                     wml::IppAttr& attr1,
-                                     wml::IppAttr& attr2)
+                                     const wml::IppAttr& attr1,
+                                     const wml::IppAttr& attr2)
 {
         ipp_t * prqst;
         ipp_t * rtn;
@@ -288,10 +288,10 @@ wml::CupsCtrl::setPrinterAttributes (const char* printerName,
 
 void
 wml::CupsCtrl::sendPrinterCommand (const char* printerName,
-                                   string asUser,
-                                   string reason,
-                                   ipp_op_t command,
-                                   string directory)
+                                   const string& asUser,
+                                   const string& reason,
+                                   const ipp_op_t command,
+                                   const string& directory) const
 {
         ipp_t * prqst;
         ipp_t * rtn;
@@ -341,13 +341,13 @@ wml::CupsCtrl::sendPrinterCommand (const char* printerName,
 }
 
 vector<string>
-wml::CupsCtrl::getPrinterList(void)
+wml::CupsCtrl::getPrinterList(void) const
 {
         return this->getCupsPrinterList (GET_PRINTERS_ONLY);
 }
 
 bool
-wml::CupsCtrl::printerExists (string cupsPrinter)
+wml::CupsCtrl::printerExists (const string& cupsPrinter) const
 {
         IppAttr attr("printer-name");
         getPrinterAttribute (cupsPrinter.c_str(), attr);
@@ -358,7 +358,7 @@ wml::CupsCtrl::printerExists (string cupsPrinter)
 }
 
 void
-wml::CupsCtrl::setInfo (string cupsPrinter, string s)
+wml::CupsCtrl::setInfo (const string& cupsPrinter, const string& s)
 {
         IppAttr attr("printer-info");
         attr.setValue (s);
@@ -366,7 +366,7 @@ wml::CupsCtrl::setInfo (string cupsPrinter, string s)
 }
 
 void
-wml::CupsCtrl::setLocation (string cupsPrinter, string s)
+wml::CupsCtrl::setLocation (const string& cupsPrinter, const string& s)
 {
         IppAttr attr("printer-location");
         attr.setValue (s);
@@ -374,14 +374,14 @@ wml::CupsCtrl::setLocation (string cupsPrinter, string s)
 }
 
 string
-wml::CupsCtrl::getMakeModel (string cupsPrinter)
+wml::CupsCtrl::getMakeModel (const string& cupsPrinter) const
 {
         IppAttr attr("printer-make-and-model");
         return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 void
-wml::CupsCtrl::setMakeModel (string cupsPrinter, string s)
+wml::CupsCtrl::setMakeModel (const string& cupsPrinter, const string& s)
 {
         throw runtime_error ("Not user settable");
         IppAttr attr("printer-make-and-model");
@@ -390,14 +390,14 @@ wml::CupsCtrl::setMakeModel (string cupsPrinter, string s)
 }
 
 string
-wml::CupsCtrl::getDeviceURI (string cupsPrinter)
+wml::CupsCtrl::getDeviceURI (const string& cupsPrinter) const
 {
         IppAttr attr("device-uri");
         return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 void
-wml::CupsCtrl::setDeviceURI (string cupsPrinter, string s)
+wml::CupsCtrl::setDeviceURI (const string& cupsPrinter, const string& s)
 {
         DBG ("Called to set device uri to '" << s << "'");
 
@@ -439,7 +439,7 @@ wml::CupsCtrl::setDeviceURI (string cupsPrinter, string s)
 }
 
 void
-wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI)
+wml::CupsCtrl::addPrinter (const string& cupsPrinter, const string& devURI)
 {
         DBG ("Called");
         try {
@@ -462,7 +462,7 @@ wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI)
 }
 
 void
-wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI, string sourcePPD)
+wml::CupsCtrl::addPrinter (const string& cupsPrinter, const string& devURI, const string& sourcePPD)
 {
         DBG ("Called");
         try {
@@ -487,7 +487,7 @@ wml::CupsCtrl::addPrinter (string cupsPrinter, string devURI, string sourcePPD)
 }
 
 void
-wml::CupsCtrl::deletePrinter (string cupsPrinter)
+wml::CupsCtrl::deletePrinter (const string& cupsPrinter)
 {
         DBG ("Called");
         ipp_t * prqst;

@@ -83,26 +83,26 @@ wml::CupsCtrl::initialise (void)
 }
 
 void
-wml::CupsCtrl::setCupsdAddress (string a)
+wml::CupsCtrl::setCupsdAddress (const string& a)
 {
         this->cupsdAddress = a;
 }
 
 std::string
-wml::CupsCtrl::getCupsdAddress (void)
+wml::CupsCtrl::getCupsdAddress (void) const
 {
         return this->cupsdAddress;
 }
 
 string
-wml::CupsCtrl::getCupsURI (string cupsPrinter)
+wml::CupsCtrl::getCupsURI (const string& cupsPrinter) const
 {
         IppAttr attr("printer-uri-supported");
         return this->getPrinterAttribute (cupsPrinter.c_str(), attr);
 }
 
 vector<string>
-wml::CupsCtrl::getCupsPrinterList (GET_PRINTERS getPrinters)
+wml::CupsCtrl::getCupsPrinterList (GET_PRINTERS getPrinters) const
 {
         vector<string> theList;
         ipp_t * prqst;
@@ -194,7 +194,7 @@ wml::CupsCtrl::getCupsPrinterList (GET_PRINTERS getPrinters)
 }
 
 list<string>
-wml::CupsCtrl::getCupsPrinterList2 (void)
+wml::CupsCtrl::getCupsPrinterList2 (void) const
 {
         list<string> theList;
         ipp_t * prqst;

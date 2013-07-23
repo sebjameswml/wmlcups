@@ -32,7 +32,7 @@ wml::CupsdDirContainer::CupsdDirContainer ():
 
 }
 
-wml::CupsdDirContainer::CupsdDirContainer (string t, string p):
+wml::CupsdDirContainer::CupsdDirContainer (const string& t, const string& p):
         type(t),
         parameter(p)
 {
@@ -44,19 +44,25 @@ wml::CupsdDirContainer::~CupsdDirContainer ()
 }
 
 string
-wml::CupsdDirContainer::getType()
+wml::CupsdDirContainer::getType() const
 {
         return this->type;
 }
 
 string
-wml::CupsdDirContainer::getParameter()
+wml::CupsdDirContainer::getParameter() const
 {
         return this->parameter;
 }
 
+void
+wml::CupsdDirContainer::setParameter (const string& p)
+{
+        this->parameter = p;
+}
+
 string
-wml::CupsdDirContainer::getId()
+wml::CupsdDirContainer::getId() const
 {
         stringstream idss;
         idss << this->getType() << " " << this->getParameter();
@@ -64,7 +70,7 @@ wml::CupsdDirContainer::getId()
 }
 
 void
-wml::CupsdDirContainer::setDirective(queue<pair<string, string> > containerId, string key, string value)
+wml::CupsdDirContainer::setDirective(queue<pair<string, string> > containerId, const string& key, const string& value)
 {
         bool containerFound = false;
         if (!containerId.empty()){
@@ -88,13 +94,13 @@ wml::CupsdDirContainer::setDirective(queue<pair<string, string> > containerId, s
 }
 
 void
-wml::CupsdDirContainer::setDirective(string key, string value)
+wml::CupsdDirContainer::setDirective(const string& key, const string& value)
 {
         this->setDirective(this->getId(), key, value);
 }
 
 void
-wml::CupsdDirContainer::setDirective(string containerId, string key, string value)
+wml::CupsdDirContainer::setDirective(string containerId, const string& key, const string& value)
 {
         //map<string,string>::iterator iter;
         if (containerId == this->getId()) {
@@ -114,7 +120,7 @@ wml::CupsdDirContainer::getDirective(queue<pair<string, string> > containerId, s
         }*/
 
 void
-wml::CupsdDirContainer::getDirective(queue<pair<string, string> > containerId, string key, string& returnStr, bool valueOnly)
+wml::CupsdDirContainer::getDirective(queue<pair<string, string> > containerId, const string& key, string& returnStr, const bool valueOnly) const
 {
         bool containerFound = false;
         if (!containerId.empty()) {
@@ -122,7 +128,7 @@ wml::CupsdDirContainer::getDirective(queue<pair<string, string> > containerId, s
                 pair <string, string> temp = containerId.front();
                 containerId.pop();
 
-                list<CupsdDirContainer>::iterator iter;
+                list<CupsdDirContainer>::const_iterator iter;
                 for (iter = this->directiveContainers.begin(); iter != this->directiveContainers.end(); iter++) {
                         string containerIdString = temp.first + " " + temp.second;
                         if (iter->getId() == containerIdString) {
@@ -135,7 +141,7 @@ wml::CupsdDirContainer::getDirective(queue<pair<string, string> > containerId, s
                 }
 
         } else {
-                map<string, string>::iterator iter;
+                map<string, string>::const_iterator iter;
                 iter = this->directives.find(key);
                 if (iter != this->directives.end()) {
                         if (valueOnly == false) {
@@ -150,13 +156,13 @@ wml::CupsdDirContainer::getDirective(queue<pair<string, string> > containerId, s
 }
 
 void
-wml::CupsdDirContainer::directiveValue(string& returnStr, map<string, string>::iterator& iter)
+wml::CupsdDirContainer::directiveValue(string& returnStr, map<string, string>::const_iterator& iter) const
 {
         returnStr = iter->second;
 }
 
 void
-wml::CupsdDirContainer::fullDirective(string& returnStr, map<string, string>::iterator& iter)
+wml::CupsdDirContainer::fullDirective(string& returnStr, map<string, string>::const_iterator& iter) const
 {
         returnStr = iter->first + " " + iter->second;
 }
@@ -264,7 +270,7 @@ wml::CupsdCtrl::CupsdCtrl() :
 {
 }
 
-wml::CupsdCtrl::CupsdCtrl (string p) :
+wml::CupsdCtrl::CupsdCtrl (const string& p) :
         cupsdPath(p)
 {
 }
@@ -332,14 +338,14 @@ wml::CupsdCtrl::setDirective (queue<pair<string, string> > containerId, string k
 }
 
 string
-wml::CupsdCtrl::getDirective (queue<pair<string, string> > containerId, string key, bool valueOnly)
+wml::CupsdCtrl::getDirective (queue<pair<string, string> > containerId, const string& key, const bool valueOnly) const
 {
         string returnStr;
         bool containerFound = false;
 
         pair <string, string> temp = containerId.front();
         containerId.pop();
-        list<CupsdDirContainer>::iterator iter;
+        list<CupsdDirContainer>::const_iterator iter;
         for (iter = this->directiveContainers.begin();
              iter != this->directiveContainers.end(); iter++) {
                 string containerIdString = temp.first + " " + temp.second;
@@ -357,7 +363,7 @@ wml::CupsdCtrl::getDirective (queue<pair<string, string> > containerId, string k
 }
 
 void
-wml::CupsdCtrl::restartCups(void)
+wml::CupsdCtrl::restartCups(void) const
 {
         if (FoundryUtilities::fileExists("/usr/sbin/recupsd")) {
                 int result = system("/bin/sudo /usr/sbin/recupsd >/tmp/recupsd.out 2>/tmp/recupsd.err");

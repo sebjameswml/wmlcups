@@ -51,7 +51,7 @@ namespace wml {
         {
         public:
                 PpdOption ();
-                PpdOption (ppd_option_t* o);
+                PpdOption (const ppd_option_t* o);
                 ~PpdOption ();
 
                 /*!
@@ -62,77 +62,94 @@ namespace wml {
                 /*!
                  * Get the group name.
                  */
-                std::string getGroupName (void);
+                std::string getGroupName (void) const;
 
                 /*!
                  * Set the group name.
                  */
-                void setGroupName (std::string n);
+                void setGroupName (const std::string& n);
 
                 /*!
                  * Return the keyword of this option.
                  */
-                std::string getKeyword (void);
+                std::string getKeyword (void) const;
 
                 /*!
                  * Set the keyword to s
                  */
-                void setKeyword (std::string s);
+                void setKeyword (const std::string& s);
 
                 /*!
                  * Return the text of this option.
                  */
-                std::string getText (void);
+                std::string getText (void) const;
 
                 /*!
                  * Set the text to s
                  */
-                void setText (std::string s);
+                void setText (const std::string& s);
 
                 /*!
                  * Return the value of this option.
                  */
-                std::string getChoiceValue (void);
+                std::string getChoiceValue (void) const;
 
                 /*!
                  * Set the choice which has the value s
                  */
-                void setChoiceValue (std::string s);
+                void setChoiceValue (const std::string& s);
 
                 /*!
                  * Return the text of the chosen option.
                  */
-                std::string getChoiceText (void);
+                std::string getChoiceText (void) const;
 
                 /*!
                  * Set the choice which has the text s
                  */
-                void setChoiceText (std::string s);
+                void setChoiceText (const std::string& s);
 
                 /*!
                  * Return the default choice of this option.
                  */
-                std::string getDefaultChoice (void);
+                std::string getDefaultChoice (void) const;
 
                 /*!
                  * Set the default choice to s
                  */
-                void setDefaultChoice (std::string s);
+                void setDefaultChoice (const std::string& s);
 
-                ppd_ui_t getUi (void);
+                /*!
+                 * Get the UI type of this option.
+                 */
+                ppd_ui_t getUi (void) const;
 
-                void setUi (ppd_ui_t u);
+                /*!
+                 * Set the UI type of this option.
+                 */
+                void setUi (const ppd_ui_t u);
 
                 /*!
                  * Returns the number of elements in this->choices.
                  */
-                int getNumChoices (void);
+                int getNumChoices (void) const;
 
                 /*!
                  * Get the next choice.
+                 *
+                 * Populates choice with the element indicated by
+                 * this->curChoice, if available, and increments
+                 * this->curChoice.
+                 *
+                 * \return Indicates whether there was a next choice
+                 * to get.
                  */
                 bool getNextChoice (ppd_choice_t& choice);
 
+                /*!
+                 * Reset this->curChoice to point to the start of
+                 * this->choices.
+                 */
                 void resetCurChoice (void);
 
         private:

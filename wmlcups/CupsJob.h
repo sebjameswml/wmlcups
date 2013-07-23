@@ -29,9 +29,9 @@ namespace wml {
         {
         public:
                 CupsJob (void);
-                CupsJob (std::string jobName);
-                CupsJob (int jobId);
-                CupsJob (int jobId, std::string jobName);
+                CupsJob (const std::string& jobName);
+                CupsJob (const int jobId);
+                CupsJob (const int jobId, const std::string& jobName);
                 ~CupsJob (void);
 
                 /*!
@@ -44,37 +44,37 @@ namespace wml {
                  * Simple accessors
                  */
                 //@{
-                void setId (int i);
+                void setId (const int i);
                 int getId (void) const;
 
-                void setCopies (int i);
+                void setCopies (const int i);
                 int getCopies (void) const;
 
-                void setName (std::string s);
+                void setName (const std::string& s);
                 std::string getName (void) const;
 
-                void setUser (std::string s);
+                void setUser (const std::string& s);
                 std::string getUser (void) const;
 
-                void setSizeKB (unsigned int i);
+                void setSizeKB (const unsigned int i);
                 unsigned int getSizeKB (void) const;
 
                 std::string getSizeString (void) const;
 
-                void setCupsPages (unsigned int i);
+                void setCupsPages (const unsigned int i);
                 unsigned int getCupsPages (void) const;
 
-                void setPrinterUri (std::string s);
+                void setPrinterUri (const std::string& s);
                 std::string getPrinterUri (void) const;
 
-                void setState (ipp_jstate_t jstate);
+                void setState (const ipp_jstate_t jstate);
                 std::string getState (void) const;
 
-                void setCreationTime (int t);
+                void setCreationTime (const int t);
                 int getCreationTime (void) const;
-                void setProcessingTime (int t);
+                void setProcessingTime (const int t);
                 int getProcessingTime (void) const;
-                void setCompletedTime (int t);
+                void setCompletedTime (const int t);
                 int getCompletedTime (void) const;
 
                 void setCurrentFilter (std::string s);
@@ -83,10 +83,10 @@ namespace wml {
                 int getTime (void) const;
                 std::string getFormattedTime (void) const;
 
-                void setSourceIP (std::string ip);
+                void setSourceIP (const std::string& ip);
                 std::string getSourceIP (void) const;
 
-                void setDestIP (std::string ip);
+                void setDestIP (const std::string& ip);
                 std::string getDestIP (void) const;
                 //@}
 

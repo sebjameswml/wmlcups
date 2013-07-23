@@ -28,7 +28,7 @@ using namespace std;
 using namespace wml;
 
 void
-wml::CupsCtrl::setPPD (string cupsPrinter, string ppdTag)
+wml::CupsCtrl::setPPD (const string& cupsPrinter, const string& ppdTag)
 {
         // This is one way, if sourcePPD specifies a "ppd descriptor".
         IppAttr attr("ppd-name");
@@ -37,7 +37,7 @@ wml::CupsCtrl::setPPD (string cupsPrinter, string ppdTag)
 }
 
 void
-wml::CupsCtrl::setPPDFromFile (string cupsPrinter, string sourcePPD)
+wml::CupsCtrl::setPPDFromFile (const string& cupsPrinter, const string& sourcePPD)
 {
         if (!FoundryUtilities::fileExists(sourcePPD)) {
                 stringstream ee;
@@ -88,7 +88,7 @@ wml::CupsCtrl::setPPDFromFile (string cupsPrinter, string sourcePPD)
 }
 
 void
-wml::CupsCtrl::getPPDToFile (string cupsPrinter, string file)
+wml::CupsCtrl::getPPDToFile (const string& cupsPrinter, const string& file) const
 {
         if (cupsPrinter.empty()) {
                 throw runtime_error ("Must specify printer.");
@@ -118,7 +118,7 @@ wml::CupsCtrl::getPPDToFile (string cupsPrinter, string file)
 }
 
 wml::Ppd
-wml::CupsCtrl::getPPD (string cupsPrinter)
+wml::CupsCtrl::getPPD (const string& cupsPrinter) const
 {
         // This gets an INCOMPLETE set of info about the PPD.
 
@@ -180,7 +180,7 @@ wml::CupsCtrl::getPPD (string cupsPrinter)
 }
 
 string
-wml::CupsCtrl::getPPDNickname (string cupsPrinter)
+wml::CupsCtrl::getPPDNickname (const string& cupsPrinter) const
 {
         if (cupsPrinter.empty()) {
                 throw runtime_error ("Must specify printer.");
@@ -231,7 +231,7 @@ wml::CupsCtrl::getPPDNickname (string cupsPrinter)
 }
 
 vector<string>
-wml::CupsCtrl::getPPDListOfMakes (void)
+wml::CupsCtrl::getPPDListOfMakes (void) const
 {
         vector<string> theList;
 
@@ -316,7 +316,7 @@ wml::CupsCtrl::getPPDListOfMakes (void)
 }
 
 vector<Ppd>
-wml::CupsCtrl::getPPDListOfModels (string make)
+wml::CupsCtrl::getPPDListOfModels (const string& make) const
 {
         vector<Ppd> theList;
 
@@ -481,7 +481,7 @@ wml::CupsCtrl::getPPDListOfModels (string make)
 }
 
 vector<PpdOption>
-wml::CupsCtrl::getPPDOptions (std::string cupsPrinter)
+wml::CupsCtrl::getPPDOptions (const std::string& cupsPrinter) const
 {
         if (cupsPrinter.empty()) {
                 throw runtime_error ("Must specify printer.");
@@ -599,9 +599,9 @@ wml::CupsCtrl::getPPDOptions (std::string cupsPrinter)
 }
 
 void
-wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
-                             std::string keyword,
-                             std::string value)
+wml::CupsCtrl::setPPDOption (const std::string& cupsPrinter,
+                             const std::string& keyword,
+                             const std::string& value)
 {
         if (this->cupsdAddress != "localhost"
             && this->cupsdAddress != "127.0.0.1") {
@@ -675,7 +675,7 @@ wml::CupsCtrl::setPPDOption (std::string cupsPrinter,
 }
 
 void
-wml::CupsCtrl::writeLpOptions (int ndests, cups_dest_t * dests)
+wml::CupsCtrl::writeLpOptions (const int ndests, cups_dest_t * dests) const
 {
         DBG ("Called");
 
