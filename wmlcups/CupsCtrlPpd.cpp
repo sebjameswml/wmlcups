@@ -18,7 +18,7 @@ extern "C" {
 #include <utility>
 #include <set>
 
-#include <futil/FoundryUtilities.h>
+#include <futil/futil.h>
 #include "QueueCupsStatus.h"
 #include "IppAttr.h"
 #include "CupsCtrl.h"
@@ -39,7 +39,7 @@ wml::CupsCtrl::setPPD (const string& cupsPrinter, const string& ppdTag)
 void
 wml::CupsCtrl::setPPDFromFile (const string& cupsPrinter, const string& sourcePPD)
 {
-        if (!FoundryUtilities::fileExists(sourcePPD)) {
+        if (!futil::fileExists(sourcePPD)) {
                 stringstream ee;
                 ee << "The file " << sourcePPD << " doesn't exist";
                 throw runtime_error (ee.str());

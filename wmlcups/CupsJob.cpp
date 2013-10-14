@@ -11,7 +11,7 @@ extern "C" {
 
 #include "config.h"
 #include <futil/WmlDbg.h>
-#include <futil/FoundryUtilities.h>
+#include <futil/futil.h>
 #include "CupsJob.h"
 
 using namespace std;
@@ -336,7 +336,7 @@ wml::CupsJob::getTime (void) const
 string
 wml::CupsJob::getFormattedTime (void) const
 {
-        return FoundryUtilities::numToDateTime ((time_t)this->getTime(), '/', ':');
+        return futil::numToDateTime ((time_t)this->getTime(), '/', ':');
 }
 
 void

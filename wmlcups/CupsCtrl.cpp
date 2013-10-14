@@ -18,7 +18,7 @@ extern "C" {
 #include <utility>
 #include <set>
 
-#include <futil/FoundryUtilities.h>
+#include <futil/futil.h>
 #include "QueueCupsStatus.h"
 #include "IppAttr.h"
 #include "CupsCtrl.h"

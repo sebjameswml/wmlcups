@@ -15,7 +15,7 @@ extern "C" {
 #include <fstream>
 #include <utility>
 
-#include <futil/FoundryUtilities.h>
+#include <futil/futil.h>
 #include "CupsdCtrl.h"
 
 using namespace std;
@@ -183,7 +183,7 @@ wml::CupsdDirContainer::read (ifstream& f, int& recurslevel)
         string line;
 
         while (getline(f,line)) {
-                FoundryUtilities::stripLeadingSpaces(line);
+                futil::stripLeadingSpaces(line);
                 if (line[0] == '<') {
                         if (line[1] == '/') {
                                 list<CupsdDirContainer>::iterator iter;
@@ -365,7 +365,7 @@ wml::CupsdCtrl::getDirective (queue<pair<string, string> > containerId, const st
 void
 wml::CupsdCtrl::restartCups(void) const
 {
-        if (FoundryUtilities::fileExists("/usr/sbin/recupsd")) {
+        if (futil::fileExists("/usr/sbin/recupsd")) {
                 int result = system("/bin/sudo /usr/sbin/recupsd >/tmp/recupsd.out 2>/tmp/recupsd.err");
                 if (result == 0) {
                         DBG ("Succeeded restarting cups");

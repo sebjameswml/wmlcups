@@ -18,7 +18,7 @@ extern "C" {
 #include <utility>
 #include <set>
 
-#include <futil/FoundryUtilities.h>
+#include <futil/futil.h>
 #include "QueueCupsStatus.h"
 #include "IppAttr.h"
 #include "CupsCtrl.h"
@@ -34,7 +34,7 @@ wml::CupsCtrl::printerNameIsValid (const string& s)
         }
         try {
                 string tmp (s);
-                FoundryUtilities::sanitize (tmp, WMLCUPS_QUEUENAME_SAFE_CHARS);
+                futil::sanitize (tmp, WMLCUPS_QUEUENAME_SAFE_CHARS);
         } catch (const exception& e) {
                 return false;
         }
@@ -49,7 +49,7 @@ wml::CupsCtrl::addrIsValid (const string& s)
         }
         try {
                 string tmp (s);
-                FoundryUtilities::sanitize (tmp, CUPS_ADDRESS_SAFE_CHARS);
+                futil::sanitize (tmp, CUPS_ADDRESS_SAFE_CHARS);
         } catch (const exception& e) {
                 return false;
         }
@@ -67,9 +67,9 @@ wml::CupsCtrl::lpdqIsValid (const string& s)
                 // in IPP printer name. That means
                 // CHARS_NUMERIC_ALPHA, '_' and
                 // '-'. WMLCUPS_QUEUENAME_SAFE_CHARS is defined in
-                // futil/FoundryUtilities.h.
+                // futil/futil.h.
                 string tmp (s);
-                FoundryUtilities::sanitize (tmp, WMLCUPS_QUEUENAME_SAFE_CHARS);
+                futil::sanitize (tmp, WMLCUPS_QUEUENAME_SAFE_CHARS);
         } catch (const exception& e) {
                 return false;
         }
@@ -84,7 +84,7 @@ wml::CupsCtrl::portIsValid (const string& s)
         }
         try {
                 string tmp (s);
-                FoundryUtilities::sanitize (tmp, CHARS_NUMERIC);
+                futil::sanitize (tmp, CHARS_NUMERIC);
         } catch (const exception& e) {
                 return false;
         }
@@ -99,7 +99,7 @@ wml::CupsCtrl::titleIsValid (const string& s)
         }
         try {
                 string tmp (s);
-                FoundryUtilities::sanitize (tmp, WMLCUPS_TITLE_SAFE_CHARS);
+                futil::sanitize (tmp, WMLCUPS_TITLE_SAFE_CHARS);
         } catch (const exception& e) {
                 return false;
         }
