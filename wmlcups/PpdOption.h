@@ -37,6 +37,7 @@
 
 extern "C" {
 #include <cups/cups.h>
+#include <cups/ppd.h>
 #include <cups/language.h>
 }
 
